@@ -1,0 +1,11 @@
+.vehicle-pane-heading{padding:24px 0 12px}.vehicle-pane-heading h2{font-size:20px;font-weight:500;margin:8px 0}.vehicle-pane-heading p{line-height:1.8}
+.vehicle-purchase-options,.new-vehicle-grade,.new-vehicle-powertrain{border:0;margin:0 0 22px;padding:0;min-width:0}
+#pane-vehicle legend{font-size:12px;font-weight:550;margin-bottom:10px;padding:0}
+.vehicle-purchase-choice{display:flex;align-items:flex-start;gap:10px;margin:8px 0;padding:14px 12px;border:1px solid var(--line);border-radius:7px;background:#fafbf8;cursor:pointer;line-height:1.6}
+.vehicle-purchase-choice:has(input:checked){background:#f1f4ed;border-color:#748866;box-shadow:0 0 0 1px #748866}
+.vehicle-purchase-choice input{margin:3px 0 0;accent-color:#455342;flex:none}.vehicle-purchase-choice strong{display:block;font-size:12px;font-weight:500}.vehicle-purchase-choice small{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.vehicle-body-spec{font-size:10px;line-height:1.9;color:var(--muted);padding:10px 12px;background:#f4f6ef;border-radius:6px;margin:0 0 20px}
+.vehicle-pricing-help{border-top:1px solid var(--line);padding-top:14px;line-height:1.9}
+.price-review-breakdown{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line)}.price-review-breakdown>div{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin:10px 0}.price-review-breakdown dt{font-size:11px;color:var(--muted)}.price-review-breakdown dd{font-size:14px;margin:0;font-weight:500;text-align:right;font-variant-numeric:tabular-nums}
+.price-vehicle-note{font-size:10px;line-height:1.8;color:var(--muted);margin:12px 0 0}.price-review-total{flex-wrap:wrap}.price-review-total output{margin-left:auto}
+.contact-selected-vehicle{margin:18px 0;padding:12px;background:#f4f6ef;border:1px solid var(--line);border-radius:6px}.contact-selected-vehicle p{font-size:11px;line-height:1.8;margin:0 0 8px}.contact-selected-vehicle button{font-size:10px;padding:6px 9px}

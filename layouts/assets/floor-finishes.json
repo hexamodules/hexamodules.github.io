@@ -1,0 +1,149 @@
+{
+  "revision": "floor-five-photo-finishes-v1",
+  "default": "oak",
+  "source": "SHOさん提供の写真（2026-09-14）。写真は無加工。",
+  "presentation": "木目は写真内の床部分をUVで抽出して長手方向に配置。柄の縮尺は紹介表示用。",
+  "step": "黒い樹脂。床柄の選択とは独立。",
+  "colors": [
+    {
+      "value": "walnut",
+      "label": "ウォールナット",
+      "name": "ウォールナット床",
+      "image": "assets/floor-finish-walnut.jpg",
+      "image_width": 567,
+      "image_height": 567,
+      "pattern": "wood",
+      "source_file": "SDF9222.jpg",
+      "mapping": {
+        "center": [
+          0.2821869488536155,
+          0.2592592592592593
+        ],
+        "across": [
+          0.12345679012345678,
+          -0.15873015873015872
+        ],
+        "along": [
+          0.26455026455026454,
+          0.24691358024691357
+        ],
+        "tile_mm": [
+          300,
+          900
+        ]
+      }
+    },
+    {
+      "value": "teak",
+      "label": "チーク",
+      "name": "チーク床",
+      "image": "assets/floor-finish-teak.jpg",
+      "image_width": 567,
+      "image_height": 567,
+      "pattern": "wood",
+      "source_file": "SDF9221.jpg",
+      "mapping": {
+        "center": [
+          0.2821869488536155,
+          0.2592592592592593
+        ],
+        "across": [
+          0.12345679012345678,
+          -0.15873015873015872
+        ],
+        "along": [
+          0.26455026455026454,
+          0.24691358024691357
+        ],
+        "tile_mm": [
+          300,
+          900
+        ]
+      }
+    },
+    {
+      "value": "oak",
+      "label": "オーク",
+      "name": "オーク床",
+      "image": "assets/floor-finish-oak.jpg",
+      "image_width": 567,
+      "image_height": 567,
+      "pattern": "wood",
+      "source_file": "SDF9220.jpg",
+      "mapping": {
+        "center": [
+          0.2821869488536155,
+          0.2592592592592593
+        ],
+        "across": [
+          0.12345679012345678,
+          -0.15873015873015872
+        ],
+        "along": [
+          0.26455026455026454,
+          0.24691358024691357
+        ],
+        "tile_mm": [
+          300,
+          900
+        ]
+      }
+    },
+    {
+      "value": "dark-canvas",
+      "label": "ダークキャンバス",
+      "name": "ダークキャンバス床",
+      "image": "assets/floor-finish-dark-canvas.jpg",
+      "image_width": 630,
+      "image_height": 630,
+      "pattern": "canvas",
+      "source_file": "PF22370_20230126C01.jpg",
+      "mapping": {
+        "center": [
+          0.5,
+          0.5
+        ],
+        "across": [
+          1,
+          0
+        ],
+        "along": [
+          0,
+          1
+        ],
+        "tile_mm": [
+          150,
+          150
+        ]
+      }
+    },
+    {
+      "value": "light-canvas",
+      "label": "ライトキャンバス",
+      "name": "ライトキャンバス床",
+      "image": "assets/floor-finish-light-canvas.jpg",
+      "image_width": 630,
+      "image_height": 630,
+      "pattern": "canvas",
+      "source_file": "PF22369_20230126C01.jpg",
+      "mapping": {
+        "center": [
+          0.5,
+          0.5
+        ],
+        "across": [
+          1,
+          0
+        ],
+        "along": [
+          0,
+          1
+        ],
+        "tile_mm": [
+          150,
+          150
+        ]
+      }
+    }
+  ]
+}

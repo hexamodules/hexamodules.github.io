@@ -1,0 +1,64 @@
+/* Keep the brand story quiet, with material details available on demand. */
+body[data-page="about"] .brand-story > div > p:not(.eyebrow):not(.profile-note) {
+  font-size: 14px;
+  line-height: 2.15;
+}
+.about-contents {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 32px;
+  padding-block: 0 25px;
+  font-size: 11px;
+  color: var(--muted);
+}
+.about-contents a { padding-block: 8px; }
+.about-contents a:hover { color: var(--ink); }
+.about-image figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
+.about-materials { background: var(--white); border-block: 1px solid var(--line); }
+.about-materials .brand-story { grid-template-columns: .8fr 1.2fr; gap: 8%; align-items: start; }
+.about-materials h2 { margin-top: 20px; }
+.about-materials .materials-intro { max-width: 300px; color: var(--muted); }
+.materials-list { min-width: 0; border-top: 1px solid var(--line); }
+.material-detail { border-bottom: 1px solid var(--line); }
+.material-detail summary {
+  display: flex;
+  gap: 20px;
+  align-items: baseline;
+  min-height: 112px;
+  padding-block: 28px;
+  list-style: none;
+  cursor: pointer;
+}
+.material-detail summary::-webkit-details-marker { display: none; }
+.material-detail summary::marker { content: ""; }
+.material-detail summary:focus-visible { outline: 2px solid #738569; outline-offset: 5px; }
+.material-detail summary:hover .material-title { color: #658056; }
+.material-number { flex: 0 0 18px; font-size: 10px; color: var(--muted); }
+.material-summary { display: grid; gap: 8px; min-width: 0; }
+.material-title { font-size: 18px; line-height: 1.6; }
+.material-lead { font-size: 12px; line-height: 1.9; color: var(--muted); }
+.material-toggle { position: relative; flex: 0 0 14px; width: 14px; height: 14px; margin-left: auto; }
+.material-toggle::before,.material-toggle::after {
+  content: ""; position: absolute; width: 14px; height: 1px; background: currentColor; top: 50%; left: 0;
+}
+.material-toggle::after { transform: rotate(90deg); }
+.material-detail[open] .material-toggle::after { transform: rotate(0); }
+.material-body { padding: 0 30px 30px 38px; font-size: 14px; line-height: 2.1; }
+.material-body p + p { margin-top: 15px; }
+.material-points { margin: 20px 0 0; }
+.material-points > div + div { margin-top: 20px; }
+.material-points dt { font-size: 12px; font-weight: 600; }
+.material-points dd { margin: 5px 0 0; }
+.development-note { margin-top: 28px; padding: 20px 24px; border-left: 2px solid #a8b19d; background: #e9ebe2; max-width: 660px; }
+.development-note p { margin-top: 8px; font-size: 12px; line-height: 2; }
+@media(max-width:700px) {
+  .about-contents { gap: 4px 22px; padding-bottom: 20px; font-size: 10px; }
+  body[data-page="about"] .brand-story > div > p:not(.eyebrow):not(.profile-note) { font-size: 14px; line-height: 2.05; }
+  .about-materials .materials-intro { max-width: none; }
+  .materials-list { margin-top: 30px; }
+  .material-detail summary { gap: 14px; min-height: 106px; padding-block: 23px; }
+  .material-title { font-size: 17px; }
+  .material-body { padding: 0 14px 25px 0; font-size: 14px; line-height: 2.05; }
+  .development-note { padding: 18px 20px; }
+  .about-image figcaption { letter-spacing: .06em; }
+}

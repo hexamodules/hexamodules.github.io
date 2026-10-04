@@ -1,0 +1,16 @@
+{
+  "source": "Japan Post, UTF-8 address postcode data",
+  "published": "2026-08-31",
+  "downloaded": "2026-09-16",
+  "records": 124523,
+  "postcodes": 120717,
+  "source_url": "https://www.post.japanpost.jp/service/search/zipcode/download/utf-zip.html",
+  "data_url": "https://www.post.japanpost.jp/service/search/zipcode/download/utf/zip/utf_ken_all.zip",
+  "terms_url": "https://www.post.japanpost.jp/service/search/zipcode/download/utf-readme.html",
+  "archive_sha256": "7d42728c4c9023e30668b1ef144fd5ffd831a417011c82d3e85ca3c35db43b15",
+  "scope": "Address postcodes; individual large-business postcodes are not included.",
+  "transformation": "Keep all distinct matches. Represent city-wide fallback town descriptions as an empty town. Split by first three postcode digits.",
+  "shards": 1000,
+  "total_bytes": 7018723,
+  "largest_shard_bytes": 69557
+}

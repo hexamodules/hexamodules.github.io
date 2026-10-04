@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ja"><head><meta name="robots" content="noindex"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>取扱店管理の見本 | Hexa</title><link rel="stylesheet" href="style.css?v=10"></head>
+<body class="setup-page"><div class="demo-bar"><span>Hexa / 取扱店管理の見本</span><a href="setup.html">セットアップへ戻る</a></div><main>
+<header class="setup-intro"><p class="eyebrow">DEALER MANAGEMENT</p><h1>店舗の情報と、<br>施工相談の受付を管理。</h1><p>登録後に使う管理画面の見本です。<br>変更はこのブラウザー内に保存されます。実際の登録・公開・連絡先共有は行いません。</p></header>
+<section id="management-empty" class="setup-form setup-terms" hidden><h2>取扱店情報を入力してください</h2><p>セットアップで入力した内容を使って、管理画面を確認できます。</p><a class="setup-back" href="setup.html">セットアップを開く →</a></section>
+<div id="management-content" hidden>
+<section class="setup-form setup-terms management-overview"><p class="eyebrow">YOUR DEALERSHIP</p><h2 id="management-name"></h2><p id="management-role"></p><p id="management-save-notice" class="management-message" role="status" aria-live="polite"></p><div class="management-actions"><a class="setup-preview-button" href="setup.html?mode=manage">取扱店情報を変更する <span aria-hidden="true">→</span></a><button id="management-preview" type="button" class="setup-preview-button">お客様向けの見本を見る <span aria-hidden="true">↗</span></button></div><p class="section-help">名称・ロゴ、施工対応、会社情報、問い合わせの受信先を変更できます。</p></section>
+<section class="setup-form setup-terms"><p class="eyebrow">INSTALLATION NETWORK</p><h2>施工店ネットワーク</h2>
+<div id="management-network-off" hidden><p>施工店ネットワークへの登録は希望していません。</p><p class="section-help">自社施工に対応する店舗は、他店からの施工相談を受ける窓口として登録を希望できます。提携先へ依頼するだけの場合、ネットワークへの登録は不要です。</p><a class="setup-back" href="setup.html?mode=manage#installation-section">施工対応の設定を変更する →</a></div>
+<div id="management-network-on" hidden><p class="management-pending">登録希望を保存しています。実際の登録・窓口の共有はHexaの確認・承認後です。</p><div id="management-network-incomplete" class="management-message" hidden>入力が未完了です。取扱店情報から必要な項目を入力してください。</div>
+<form id="management-network-form"><fieldset><legend>承認後の新規施工相談</legend><div class="setup-markets"><label><input type="radio" name="networkAvailability" value="accepting"><span><strong>相談を受け付ける</strong><small>新しい施工相談の窓口として案内</small></span></label><label><input type="radio" name="networkAvailability" value="paused"><span><strong>受付を一時停止する</strong><small>新しい施工相談の受付を休止</small></span></label></div></fieldset><p class="section-help">施工が立て込んでいるときに一時停止し、余裕ができたら再開できます。すでに相談中・受注済みの案件と、お客様向けのページや見積もり窓口は継続します。</p><button type="submit" class="setup-submit">受付設定を見本に保存 <span aria-hidden="true">→</span></button><p id="network-save-status" class="setup-status" role="status" aria-live="polite"></p></form>
+<div class="network-current"><span>保存済みの設定</span><strong id="network-current-status"></strong></div>
+<dl id="management-network-details" class="management-details"></dl><a class="setup-back" href="setup.html?mode=manage#installer-network-setup">施工場所・対応範囲・専用窓口を変更する →</a>
+</div></section>
+</div><footer>Layout Studio by Hexa</footer></main><script type="module" src="manage.js?v=4"></script></body></html>

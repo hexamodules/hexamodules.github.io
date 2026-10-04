@@ -1,0 +1,130 @@
+{
+  "revision": "ceiling-natural-veneer-v1",
+  "default": "white-ash",
+  "material": "天然木突板",
+  "legacy_values": {
+    "oak": "white-ash"
+  },
+  "source": "SHOさん提供の写真（2026-09-14）。画像・色は無加工。",
+  "presentation": "各板のUVで写真の継ぎ目を避け、長手に沿って木目を配置。",
+  "colors": [
+    {
+      "value": "white-ash",
+      "label": "ホワイトアッシュ",
+      "name": "ホワイトアッシュの突板天井",
+      "image": "assets/ceiling-finish-white-ash.jpg",
+      "image_width": 1000,
+      "image_height": 1000,
+      "grain_strips_px": [
+        [
+          8,
+          110
+        ],
+        [
+          124,
+          238
+        ],
+        [
+          252,
+          365
+        ],
+        [
+          381,
+          491
+        ],
+        [
+          506,
+          618
+        ],
+        [
+          636,
+          745
+        ],
+        [
+          760,
+          875
+        ],
+        [
+          891,
+          993
+        ]
+      ]
+    },
+    {
+      "value": "walnut",
+      "label": "ウォールナット",
+      "name": "ウォールナットの突板天井",
+      "image": "assets/ceiling-finish-walnut.jpg",
+      "image_width": 1000,
+      "image_height": 1000,
+      "grain_strips_px": [
+        [
+          9,
+          169
+        ],
+        [
+          183,
+          290
+        ],
+        [
+          306,
+          432
+        ],
+        [
+          507,
+          682
+        ],
+        [
+          699,
+          803
+        ],
+        [
+          818,
+          943
+        ]
+      ]
+    },
+    {
+      "value": "black-cherry",
+      "label": "ブラックチェリー",
+      "name": "ブラックチェリーの突板天井",
+      "image": "assets/ceiling-finish-black-cherry.jpg",
+      "image_width": 1000,
+      "image_height": 1000,
+      "grain_strips_px": [
+        [
+          8,
+          115
+        ],
+        [
+          130,
+          242
+        ],
+        [
+          255,
+          369
+        ],
+        [
+          383,
+          493
+        ],
+        [
+          508,
+          619
+        ],
+        [
+          635,
+          745
+        ],
+        [
+          760,
+          869
+        ],
+        [
+          886,
+          993
+        ]
+      ]
+    }
+  ]
+}

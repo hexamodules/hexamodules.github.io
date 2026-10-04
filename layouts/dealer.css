@@ -1,0 +1,21 @@
+/* Only registered dealer pages use this presentation. */
+.dealer-branded .studio-header{gap:25px}
+.dealer-branded .studio-header .dealer-brand{flex:0 0 136px;display:flex;visibility:visible;flex-direction:column;align-items:flex-start;gap:3px;pointer-events:auto}
+.dealer-brand>img{display:block;width:128px;height:35px;object-fit:contain;object-position:left center}
+.dealer-brand .dealer-role{font-size:8px;line-height:1.2;letter-spacing:.04em;color:#757c75;white-space:normal;max-width:100%}
+.dealer-wordmark{font-size:15px;font-weight:550;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.dealer-preview-missing{max-width:650px;margin:10vh auto;padding:30px;line-height:2}
+.dealer-preview-missing h1{font-size:24px;margin:20px 0}
+.dealer-preview-missing a{display:inline-block;margin-top:25px;border-bottom:1px solid}
+.dealer-branded .studio-heading h1 span{display:block;font-size:9px;letter-spacing:.055em;margin-top:6px}
+.dealer-branded .concept-message{font-size:11px}
+.dealer-enquiry-context{padding:12px 14px;background:#edf1e9;border:1px solid #dce3d6;border-radius:6px;color:#4e6148;font-size:11px;line-height:1.7;margin-bottom:20px}
+.dealer-branded .location-choice[hidden],.dealer-branded .location-connection[hidden]{display:none!important}
+.dealer-single-location .opening-locations{grid-template-columns:1fr;max-width:190px}
+.dealer-single-location .location-choice:disabled{opacity:1;cursor:default;color:inherit}
+.dealer-branded.outro-night .dealer-brand{background:#f7f7f0;border-radius:5px;padding:6px 9px}
+@media(max-width:1100px){.dealer-branded .concept-message{display:none}.dealer-branded .studio-header{gap:17px}}
+@media(max-width:850px){.dealer-branded .studio-header .dealer-brand{flex-basis:90px}.dealer-brand>img{width:90px;height:28px}.dealer-brand .dealer-role{font-size:7px}.dealer-branded .studio-heading h1 span{font-size:8px}.dealer-branded .studio-header{gap:13px}}
+@media(max-width:440px){.dealer-branded .studio-header{gap:8px;padding:0 10px}.dealer-branded .studio-header .dealer-brand{flex-basis:69px}.dealer-brand>img{width:69px;height:24px}.dealer-brand .dealer-role{font-size:6px}.dealer-branded .studio-heading h1{font-size:13px;letter-spacing:.06em}.dealer-branded .studio-heading h1 span{font-size:7px;letter-spacing:0;margin-top:4px}.dealer-branded .studio-home-link{font-size:7px}.dealer-branded #open-help{display:none}}
+@media(max-width:850px){.dealer-wordmark{font-size:12px}}
+@media(max-width:440px){.dealer-wordmark{font-size:10px}}

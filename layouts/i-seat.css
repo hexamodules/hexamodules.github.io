@@ -1,0 +1,19 @@
+.iseat-options{padding:15px 14px 17px;border-top:1px solid #deded5;background:#fafaf7;font-size:12px}
+.iseat-options fieldset{border:0;padding:0;margin:15px 0 0;min-width:0}
+.iseat-options legend{font-size:12px;font-weight:600;margin-bottom:8px}
+.iseat-spec{line-height:1.7;margin:0;color:#424941}.iseat-spec span{font-size:10px;letter-spacing:.1em}
+.iseat-poses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.iseat-poses button{border:1px solid #deded5;border-radius:6px;padding:4px 4px 8px;background:#fff;font:inherit;cursor:pointer;color:#424941;min-width:0}
+.iseat-poses button[aria-pressed=true]{border-color:#5b6954;box-shadow:inset 0 0 0 1px #5b6954;background:#f1f3ec}
+.iseat-poses img{width:100%;height:auto;display:block;aspect-ratio:28/19;object-fit:contain;border-radius:3px}
+.iseat-poses span{display:block;font-size:11px;margin-top:4px}.iseat-dimensions{font-size:10px;color:#73786f;line-height:1.6}
+.iseat-note{font-size:10px;line-height:1.8;color:#72766e;margin:13px 0 7px}.iseat-source{font-size:10px;color:#515e47;text-underline-offset:3px}
+.iseat-options button:focus-visible,.iseat-options a:focus-visible{outline:2px solid #566947;outline-offset:3px}
+
+.iseat-slide legend{width:100%;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.iseat-slide output{font-weight:400;color:#58654d;font-size:11px}
+.iseat-slide input[type=range]{width:100%;margin:5px 0;accent-color:#596a4c;cursor:pointer}.iseat-slide-scale{display:flex;justify-content:space-between;font-size:10px;color:#687060}.iseat-slide-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:9px}.iseat-slide-foot small{font-size:10px;color:#72776c}.iseat-slide-foot button{font:inherit;font-size:10px;padding:4px 7px;border:1px solid #d2d7cc;border-radius:4px;background:transparent;color:#4e5c43;cursor:pointer}.iseat-slide-label .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+.iseat-stage-controls{padding:4px 0 11px}.iseat-stage-controls:has(+.motion-item){border-bottom:1px solid #e1e4db;margin-bottom:10px}.iseat-stage-heading{display:flex;justify-content:space-between;gap:8px;align-items:center;margin:4px 0 8px;font-size:11px}.iseat-stage-heading small{font-size:10px;color:#717968}.iseat-stage-poses{display:grid;grid-template-columns:1fr 1fr;gap:6px}.iseat-stage-poses button{min-height:38px;padding:7px 5px;font-size:10px;line-height:1.4;background:#fff;border:1px solid #d6dcd0;color:#424d3c;border-radius:5px;cursor:pointer}.iseat-stage-poses button[aria-pressed=true]{background:#edf1e6;border-color:#5c6d4d;box-shadow:inset 0 0 0 1px #5c6d4d}.iseat-stage-poses button:focus-visible{outline:2px solid #566947;outline-offset:2px}.motion-popover.has-iseat .motion-content{max-height:calc(100dvh - 260px);overflow-y:auto;overscroll-behavior:contain}
+@media(max-width:850px){.motion-popover.has-iseat .motion-content{max-height:calc(clamp(235px,40dvh,390px) - 125px)}}
+.iseat-stage-poses button:last-child{grid-column:1/-1}
+.iseat-clearance-note{display:block;font-size:10px;color:#72776c;line-height:1.6;margin-top:8px}

@@ -1,0 +1,50 @@
+{
+  "revision": "wall-three-finishes-v2-soft-white",
+  "colors": [
+    {
+      "value": "teffy",
+      "label": "TEFFY",
+      "name": "TEFFY壁面",
+      "rgb": [
+        175,
+        166,
+        159
+      ],
+      "image": "assets/wall-finish-teffy.png",
+      "fusion_archive": "../wall-finishes/Hiace_Wall_100mm_teffy.f3d"
+    },
+    {
+      "value": "white",
+      "label": "WHITE",
+      "name": "ホワイト壁面",
+      "rgb": [
+        252,
+        252,
+        252
+      ],
+      "image": "assets/wall-finish-white.png",
+      "fusion_archive": "../wall-finishes/Hiace_Wall_100mm_white.f3d",
+      "web_rgb": [
+        235,
+        234,
+        230
+      ],
+      "web_finish": "Soft matte white presentation; reference and Fusion RGB retained."
+    },
+    {
+      "value": "volcanic-gray",
+      "label": "VOLCANIC GRAY",
+      "name": "ボルカニックグレー壁面",
+      "rgb": [
+        109,
+        110,
+        115
+      ],
+      "image": "assets/wall-finish-volcanic-gray.png",
+      "fusion_archive": "../wall-finishes/Hiace_Wall_100mm_volcanic-gray.f3d"
+    }
+  ],
+  "color_source": "Median sRGB of the unlettered upper-left panel region in each user-supplied 220 px reference; visual matching, not manufacturer calibrated values.",
+  "surface_only": true,
+  "grooves_and_cut_edges": "Preserve existing wood grain."
+}

@@ -1,0 +1,17 @@
+.dealer-option-badge{display:inline-block;width:fit-content;vertical-align:middle;padding:3px 6px;border:1px solid #bbc4b9;border-radius:4px;background:#f3f6f1;color:#53634f;font-size:8px;font-weight:600;letter-spacing:.055em;line-height:1.3;white-space:nowrap}
+.step>summary>span:first-child:has(.dealer-option-badge){display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.aircon-card-caption>.dealer-option-badge{margin-top:7px}
+#electrical-title .dealer-option-badge{margin-left:8px}
+.dealer-option-note{font-size:10px;line-height:1.85;color:#6c7568;margin:14px 0 3px}
+.selection-row[data-dealer-option-row]>span{display:flex;flex-direction:column;align-items:flex-start;gap:6px;flex-shrink:0}
+.selection-row[data-dealer-option-row]{grid-template-columns:100px 1fr}
+.heater-indicator{display:grid;grid-template-columns:19px auto;gap:3px 5px}.heater-indicator svg{grid-row:1 / span 2}.heater-indicator>.dealer-option-badge{grid-column:2;font-size:7px}
+.stage.has-electrical .motion-popover{top:150px}
+@media(max-width:850px){.stage.has-electrical .motion-popover{top:122px}.heater-indicator{grid-template-columns:17px auto}}
+.dealer-options-review{padding:16px;border:1px solid #dde3d9;border-radius:8px;background:#f6f8f3;margin:18px 0;font-size:11px;line-height:1.85;color:#626e5d}
+.dealer-options-review strong{font-size:12px;color:#354631}.dealer-options-review p{margin:9px 0 0}
+.dealer-option-contact{font-size:11px;line-height:1.85;color:#64705e}
+.dealer-option-disclosure{font-size:10px;color:#68745f;line-height:1.85;margin-top:18px}.dealer-option-disclosure summary{cursor:pointer;text-decoration:underline;text-underline-offset:3px}.dealer-option-disclosure p{margin:10px 0}
+.outro-dealer-price-note{font-size:10px;line-height:1.7;color:inherit;opacity:.8;max-width:420px;margin:5px auto 0}
+.price-review-total{flex-wrap:wrap}#reference-price-total{white-space:nowrap;margin-left:auto}
+#electrical-preview>.dealer-option-badge{margin-top:7px;font-size:7px}
