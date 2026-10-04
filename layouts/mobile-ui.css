@@ -93,3 +93,53 @@
  html.mobile-ui .twi-maker {font-size:11px;margin:0;}
  html.mobile-ui dialog {max-width:calc(100vw - 24px);max-height:90dvh;overflow:auto;}
 }
+
+/* Two-level phone chooser: 76px subcategory tiles, 70vw option cards. */
+@media (max-width:700px) {
+ html.mobile-ui .mobile-subcategories {display:flex;flex:none;gap:8px;overflow-x:auto;padding:8px 12px;overscroll-behavior-x:contain;scrollbar-width:thin;}
+ html.mobile-ui .mobile-subcategories[hidden] {display:none;}
+ html.mobile-ui .mobile-subcategory {flex:0 0 146px;min-height:60px;padding:10px;border:1px solid #d9dfd4;border-radius:12px;background:#f7f8f4;text-align:left;font-size:13px;line-height:1.5;}
+ html.mobile-ui .mobile-subcategory[aria-pressed=true] {background:#e8f0e3;border-color:#355a40;box-shadow:inset 0 0 0 1px #355a40;}
+ html.mobile-ui .studio-pane .mobile-substep {display:none!important;}
+ html.mobile-ui .studio-pane .mobile-substep-active {display:block!important;margin:0!important;min-width:0;}
+ html.mobile-ui .mobile-substep > summary,html.mobile-ui #finish-title,
+ html.mobile-ui .material-details,html.mobile-ui .mobile-substep > h3,
+ html.mobile-ui .mobile-substep > legend,html.mobile-ui .mobile-substep .interior-views,
+ html.mobile-ui .mobile-substep .wall-view,html.mobile-ui .twi-quarter-photo,
+ html.mobile-ui .twi-maker {display:none!important;}
+ html.mobile-ui .mobile-card-rail,html.mobile-ui .mobile-combined-rail {display:flex!important;flex-direction:row;gap:10px;max-width:100%;overflow-x:auto;padding:4px 0 10px;scroll-snap-type:x proximity;overscroll-behavior-x:contain;scrollbar-width:thin;}
+ html.mobile-ui .mobile-card-rail > button,html.mobile-ui .mobile-card-rail > label,
+ html.mobile-ui .mobile-combined-rail button {display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;flex:0 0 70vw;width:70vw;max-width:none;min-height:158px;margin:0;padding:10px;gap:8px;border:1px solid #d9dfd4;border-radius:12px;background:#fff;scroll-snap-align:start;white-space:normal;text-align:left;font-size:13px;}
+ html.mobile-ui .mobile-card-rail button[aria-pressed=true],html.mobile-ui .mobile-combined-rail button[aria-pressed=true] {background:#edf3e8;border-color:#355a40;}
+ html.mobile-ui .mobile-card-rail img,html.mobile-ui .mobile-combined-rail img {width:100%;height:92px;object-fit:contain;}
+ html.mobile-ui .mobile-card-rail .wall-swatch,html.mobile-ui .mobile-combined-rail .wall-swatch {width:100%;height:92px;flex:none;}
+ html.mobile-ui .mobile-combined-rail .mobile-card-rail:not([hidden]),
+ html.mobile-ui .mobile-combined-rail #ceiling-color-section:not([hidden]),
+ html.mobile-ui .mobile-combined-rail #wall-color-section:not([hidden]),
+ html.mobile-ui .mobile-combined-rail #floor-color-section:not([hidden]) {display:contents!important;}
+ html.mobile-ui .mobile-combined-rail .interior-subheading {display:none;}
+ html.mobile-ui .mobile-combined-rail [hidden] {display:none!important;}
+ html.mobile-ui #pane-electrical > .electrical-panel {padding:0;border:0;}
+ html.mobile-ui .electrical-panel > h2,html.mobile-ui .electrical-panel > .package-contents {display:none;}
+ html.mobile-ui .mobile-package-selected #standard-package-card {display:flex!important;min-height:158px;align-items:center;}
+ html.mobile-ui #electrical-upgrades {margin:0;padding:0;border:0;}
+ html.mobile-ui .vehicle-pane-heading,html.mobile-ui .vehicle-body-spec {display:none;}
+ html.mobile-ui .vehicle-purchase-options.mobile-substep-active {display:flex!important;}
+ html.mobile-ui #new-vehicle-options {margin:0;padding:0;border:0;}
+ html.mobile-ui .mobile-substep fieldset {min-width:0;}
+ html.mobile-ui .mobile-substep .segmented {margin:0 0 4px;}
+}
+
+@media (max-width:700px) {
+ html.mobile-ui .mobile-combined-rail #dx-wall-content:not([hidden]),
+ html.mobile-ui .mobile-combined-rail .twi-options:not([hidden]),
+ html.mobile-ui .mobile-combined-rail .twi-quantity:not([hidden]),
+ html.mobile-ui .mobile-combined-rail #quarter-side-options:not([hidden]),
+ html.mobile-ui .mobile-combined-rail .twi-side-grid:not([hidden]) {display:contents!important;}
+ html.mobile-ui .mobile-combined-rail [hidden] {display:none!important;}
+ html.mobile-ui .mobile-card-rail > .module-option-set {display:contents;}
+ html.mobile-ui .mobile-card-rail > .module-option-set > .option {flex:0 0 70vw;width:70vw;min-height:158px;}
+ html.mobile-ui .mobile-card-rail .mattress-options,html.mobile-ui .mobile-card-rail .i-seat-options,
+ html.mobile-ui .mobile-card-rail .module-detail-inline {flex:0 0 70vw;max-width:70vw;}
+ html.mobile-ui #cabinet-step:not(:has(#cabinet-options > *)) #cabinet-help {display:block!important;}
+}
