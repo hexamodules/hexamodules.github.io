@@ -7,8 +7,12 @@
     const params = new URLSearchParams(location.search);
     const market = params.get('location') || saved.location;
     const language = params.get('lang') || saved.language;
-    document.querySelectorAll('.collection-group [data-ja][data-en]').forEach(label => {
+    document.documentElement.lang = language === 'en' ? 'en' : 'ja';
+    document.querySelectorAll('[data-ja][data-en]').forEach(label => {
       label.textContent = label.dataset[language === 'en' ? 'en' : 'ja'];
+    });
+    document.querySelectorAll('[data-ja-alt][data-en-alt]').forEach(image => {
+      image.alt = image.dataset[language === 'en' ? 'enAlt' : 'jaAlt'];
     });
     for (const {link, href} of links) {
       if (href.startsWith('#')) continue;

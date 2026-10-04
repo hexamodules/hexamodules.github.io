@@ -57,10 +57,10 @@
   document.querySelector('#copy-contact').addEventListener('click',async () => {
     try {
       await navigator.clipboard.writeText(draft.value);
-      status.textContent = ja() ? 'コピーしました。メールに貼り付けてお送りください。' : 'Copied. Paste the message into your email to send it.';
+      status.textContent = ja() ? 'コピーしました。メールに貼り付けてお送りください。' : 'Copied. Paste it into an email and send.';
     } catch {
       draft.focus(); draft.select();
-      status.textContent = ja() ? '内容を選択しました。コピーしてお使いください。' : 'Message selected. Please copy it to your email.';
+      status.textContent = ja() ? '内容を選択しました。コピーしてお使いください。' : 'Message selected. Copy it into an email to send.';
     }
   });
 })();

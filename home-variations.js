@@ -46,28 +46,28 @@
       "title": "シートも、冷蔵庫も、一緒に。",
       "en": "Seats, storage and something cool.",
       "detail": "DX · セカンドシート × アルミベッド × 冷蔵庫",
-      "detail_en": "DX · Second-row seat × Aluminium bed × Fridge",
+      "detail_en": "DX · Second-row seat × Aluminum bed × Fridge",
       "night": false
     },
     {
       "title": "必要なものだけ、すっきりと。",
       "en": "Just what you need.",
       "detail": "DX · シンプルベッド × シンク付きキャビネット",
-      "detail_en": "DX · Simple bed × Sink-equipped cabinet",
+      "detail_en": "DX · Simple bed × Sink cabinet",
       "night": false
     },
     {
       "title": "キッチンと収納を、ひとつの空間に。",
-      "en": "Cook, store and make yourself at home.",
+      "en": "Cook, store, settle in.",
       "detail": "DX · アルミフロント × 収納付きスライドベッド",
-      "detail_en": "DX · Aluminium front module × Storage slide-out bed",
+      "detail_en": "DX · Aluminum front module × Storage slide-out bed",
       "night": false
     },
     {
       "title": "Super GLも、自由に組み合わせる。",
       "en": "Make Super GL your own.",
       "detail": "Super GL · TWIクリア天井 × アルミ家具",
-      "detail_en": "Super GL · TWI clear ceiling × Aluminium furniture",
+      "detail_en": "Super GL · TWI clear ceiling × Aluminum furniture",
       "night": false
     },
     {
@@ -88,7 +88,7 @@
       "title": "外から眺める、くつろぎの明かり。",
       "en": "Your space, glowing from within.",
       "detail": "Super GL · バーライト＋間接照明＋バックドアライト",
-      "detail_en": "Super GL · Bar lights + Indirect glow + Tailgate lights",
+      "detail_en": "Super GL · Bar lights + Indirect lighting + Tailgate lights",
       "night": true
     }
   ];

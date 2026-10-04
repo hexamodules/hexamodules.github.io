@@ -30,7 +30,7 @@
     poster.dataset.enLabel = 'Watch the Grid. video tour on YouTube';
     poster.setAttribute('aria-label', english() ? poster.dataset.enLabel : poster.dataset.jaLabel);
     message('動画を読み込めませんでした。画像または下のリンクからYouTubeでご覧いただけます。',
-      'The video could not load. Select the image or the link below to watch on YouTube.');
+      'The video couldn’t load. Tap the image or the link below to watch on YouTube.');
   }
   function loadAPI() {
     if (window.YT?.Player) return Promise.resolve();
