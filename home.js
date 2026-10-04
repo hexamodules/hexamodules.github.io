@@ -1,13 +1,14 @@
 // The homepage is deliberately independent of the 3D runtime.
 (() => {
   const query = new URLSearchParams(location.search);
+  let legacyStudioUrl = null;
   // Keep older configuration links that used the site's root URL working.
   if (document.body.dataset.page === 'home' && ['front','bed','cab','finish','wall','panel','ceiling','floor','electrical','ac','heater'].some(key => query.has(key))) {
-    location.replace('layouts/' + location.search + location.hash);
-    return;
+    legacyStudioUrl = 'layouts/' + location.search + location.hash;
+    window.open(legacyStudioUrl, '_blank', 'noopener');
   }
   // Existing links to vehicle sections now belong to Hexa Auto.
-  if (document.body.dataset.page === 'home' && ['#studio','#grid','#faq'].includes(location.hash)) {
+  if (!legacyStudioUrl && document.body.dataset.page === 'home' && ['#studio','#grid','#faq'].includes(location.hash)) {
     location.replace('auto.html' + location.search + location.hash);
     return;
   }
@@ -32,6 +33,8 @@
       url.searchParams.set('lang',language);
       el.href = url.pathname + url.search + url.hash;
     });
+    // Keep a user-clickable fallback if the browser blocks the legacy popup.
+    if (legacyStudioUrl) document.querySelectorAll('a.preview-link').forEach(el => { el.href = legacyStudioUrl; });
     const description = document.querySelector('meta[name="description"]');
     if (description?.dataset[language === 'ja' ? 'descJa' : 'descEn']) description.content = description.dataset[language === 'ja' ? 'descJa' : 'descEn'];
     const title = document.querySelector('title');

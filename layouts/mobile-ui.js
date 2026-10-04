@@ -18,10 +18,9 @@
   const moved=new Map(), details=new Map(), attrs=new Map();
   function move(e,parent){if(!e||moved.has(e))return;const m=document.createComment('mobile original position');e.before(m);moved.set(e,m);parent.append(e);}
   const hud=make('div','mobile-hud');
-  const back=make('a','mobile-home','← Hexa');back.href=location.pathname.includes('/hexa-layouts/')?'../hexa-module-pages/auto.html':'../auto.html';
   const chips=make('div','mobile-chips');chips.setAttribute('aria-label','選択中');
   const launch=button('mobile-launch','＋ 選ぶ',()=>open(current));launch.setAttribute('aria-controls','mobile-sheet');
-  hud.append(back,chips,launch);
+  hud.append(chips,launch);
   const blocker=button('mobile-backdrop','',()=>close());blocker.setAttribute('aria-label','閉じる');blocker.tabIndex=-1;
   const head=make('div','mobile-sheet-head'),title=make('strong','mobile-title');title.id='mobile-title';
   const dismiss=button('mobile-close','×',()=>close());dismiss.setAttribute('aria-label','閉じる');head.append(title,dismiss);

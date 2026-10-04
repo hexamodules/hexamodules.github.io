@@ -42,9 +42,12 @@
   main button { min-width: 44px; min-height: 44px; }
   main :is(.about-links, .configurator-actions, .series-range, .related-line) { flex-wrap: wrap; gap: 12px 20px; }
   main .series-range a { display: inline-flex; align-items: center; min-height: 44px; }
-  .footer-links { flex-wrap: wrap; gap: 8px 20px; margin: 0; }
+  .footer-links { flex-wrap: nowrap; gap: 12px; margin: 0; }
   .site-footer .footer-links { grid-column: 1 / -1; }
-  .site-footer .footer-links .text-link { font-size: 14px !important; min-height: 44px; }
+  .site-footer .footer-links .text-link {
+    flex: 0 0 auto; font-size: 13px !important; min-height: 44px; white-space: nowrap;
+  }
+  .site-footer .footer-links .text-link > span[aria-hidden="true"] { display: none; }
   .home-origin { padding-block: 22px 40px; gap: 22px; }
   .home-origin-photo figcaption { display: grid; gap: 3px; font-size: 11px; margin-top: 9px; }
   .home-origin h1 { font-size: clamp(36px, 10vw, 43px); line-height: 1.1; margin: 12px 0 16px; }
