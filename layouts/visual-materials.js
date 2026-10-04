@@ -1,6 +1,15 @@
 import * as THREE from 'three';
 // Presentation materials only. No dimensions, transforms or product selections change.
 export function createVisualMaterials(renderer,scene){
+ // Furniture birch only: linear RGB gain, approximately 13% darker in sRGB.
+ const birchTone={value:new THREE.Vector3(.72,.72,.78)},birchFinish={value:1};
+ function applyBirchTone(mat){
+  const previous=mat.onBeforeCompile;
+  mat.onBeforeCompile=shader=>{previous(shader);shader.uniforms.birchTone=birchTone;shader.uniforms.birchFinish=birchFinish;
+   shader.fragmentShader='uniform vec3 birchTone; uniform float birchFinish;\n'+shader.fragmentShader;
+   shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>','diffuseColor.rgb *= mix(vec3(1.0),birchTone,birchFinish);\n#include <roughnessmap_fragment>');
+  };
+ }
  const anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
  const texture=(canvas)=>{const t=new THREE.CanvasTexture(canvas);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=anisotropy;return t};
  // Hexagonal anti-slip face, based on furniture-finish-hexa.webp. Pattern pitch
@@ -21,8 +30,10 @@ export function createVisualMaterials(renderer,scene){
   mat.userData.visualWood=woodKind;mat.userData.visualBirch={value:woodKind?1:0};
   if(woodKind){mat.roughness=.68;if(cutEdge){mat.map=edge;mat.color.set('#ffffff');mat.userData.plyEdge=true}}
   if(switchable)mat.userData.visualHexa=true;
+  mat.userData.birchTone=switchable||/birch/i.test(mat.name);
+  if(mat.userData.birchTone)applyBirchTone(mat);
  }
- function finish(mat,isBirch,wood){if(mat.userData.visualBirch)mat.userData.visualBirch.value=isBirch?1:0;mat.map=isBirch?wood:hexa;mat.bumpMap=isBirch?null:hexaBump;mat.bumpScale=isBirch?0:.12;mat.color.set('#ffffff');mat.roughness=isBirch?.68:.76;mat.envMapIntensity=.18;mat.needsUpdate=true}
+ function finish(mat,isBirch,wood){birchFinish.value=isBirch?1:0;if(mat.userData.visualBirch)mat.userData.visualBirch.value=isBirch?1:0;mat.map=isBirch?wood:hexa;mat.bumpMap=isBirch?null:hexaBump;mat.bumpScale=isBirch?0:.12;mat.color.set('#ffffff');mat.roughness=isBirch?.68:.76;mat.envMapIntensity=.18;mat.needsUpdate=true}
  function mesh(mesh,bounds){
   const mat=mesh.material;if(!bounds||(!mat.userData.visualWood&&!mat.userData.visualHexa))return;
   // Separate face grain from the exposed laminate optically, with no new meshes.
@@ -40,7 +51,7 @@ export function createVisualMaterials(renderer,scene){
    shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.77,0.69,0.53),0.19*visualBirch);
     diffuseColor.rgb=mix(diffuseColor.rgb,texture2D(plyEdgeMap,vPlySurface.xy).rgb,smoothstep(0.4,0.8,vPlySurface.z));`);
-  };mat.customProgramCacheKey=()=>mat.userData.visualHexa?'hexa-ply-edge-v2':'birch-ply-edge-v2';mat.needsUpdate=true;
+  };if(mat.userData.birchTone)applyBirchTone(mat);mat.customProgramCacheKey=()=>(mat.userData.visualHexa?'hexa-ply-edge-v2':'birch-ply-edge-v2')+(mat.userData.birchTone?'-tone-v1':'');mat.needsUpdate=true;
  }
 
  function lighting(night){scene.environmentIntensity=night?.035:.6}

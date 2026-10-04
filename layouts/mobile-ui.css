@@ -1,0 +1,73 @@
+/* All presentation changes are scoped; desktop retains its original DOM and styles. */
+@media (max-width:700px) {
+  html.mobile-ui { --header:0px; --mobile-stage:50%; }
+  html.mobile-ui.mobile-sheet-expanded { --mobile-stage:30%; }
+  html.mobile-ui body { height:100dvh; overflow:hidden; }
+  html.mobile-ui .workspace { display:flex; flex-direction:column; height:100dvh; width:100%; overflow:hidden; }
+  html.mobile-ui .stage { flex:0 0 var(--mobile-stage); height:var(--mobile-stage); min-height:0; width:100%; touch-action:none; overscroll-behavior:none; }
+  html.mobile-ui #viewport, html.mobile-ui #viewport canvas { touch-action:none; }
+  html.mobile-ui .configuration { flex:1; height:0; min-height:0; width:100%; border:0; border-radius:20px 20px 0 0; box-shadow:0 -5px 24px #29312d14; z-index:6; overflow:hidden; }
+  html.mobile-ui .configuration-heading, html.mobile-ui .studio-tabs, html.mobile-ui .panel-footer { display:none!important; }
+  html.mobile-ui .mobile-sheet-head { flex:none; padding:0 16px 9px; background:#fff; }
+  html.mobile-ui .mobile-sheet-handle { display:block; width:100%; min-height:44px; border:0; margin:0; background:transparent; font-size:12px; touch-action:none; }
+  html.mobile-ui .mobile-price-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  html.mobile-ui .mobile-price { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 8px; min-width:0; }
+  html.mobile-ui .mobile-price-label { font-size:11px; color:#757c75; }
+  html.mobile-ui .mobile-price-total { font-size:18px; font-weight:600; line-height:1.25; overflow-wrap:anywhere; }
+  html.mobile-ui .mobile-quote { flex:none; min-height:44px; padding:8px 14px; background:#29312d; color:white; }
+  html.mobile-ui .mobile-tabs { display:flex; flex:none; overflow-x:auto; scrollbar-width:thin; padding:0 12px; gap:2px; border-bottom:1px solid #e3e5de; background:white; }
+  html.mobile-ui .mobile-tab { flex:1 0 auto; padding:8px 10px; min-height:44px; border:0; border-radius:0; font-size:13px; }
+  html.mobile-ui .mobile-tab[aria-selected=true] { color:#29312d; background:#eaf0e7; box-shadow:inset 0 -3px #49624f; }
+  html.mobile-ui .panel-scroll { overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; touch-action:pan-y; padding-bottom:max(16px,env(safe-area-inset-bottom)); }
+  html.mobile-ui .studio-pane { display:none!important; padding:8px 16px 24px; }
+  html.mobile-ui[data-mobile-pane=vehicle] #pane-vehicle,
+  html.mobile-ui[data-mobile-pane=furniture] #pane-furniture,
+  html.mobile-ui[data-mobile-pane=interior] #pane-interior,
+  html.mobile-ui[data-mobile-pane=equipment] #pane-equipment,
+  html.mobile-ui[data-mobile-pane=equipment][data-mobile-electrical=true] #pane-electrical,
+  html.mobile-ui[data-mobile-pane=review] #pane-review { display:block!important; }
+  html.mobile-ui[data-mobile-pane=other][data-mobile-shipping=true] #pane-shipping { display:block!important; }
+  html.mobile-ui .step>summary { min-height:56px; padding:14px 0; font-size:16px; }
+  html.mobile-ui .step-choice { font-size:12px; }
+  html.mobile-ui .configuration button, html.mobile-ui .configuration select, html.mobile-ui .configuration input:not([type=checkbox]):not([type=radio]), html.mobile-ui .configuration summary, html.mobile-ui .package-choice { min-height:44px; }
+  html.mobile-ui .configuration select, html.mobile-ui .configuration input, html.mobile-ui .configuration textarea { font-size:16px; max-width:100%; }
+  html.mobile-ui .options { display:flex; flex-direction:column; gap:10px; }
+  html.mobile-ui .option { width:100%; min-height:104px; padding:12px; gap:12px; grid-template-columns:96px minmax(0,1fr) 18px; }
+  html.mobile-ui .option>img { width:96px; height:80px; flex:0 0 96px; object-fit:contain; }
+  html.mobile-ui .option .name { font-size:15px; line-height:1.5; }
+  html.mobile-ui .option small { font-size:12px; line-height:1.5; }
+  html.mobile-ui .wall-color-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  html.mobile-ui .wall-color-option { padding:8px; font-size:13px; }
+  html.mobile-ui .wall-color-option img { width:100%; height:90px; object-fit:cover; }
+  html.mobile-ui .wall-swatch, html.mobile-ui .seat-icon { width:72px; height:64px; }
+  html.mobile-ui .aircon-options { grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  html.mobile-ui .aircon-card img { width:100%; height:112px; object-fit:contain; }
+  html.mobile-ui .aircon-card-caption strong, html.mobile-ui .light-option strong { font-size:14px; }
+  html.mobile-ui .aircon-card-caption small, html.mobile-ui .light-option small { font-size:12px; }
+  html.mobile-ui .helper { font-size:12px; }
+  html.mobile-ui .floor-required-notice { position:static; margin:12px 16px; border-radius:8px; }
+  html.mobile-ui .mobile-other { padding:12px 16px 24px; }
+  html.mobile-ui .mobile-other .studio-header { height:auto; display:flex; flex-wrap:wrap; gap:16px; padding:12px 0; position:static; }
+  html.mobile-ui .mobile-other .studio-heading { width:100%; order:3; }
+  html.mobile-ui .mobile-other .view-toolbar, html.mobile-ui .mobile-other .motion-popover,
+  html.mobile-ui .mobile-other .lighting-preview, html.mobile-ui .mobile-other .equipment-indicators,
+  html.mobile-ui .mobile-other .electrical-preview, html.mobile-ui .mobile-other .stage-context,
+  html.mobile-ui .mobile-other .gesture-hint, html.mobile-ui .mobile-other .shell-label { position:static; transform:none; width:100%; max-width:100%; margin:16px 0; }
+  html.mobile-ui .mobile-other .view-toolbar { display:flex; flex-wrap:wrap; }
+  html.mobile-ui .mobile-other .view-toolbar button { flex:1; }
+  html.mobile-ui .mobile-other .motion-content { position:static; }
+  html.mobile-ui .mobile-other .language-switch { margin:0; }
+  html.mobile-ui .mobile-other .studio-maker-info { margin:12px 0; }
+  html.mobile-ui .mobile-other .electrical-preview { box-shadow:none; }
+  html.mobile-ui .mobile-vehicle-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin:12px 0 20px; }
+  html.mobile-ui .mobile-vehicle-card { padding:12px; text-align:left; font-size:14px; }
+  html.mobile-ui .mobile-vehicle-card svg { display:block; width:100%; height:80px; }
+  html.mobile-ui .electrical-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  html.mobile-ui .electrical-options button { min-height:90px; font-size:15px; }
+  html.mobile-ui .electrical-options button::before { content:'▣'; display:block; font-size:26px; }
+  html.mobile-ui #studio-vehicle-compatibility { margin:8px 0 16px; padding:12px; }
+  html.mobile-ui dialog { max-height:90dvh; max-width:calc(100vw - 24px); overflow:auto; }
+  html.mobile-ui.intro-active .stage, html.mobile-ui.outro-active .stage { flex:1 0 100%; height:100%; }
+  html.mobile-ui.intro-active .configuration, html.mobile-ui.outro-active .configuration { display:none; }
+  @media (max-height:500px) { html.mobile-ui { --mobile-stage:38%; } html.mobile-ui.mobile-sheet-expanded { --mobile-stage:20%; } }
+}

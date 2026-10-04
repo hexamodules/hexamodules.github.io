@@ -16,7 +16,7 @@ export function createPricingSetup(form){
   for(const row of RETAILER_PRICES.filter(r=>r.kind===kind)){
    const box=document.createElement('div');box.className='retailer-price-row';box.dataset.priceId=row.id;
    const name=document.createElement('strong');name.textContent=row.ja;
-   const reference=document.createElement('span');reference.className='retailer-price-reference';reference.textContent=money(row.price_jpy)+'（税込）';box.append(name,reference);details.append(box);controls.push({row,box});
+   const reference=document.createElement('span');reference.className='retailer-price-reference';reference.textContent=row.kind==='installation'?'製品参考価格に取付込み':money(row.price_jpy)+'（税込）';box.append(name,reference);details.append(box);controls.push({row,box});
   }
   host.append(details);
  }

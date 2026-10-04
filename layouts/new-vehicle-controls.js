@@ -45,7 +45,7 @@ export function createNewVehicleControls({getState,getLanguage,onChange}){
   }
   for(const input of options.querySelectorAll('input'))input.disabled=options.hidden;
   pane.querySelector('#vehicle-selection-help').textContent=state.newVehiclePowertrain?(en?'Specification selected.':'仕様を選択しました。'):(en?'Select fuel and drivetrain to include a vehicle reference price.':'燃料・駆動方式を選択してください。');
-  pane.querySelector('.vehicle-pricing-help').textContent=en?'The vehicle reference price appears on the Review page. Manufacturer options and registration fees are not included. Your dealer will confirm availability and final specification.':'新車参考価格は最後の確認画面で表示します。メーカーオプション・登録諸費用は含みません。納期や最終仕様は取扱店にご確認ください。';
+  pane.querySelector('.vehicle-pricing-help').textContent=en?'Your dealer will provide the vehicle quote. Manufacturer options and registration fees are not included. Your dealer will confirm availability and final specification.':'新車のお見積もりは取扱店がご案内します。メーカーオプション・登録諸費用は含みません。納期や最終仕様は取扱店にご確認ください。';
   let row=document.querySelector('#vehicle-purchase-summary');
   if(!row){row=document.createElement('div');row.id='vehicle-purchase-summary';row.className='selection-row';row.setAttribute('data-module-i18n','');row.innerHTML='<span></span><b></b>';document.querySelector('#selection-summary').append(row)}
   row.querySelector('span').textContent=en?'Vehicle':'車体';row.querySelector('b').textContent=newVehicleSummary(state,lang);

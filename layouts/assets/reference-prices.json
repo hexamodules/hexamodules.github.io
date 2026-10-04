@@ -13,161 +13,169 @@
       "key": "floor:walnut",
       "category": "床（必須）",
       "name": "ウォールナット",
-      "price_jpy": 182160,
+      "price_jpy": 370000,
       "selection_value": "walnut",
       "name_en": "Floor · Walnut",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "B01"
     },
     {
       "number": 2,
       "key": "floor:teak",
       "category": "床（必須）",
       "name": "チーク",
-      "price_jpy": 182160,
+      "price_jpy": 370000,
       "selection_value": "teak",
       "name_en": "Floor · Teak",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "B01"
     },
     {
       "number": 3,
       "key": "floor:oak",
       "category": "床（必須）",
       "name": "オーク",
-      "price_jpy": 182160,
+      "price_jpy": 370000,
       "selection_value": "oak",
       "name_en": "Floor · Oak",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "B01"
     },
     {
       "number": 4,
       "key": "floor:dark-canvas",
       "category": "床（必須）",
       "name": "ダークキャンバス",
-      "price_jpy": 182160,
+      "price_jpy": 370000,
       "selection_value": "dark-canvas",
       "name_en": "Floor · Dark canvas",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "B01"
     },
     {
       "number": 5,
       "key": "floor:light-canvas",
       "category": "床（必須）",
       "name": "ライトキャンバス",
-      "price_jpy": 182160,
+      "price_jpy": 370000,
       "selection_value": "light-canvas",
       "name_en": "Floor · Light canvas",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "B01"
     },
     {
       "number": 6,
       "key": "ceiling:white-ash",
       "category": "天井",
       "name": "ホワイトアッシュ",
-      "price_jpy": 237820,
+      "price_jpy": 420000,
       "selection_value": "white-ash",
       "name_en": "Ceiling · White ash",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "C01"
     },
     {
       "number": 7,
       "key": "ceiling:walnut",
       "category": "天井",
       "name": "ウォールナット",
-      "price_jpy": 237820,
+      "price_jpy": 420000,
       "selection_value": "walnut",
       "name_en": "Ceiling · Walnut",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "C01"
     },
     {
       "number": 8,
       "key": "ceiling:black-cherry",
       "category": "天井",
       "name": "ブラックチェリー",
-      "price_jpy": 237820,
+      "price_jpy": 420000,
       "selection_value": "black-cherry",
       "name_en": "Ceiling · Black cherry",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "C01"
     },
     {
       "number": 9,
       "key": "panel:white",
       "category": "カラーパネル",
       "name": "ホワイト",
-      "price_jpy": 182160,
+      "price_jpy": 160000,
       "selection_value": "white",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
-      "name_en": "Colour panels · White"
+      "price_basis": "reference_including_installation",
+      "name_en": "Colour panels · White",
+      "pricing_id": "P01"
     },
     {
       "number": 10,
       "key": "panel:teffy",
       "category": "カラーパネル",
       "name": "テフィ（TEFFY）",
-      "price_jpy": 182160,
+      "price_jpy": 160000,
       "selection_value": "teffy",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
-      "name_en": "Colour panels · Teffy"
+      "price_basis": "reference_including_installation",
+      "name_en": "Colour panels · Teffy",
+      "pricing_id": "P01"
     },
     {
       "number": 11,
       "key": "panel:volcanic-gray",
       "category": "カラーパネル",
       "name": "ボルカニックグレー",
-      "price_jpy": 182160,
+      "price_jpy": 160000,
       "selection_value": "volcanic-gray",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
-      "name_en": "Colour panels · Volcanic gray"
+      "price_basis": "reference_including_installation",
+      "name_en": "Colour panels · Volcanic gray",
+      "pricing_id": "P01"
     },
     {
       "number": 12,
       "key": "wall:white",
       "category": "壁面パネル（カラーパネル込み）",
       "name": "ホワイト",
-      "price_jpy": 379500,
+      "price_jpy": 310000,
       "selection_value": "white",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
+      "price_basis": "reference_including_installation",
       "name_en": "Wall panels + colour panels · White",
-      "base_colour_panels_jpy": 190000,
-      "additional_wall_panels_jpy": 120000,
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "pricing_id": "W01"
     },
     {
       "number": 13,
       "key": "wall:teffy",
       "category": "壁面パネル（カラーパネル込み）",
       "name": "テフィ（TEFFY）",
-      "price_jpy": 379500,
+      "price_jpy": 310000,
       "selection_value": "teffy",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
+      "price_basis": "reference_including_installation",
       "name_en": "Wall panels + colour panels · Teffy",
-      "base_colour_panels_jpy": 190000,
-      "additional_wall_panels_jpy": 120000,
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "pricing_id": "W01"
     },
     {
       "number": 14,
       "key": "wall:volcanic-gray",
       "category": "壁面パネル（カラーパネル込み）",
       "name": "ボルカニックグレー",
-      "price_jpy": 379500,
+      "price_jpy": 310000,
       "selection_value": "volcanic-gray",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
+      "price_basis": "reference_including_installation",
       "name_en": "Wall panels + colour panels · Volcanic gray",
-      "base_colour_panels_jpy": 190000,
-      "additional_wall_panels_jpy": 120000,
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "pricing_id": "W01"
     },
     {
       "number": 15,
@@ -176,13 +184,14 @@
       "name": "フロントモジュール",
       "module_id": "front-module",
       "construction": "plywood",
-      "price_jpy": 693220,
+      "price_jpy": 580000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Front module · Plywood",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F01"
     },
     {
       "number": 16,
@@ -191,13 +200,14 @@
       "name": "フロントモジュール",
       "module_id": "aluminum-front-kitchen",
       "construction": "aluminum",
-      "price_jpy": 748880,
+      "price_jpy": 870000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Front module · Aluminium",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F02"
     },
     {
       "number": 17,
@@ -206,13 +216,14 @@
       "name": "シンプルスライドアウトベッド",
       "module_id": "slide-bed",
       "construction": "plywood",
-      "price_jpy": 222640,
+      "price_jpy": 360000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Simple slide-out bed · Plywood",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F03"
     },
     {
       "number": 18,
@@ -221,13 +232,14 @@
       "name": "収納付きスライドアウトベッド",
       "module_id": "lounge-slide-bed",
       "construction": "plywood",
-      "price_jpy": 432630,
+      "price_jpy": 530000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Storage slide-out bed · Plywood",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F04"
     },
     {
       "number": 19,
@@ -236,13 +248,14 @@
       "name": "スライドアウトベッド",
       "module_id": "aluminum-bed",
       "construction": "aluminum",
-      "price_jpy": 536360,
+      "price_jpy": 600000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Slide-out bed · Aluminium",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F05"
     },
     {
       "number": 20,
@@ -251,13 +264,14 @@
       "name": "ラウンジベッド",
       "module_id": "lounge-bed",
       "construction": "plywood",
-      "price_jpy": 402270,
+      "price_jpy": 610000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Lounge bed · Plywood",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F06"
     },
     {
       "number": 21,
@@ -266,14 +280,14 @@
       "name": "床スライド付きラウンジベッド",
       "module_id": "two-side-bed",
       "construction": "plywood",
-      "price_jpy": 508530,
+      "price_jpy": 640000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Lounge bed with optional floor slide · Plywood",
-      "note": "中央通路の床スライドは別途70,000円。",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F07"
     },
     {
       "number": 22,
@@ -282,13 +296,14 @@
       "name": "フリップアップテーブル付きサイドキャビネット",
       "module_id": "side-cabinet",
       "construction": "plywood",
-      "price_jpy": 283360,
+      "price_jpy": 340000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Side cabinet with flip-up table · Plywood",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F08"
     },
     {
       "number": 23,
@@ -297,13 +312,14 @@
       "name": "シンク付きサイドキャビネット",
       "module_id": "aluminum-side-cabinet",
       "construction": "aluminum",
-      "price_jpy": 462990,
+      "price_jpy": 460000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Side cabinet with sink · Aluminium",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F09"
     },
     {
       "number": 24,
@@ -312,13 +328,14 @@
       "name": "サイドキャビネット",
       "module_id": "simple-side-cabinet",
       "construction": "aluminum",
-      "price_jpy": 201135,
+      "price_jpy": 270000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Side cabinet · Aluminium",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F10"
     },
     {
       "number": 25,
@@ -327,77 +344,83 @@
       "name": "冷蔵庫付きサイドキャビネット",
       "module_id": "active-side-cabinet",
       "construction": "aluminum",
-      "price_jpy": 352935,
+      "price_jpy": 390000,
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
       "name_en": "Side cabinet with fridge · Aluminium",
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "F11"
     },
     {
       "number": 26,
       "key": "two-side-bed:floor-slide",
       "category": "家具オプション",
       "name": "中央通路の床スライド（脱着式）",
-      "price_jpy": 103730,
+      "price_jpy": 140000,
       "applies_to": "two-side-bed",
-      "price_basis": "assembled_product_excluding_vehicle_fitting",
-      "note": "床スライド付きラウンジベッドの追加オプション。選択時のみ加算。",
-      "name_en": "Removable centre floor slide"
+      "price_basis": "reference_including_installation",
+      "name_en": "Removable centre floor slide",
+      "pricing_id": "M01"
     },
     {
       "key": "twi-ceiling:clear",
       "category": "TWI 天井",
       "name": "TWI 檜天井 · クリア（照明付き）",
       "name_en": "TWI hinoki ceiling · Clear (lighting included)",
-      "price_jpy": 304000,
+      "price_jpy": 388448,
       "includes": [
         "integrated_lighting"
       ],
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "GL-C"
     },
     {
       "key": "twi-ceiling:walnut",
       "category": "TWI 天井",
       "name": "TWI 檜天井 · ウォールナット（照明付き）",
       "name_en": "TWI hinoki ceiling · Walnut (lighting included)",
-      "price_jpy": 304000,
+      "price_jpy": 388448,
       "includes": [
         "integrated_lighting"
       ],
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_basis": "reference_including_installation",
+      "pricing_id": "GL-C"
     },
     {
       "key": "twi-quarter",
       "category": "TWI クォーターパネル",
       "name": "TWI クォーターパネル（1枚）",
       "name_en": "TWI quarter panel (one side)",
-      "price_jpy": 45000,
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_jpy": 55286,
+      "price_basis": "reference_including_installation",
+      "pricing_id": "GL-Q"
     },
     {
       "key": "mattress:bed",
       "category": "マットレス",
       "name": "ベッド専用マットレス（80mm）",
       "name_en": "Fitted bed mattress (80 mm)",
-      "price_jpy": 182160,
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_jpy": 210000,
+      "price_basis": "reference_including_installation",
+      "pricing_id": "M02"
     },
     {
       "key": "mattress:front",
       "category": "マットレス",
       "name": "フロント収納上クッション（80mm）",
       "name_en": "Front storage cushion (80 mm)",
-      "price_jpy": 60720,
-      "price_basis": "assembled_product_excluding_vehicle_fitting"
+      "price_jpy": 70000,
+      "price_basis": "reference_including_installation",
+      "pricing_id": "M03"
     }
   ],
   "notes": [
-    "2026年9月27日に確定した参考基準。製品の価格は組立済み・車両取付別。取付・選択装備は別行で加算し、正式価格は取扱店が見積もりで案内します。"
+    "取付込み参考価格。送料別途。正式な見積もりは取扱店からご案内します。"
   ],
-  "revision": "2026-09-27-locked-reference",
-  "updated_at": "2026-09-27",
+  "revision": "2026-10-04-dealer-reference",
+  "updated_at": "2026-10-04",
   "source": "owner_supplied",
   "rounding": "tax rounded to nearest yen per component",
   "exchange_rate": {
@@ -410,11 +433,265 @@
     "rounding_method": "nearest_half_up_per_item",
     "mode": "fixed_snapshot"
   },
-  "installation_included": false,
+  "installation_included": true,
   "price_basis": "assembled_furniture_modules_and_interior_parts",
   "module_delivery": "assembled",
-  "vehicle_installation_included": false,
+  "vehicle_installation_included": true,
   "furniture_assembly_included": true,
   "direct_consumer_supply_only_sales": false,
-  "wholesale_prices_included": false
+  "wholesale_prices_included": true,
+  "dealer_catalogue": [
+    {
+      "id": "F01",
+      "name": "フロントモジュール(合板)",
+      "key": "module:front-module",
+      "fp_wholesale_ex_tax": 432000,
+      "assembled_wholesale_ex_tax": 472000,
+      "price_jpy": 580000,
+      "assembly_hours": 4,
+      "install_hours": 2
+    },
+    {
+      "id": "F02",
+      "name": "フロントモジュール(アルミ)",
+      "key": "module:aluminum-front-kitchen",
+      "fp_wholesale_ex_tax": 625000,
+      "assembled_wholesale_ex_tax": 705000,
+      "price_jpy": 870000,
+      "assembly_hours": 8,
+      "install_hours": 2
+    },
+    {
+      "id": "F03",
+      "name": "シンプルスライドアウトベッド",
+      "key": "module:slide-bed",
+      "fp_wholesale_ex_tax": 217000,
+      "assembled_wholesale_ex_tax": 257000,
+      "price_jpy": 360000,
+      "assembly_hours": 4,
+      "install_hours": 3
+    },
+    {
+      "id": "F04",
+      "name": "収納付きスライドアウトベッド",
+      "key": "module:lounge-slide-bed",
+      "fp_wholesale_ex_tax": 334000,
+      "assembled_wholesale_ex_tax": 394000,
+      "price_jpy": 530000,
+      "assembly_hours": 6,
+      "install_hours": 3
+    },
+    {
+      "id": "F05",
+      "name": "スライドアウトベッド(アルミ)",
+      "key": "module:aluminum-bed",
+      "fp_wholesale_ex_tax": 371000,
+      "assembled_wholesale_ex_tax": 451000,
+      "price_jpy": 600000,
+      "assembly_hours": 8,
+      "install_hours": 3
+    },
+    {
+      "id": "F06",
+      "name": "ラウンジベッド",
+      "key": "module:lounge-bed",
+      "fp_wholesale_ex_tax": 395000,
+      "assembled_wholesale_ex_tax": 455000,
+      "price_jpy": 610000,
+      "assembly_hours": 6,
+      "install_hours": 3
+    },
+    {
+      "id": "F07",
+      "name": "床スライド付きラウンジベッド",
+      "key": "module:two-side-bed",
+      "fp_wholesale_ex_tax": 427000,
+      "assembled_wholesale_ex_tax": 487000,
+      "price_jpy": 640000,
+      "assembly_hours": 6,
+      "install_hours": 2
+    },
+    {
+      "id": "F08",
+      "name": "フリップアップテーブル付きサイドキャビネット",
+      "key": "module:side-cabinet",
+      "fp_wholesale_ex_tax": 218000,
+      "assembled_wholesale_ex_tax": 258000,
+      "price_jpy": 340000,
+      "assembly_hours": 4,
+      "install_hours": 1
+    },
+    {
+      "id": "F09",
+      "name": "シンク付きサイドキャビネット(アルミ)",
+      "key": "module:aluminum-side-cabinet",
+      "fp_wholesale_ex_tax": 304000,
+      "assembled_wholesale_ex_tax": 364000,
+      "price_jpy": 460000,
+      "assembly_hours": 6,
+      "install_hours": 1
+    },
+    {
+      "id": "F10",
+      "name": "サイドキャビネット(アルミ)",
+      "key": "module:simple-side-cabinet",
+      "fp_wholesale_ex_tax": 172000,
+      "assembled_wholesale_ex_tax": 202000,
+      "price_jpy": 270000,
+      "assembly_hours": 3,
+      "install_hours": 1
+    },
+    {
+      "id": "F11",
+      "name": "冷蔵庫付きサイドキャビネット(アルミ)",
+      "key": "module:active-side-cabinet",
+      "fp_wholesale_ex_tax": 284000,
+      "assembled_wholesale_ex_tax": 314000,
+      "price_jpy": 390000,
+      "assembly_hours": 3,
+      "install_hours": 1
+    },
+    {
+      "id": "M01",
+      "name": "中央通路の床スライド",
+      "key": "two-side-bed:floor-slide",
+      "fp_wholesale_ex_tax": 81000,
+      "assembled_wholesale_ex_tax": 101000,
+      "price_jpy": 140000,
+      "assembly_hours": 2,
+      "install_hours": 1
+    },
+    {
+      "id": "M02",
+      "name": "ベッド専用マットレス",
+      "key": "mattress:bed",
+      "fp_wholesale_ex_tax": 169000,
+      "assembled_wholesale_ex_tax": 169000,
+      "price_jpy": 210000,
+      "assembly_hours": 0,
+      "install_hours": 0
+    },
+    {
+      "id": "M03",
+      "name": "フロント収納上クッション",
+      "key": "mattress:front",
+      "fp_wholesale_ex_tax": 56000,
+      "assembled_wholesale_ex_tax": 56000,
+      "price_jpy": 70000,
+      "assembly_hours": 0,
+      "install_hours": 0
+    },
+    {
+      "id": "B01",
+      "name": "床(DX)",
+      "key": "floor:walnut",
+      "fp_wholesale_ex_tax": 256000,
+      "assembled_wholesale_ex_tax": 256000,
+      "price_jpy": 370000,
+      "assembly_hours": 0,
+      "install_hours": 4
+    },
+    {
+      "id": "C01",
+      "name": "DXの天井(加工込み)",
+      "key": "ceiling:white-ash",
+      "fp_wholesale_ex_tax": 294000,
+      "assembled_wholesale_ex_tax": 294000,
+      "price_jpy": 420000,
+      "assembly_hours": 0,
+      "install_hours": 4
+    },
+    {
+      "id": "P01",
+      "name": "DXのカラーパネル",
+      "key": "panel:white",
+      "fp_wholesale_ex_tax": 112000,
+      "assembled_wholesale_ex_tax": 112000,
+      "price_jpy": 160000,
+      "assembly_hours": 0,
+      "install_hours": 2
+    },
+    {
+      "id": "W01",
+      "name": "DXの壁面パネル(カラーパネル込み)",
+      "key": "wall:white",
+      "fp_wholesale_ex_tax": 219000,
+      "assembled_wholesale_ex_tax": 219000,
+      "price_jpy": 310000,
+      "assembly_hours": 0,
+      "install_hours": 3
+    }
+  ],
+  "super_gl_catalogue": [
+    {
+      "id": "GL-B",
+      "name": "床部品一式",
+      "key": "floor:",
+      "fp_wholesale_ex_tax": 94961,
+      "assembled_wholesale_ex_tax": 94961,
+      "price_jpy": 172419,
+      "assembly_hours": 0,
+      "install_hours": 3
+    },
+    {
+      "id": "GL-S",
+      "name": "シート一式(i-Seat)",
+      "key": "i-seat",
+      "fp_wholesale_ex_tax": 339972,
+      "assembled_wholesale_ex_tax": 339972,
+      "price_jpy": 532138,
+      "assembly_hours": 0,
+      "install_hours": 3
+    },
+    {
+      "id": "GL-C",
+      "name": "天井一式",
+      "key": "twi-ceiling:",
+      "fp_wholesale_ex_tax": 234610,
+      "assembled_wholesale_ex_tax": 234610,
+      "price_jpy": 388448,
+      "assembly_hours": 0,
+      "install_hours": 4
+    },
+    {
+      "id": "GL-M",
+      "name": "ベッド専用マットレス",
+      "key": "mattress:bed",
+      "fp_wholesale_ex_tax": 169000,
+      "assembled_wholesale_ex_tax": 169000,
+      "price_jpy": 210000,
+      "assembly_hours": 0,
+      "install_hours": 0
+    },
+    {
+      "id": "GL-Q",
+      "name": "クォーターパネル 左右",
+      "key": "twi-quarter",
+      "fp_wholesale_ex_tax": 60328,
+      "assembled_wholesale_ex_tax": 60328,
+      "price_jpy": 110572,
+      "assembly_hours": 0,
+      "install_hours": 2
+    },
+    {
+      "id": "GL-F05",
+      "name": "スライドアウトベッド(アルミ)FP",
+      "key": "module:aluminum-bed",
+      "fp_wholesale_ex_tax": 371000,
+      "assembled_wholesale_ex_tax": null,
+      "price_jpy": 665692,
+      "assembly_hours": 8,
+      "install_hours": 3
+    },
+    {
+      "id": "GL-F09",
+      "name": "シンク付きサイドキャビネット(アルミ)FP",
+      "key": "module:aluminum-side-cabinet",
+      "fp_wholesale_ex_tax": 304000,
+      "assembled_wholesale_ex_tax": null,
+      "price_jpy": 545325,
+      "assembly_hours": 8,
+      "install_hours": 1
+    }
+  ]
 }

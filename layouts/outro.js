@@ -37,7 +37,7 @@ export function createOutro({prepare,pose,showcase,restore,describe,getLocation=
   if(!active||finishing||ready)return;
   finishing=true;cancelAnimationFrame(frame);$('#outro-skip').disabled=true;
   try{await preparation;paint(11600);await showcase();ready=true;root.classList.add('outro-ready');
-   $('#outro-contact').disabled=true;$('#outro-edit').disabled=false;
+   $('#outro-contact').disabled=false;$('#outro-edit').disabled=false;
    mark('ready','完成したレイアウトです。ドラッグで回してご覧ください。');
   }catch(e){await fail(e)}finally{finishing=false}
  }
@@ -117,7 +117,7 @@ export function createOutro({prepare,pose,showcase,restore,describe,getLocation=
   if(!official)return;
   const en=root.lang==='en';
   for(const [selector,label] of [
-   ['#outro-contact span:first-child',en?'PDF export is being prepared':'PDF保存は準備中'],
+   ['#outro-contact span:first-child',en?'Save layout as PDF':'このレイアウトをPDFで保存'],
    ['#review-enquiry',en?'View your completed layout →':'完成したレイアウトを見る →']
   ]){const el=$(selector);el.setAttribute('data-module-i18n','');el.textContent=label;}
   handoffNote.textContent=en?'Choose your dealer and share this page URL or your saved configuration. Quotes and installation enquiries go directly to the dealer.':'このページのURLや保存した組み合わせを、ご希望の取扱店へお伝えください。ご相談・お見積もりは取扱店が直接承ります。';
@@ -152,7 +152,7 @@ export function createOutro({prepare,pose,showcase,restore,describe,getLocation=
     (en?'Postcode: ':'郵便番号: ')+normaliseContact(form.elements.customerPostcode.value),
     (en?'Address from postcode: ':'郵便番号から分かる住所: ')+postalAddress,
    ]:[(en?'Region / state: ':'お住まいの地域: ')+form.elements.customerRegion.value.trim()]),' ',
-   en?'Hexa manufactures furniture modules and interior parts. The reference price adds configured fitting and selected dealer equipment amounts, plus the new vehicle when selected. Unpriced items are listed separately. Your dealer arranges installation and equipment, sets its prices and confirms the formal quote.':'Hexaは家具・内装モジュールおよびパーツのメーカーです。参考価格には設定済みの取付施工費・選択した装備を加算し、新車込みの場合は新車参考価格も含みます。未設定分は別途明示します。施工・装備の手配、実際の販売価格と正式なお見積もりは取扱店がご案内します。',' ',
+   en?'Hexa manufactures furniture modules and interior parts. Your dealer arranges installation and equipment, sets its prices and confirms the formal quote.':'Hexaは家具・内装モジュールおよびパーツのメーカーです。施工・装備の手配、実際の販売価格と正式なお見積もりは取扱店がご案内します。',' ',
    en?'Requests or questions':'ご希望・ご質問',form.elements.message.value.trim(),' ',en?'Your layout':'選んだレイアウト',data.summary,' ',data.url].join('\n');
  }
  $('#contact-form').onsubmit=async e=>{e.preventDefault();const content=await draft();if(!content)return;

@@ -1,25 +1,25 @@
 // Public reference selling amounts only. No wholesale or manufacturer costs.
 export const LOCKED_REFERENCE={
-  "revision": "2026-09-27-locked-reference",
+  "revision": "2026-10-04-dealer-reference",
   "fitting": {
-    "fit-front-module": 22000,
-    "fit-aluminum-front-kitchen": 22000,
-    "fit-slide-bed": 33000,
-    "fit-lounge-slide-bed": 33000,
-    "fit-aluminum-bed": 33000,
-    "fit-lounge-bed": 33000,
-    "fit-two-side-bed": 22000,
-    "fit-side-cabinet": 11000,
-    "fit-aluminum-side-cabinet": 11000,
-    "fit-simple-side-cabinet": 11000,
-    "fit-active-side-cabinet": 11000,
-    "fit-floor-slide": 11000,
-    "fit-floor": 44000,
-    "fit-ceiling": 44000,
-    "fit-panel": 22000,
-    "fit-wall": 33000,
-    "fit-twi-ceiling": 66000,
-    "fit-twi-quarter": 22000
+    "fit-front-module": 0,
+    "fit-aluminum-front-kitchen": 0,
+    "fit-slide-bed": 0,
+    "fit-lounge-slide-bed": 0,
+    "fit-aluminum-bed": 0,
+    "fit-lounge-bed": 0,
+    "fit-two-side-bed": 0,
+    "fit-side-cabinet": 0,
+    "fit-aluminum-side-cabinet": 0,
+    "fit-simple-side-cabinet": 0,
+    "fit-active-side-cabinet": 0,
+    "fit-floor-slide": 0,
+    "fit-floor": 0,
+    "fit-ceiling": 0,
+    "fit-panel": 0,
+    "fit-wall": 0,
+    "fit-twi-ceiling": 0,
+    "fit-twi-quarter": 0
   },
   "equipment": {
     "ceiling-lights": 86000,
@@ -33,6 +33,6 @@ export const LOCKED_REFERENCE={
     "inverter-2000": 68000,
     "ac": 520000,
     "heater": 480000,
-    "i-seat": 690000
+    "i-seat": 532138
   }
 };

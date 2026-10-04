@@ -32,7 +32,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const reviewMode=false; // Production capture tools are unavailable on this static site.
 if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false)return;
 const dealerOptions=dealerOptionAvailability(selectedDealer());
-const priceCatalogue=await fetch('assets/reference-prices.json?v=2026-09-27-locked-reference').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
+const priceCatalogue=await fetch('assets/reference-prices.json?v=2026-10-04-dealer-reference').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=cabinet-names-1').then(r=>r.json());
 const modules=Object.fromEntries(M.map(m=>[m.id,m]));
 modules['i-seat']={id:'i-seat',name:'i seat',en:'i seat',selection_description:'1,400mm'};
@@ -128,17 +128,21 @@ const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient)
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=true;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=.15;scene.add(grid);
-const wood=await new THREE.TextureLoader().loadAsync('assets/wood-grain.jpg');wood.colorSpace=THREE.SRGBColorSpace;wood.wrapS=wood.wrapT=THREE.RepeatWrapping;wood.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+const {createAssetLoader}=await import('./lightweight-loader.js?v=20261004');
+const assetLoader=createAssetLoader();
+const wood=await new THREE.TextureLoader().loadAsync(assetLoader.textureURL('assets/wood-grain.jpg'));wood.colorSpace=THREE.SRGBColorSpace;wood.wrapS=wood.wrapT=THREE.RepeatWrapping;wood.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
 // Fine moulded-resin grain for the original step; units in the asset are mm.
 const resinNoise=new Uint8Array(128*128*4);let noiseSeed=173;for(let i=0;i<resinNoise.length;i+=4){noiseSeed=(Math.imul(noiseSeed,1664525)+1013904223)>>>0;const v=110+(noiseSeed>>>25);resinNoise.set([v,v,v,255],i)}
 const resinBump=new THREE.DataTexture(resinNoise,128,128);resinBump.wrapS=resinBump.wrapT=THREE.RepeatWrapping;resinBump.magFilter=THREE.LinearFilter;resinBump.minFilter=THREE.LinearMipmapLinearFilter;resinBump.generateMipmaps=true;resinBump.needsUpdate=true;
 const ceilingTextures=Object.fromEntries(await Promise.all(ceilingPalette.colors.map(async c=>{
+ c.image=assetLoader.textureURL(c.image);
  const texture=await new THREE.TextureLoader().loadAsync(c.image);
  texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.ClampToEdgeWrapping;
  texture.wrapT=THREE.MirroredRepeatWrapping;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
  return [c.value,texture];
 })));
 const floorTextures=Object.fromEntries(await Promise.all(floorPalette.colors.map(async c=>{
+ c.image=assetLoader.textureURL(c.image);
  const texture=await new THREE.TextureLoader().loadAsync(c.image);
  texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;
  texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return [c.value,texture];
@@ -185,8 +189,24 @@ function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colo
  }
  visualMaterials.material(mat,{woodKind,edge,metal,isVehicle,switchable,key});
  return mat;}
-async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const data=await fetch(`assets/${key}.mesh.json${key===PANEL.key?"?v="+PANEL.revision:""}`).then(r=>{if(!r.ok)throw Error(`形状が見つかりません: ${key}`);return r.json()});const buf=await fetch(`assets/${data.binary}`).then(r=>r.arrayBuffer());let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;
- for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(new Float32Array(buf,p.position[0],p.position[1]).slice(),3));g.setAttribute('normal',new THREE.BufferAttribute(new Float32Array(buf,p.normal[0],p.normal[1]).slice(),3));g.setAttribute('uv',new THREE.BufferAttribute(new Float32Array(buf,p.uv[0],p.uv[1]).slice(),2));g.setIndex(new THREE.BufferAttribute(new Uint32Array(buf,p.index[0],p.index[1]).slice(),1));g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();visualMaterials.mesh(mesh,b.bounds);node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);return group})();cache.set(key,promise);return promise;}
+// Loader-owned resources are released after a completed placement only.
+const loadedModels=new Map();
+const assetReleaseObserver=new MutationObserver(()=>{
+ if(batchRunning||opening.active||outro.active||$('#loading').style.display!=='none')return;
+ const keep=new Set(($('#viewport').dataset.assets||'').split(','));
+ for(const [key,{group,materials}] of loadedModels){
+  if(keep.has(key)||assetLoader.isVehicle(key)||(!group.userData.moduleId&&key!=='seat'))continue;
+  // Shared worktop/upholstery/wood textures and materials belong to their factories.
+  group.traverse(node=>node.geometry?.dispose());scene.remove(group);
+  for(let i=swappable.length-1;i>=0;i--)if(materials.has(swappable[i]))swappable.splice(i,1);
+  for(const mat of materials)mat.dispose();
+  loadedModels.delete(key);cache.delete(key);
+ }
+});
+assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['data-assets']});
+async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const loaded=await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"");const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;
+ for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}visualMaterials.mesh(mesh,b.bounds);node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set(Object.values(mats))});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
+
 // Broad melamine faces keep their established daytime swatch colour. At night
 // the same surface receives the actual lamp lighting, including cast shadows.
 function registerDaySurface(mat){
@@ -866,4 +886,17 @@ if(document.documentElement.classList.contains('intro-active')&&!reviewMode)awai
 else await apply();
 initLayoutRecall({begin:()=>opening.start(),restore:async saved=>{if(outro.active)await outro.edit();if(opening.active)await opening.start?.();await apply({...state,...saved,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,night:false},{history:true});$('#tab-review').click();setView('rear');}});
 
-})().catch(e=>{console.error(e);document.querySelector("#loading p").textContent="読み込みに失敗しました: "+e.message;});
+})().catch(e=>{
+ console.error(e);
+ // Temporary Safari diagnostics: retain the first three stack lines verbatim.
+ const message=document.querySelector('#loading p');
+ if(!message)return;
+ const name=e&&e.name?String(e.name):'Error';
+ const detail=e&&e.message?String(e.message):String(e);
+ const stack=e&&e.stack?String(e.stack).split(/\r?\n/).slice(0,3).join('\n'):'';
+ message.textContent='読み込みに失敗しました: '+detail+'\n'+name+(stack?'\n'+stack:'');
+ message.style.whiteSpace='pre-wrap';
+ message.style.overflowWrap='anywhere';
+ const loading=document.querySelector('#loading');
+ if(loading)loading.style.display='flex';
+});

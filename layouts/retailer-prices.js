@@ -1,4 +1,4 @@
-import {LOCKED_REFERENCE} from './reference-baseline.js?v=20260927';
+import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261004';
 // Owner-confirmed reference amounts. Equipment prices include fitting.
 // null is deliberately unpriced, never a free service. Retailer inputs do not override this locked reference baseline.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;
@@ -58,7 +58,7 @@ export function retailerPriceLines(state,parts,profile=null){
   const resolved=resolveRetailerPrice(row,settings);
   lines.push({key:row.id,kind:row.kind,name:row.ja,name_en:row.en,quantity,unit_price_jpy:resolved.price_jpy,amount_jpy:resolved.price_jpy===null?null:resolved.price_jpy*quantity,price_source:resolved.source,includes_fitting:true,price_basis:row.kind==='equipment'?'equipment_materials_and_fitting':'vehicle_fitting_labour'});
  };
- for(const item of parts){
+ for(const item of []){ // Product reference amounts already include fitting.
   const row=RETAILER_PRICES.find(r=>r.kind==='installation'&&r.productKeys.some(k=>k.endsWith(':')?item.key.startsWith(k):k===item.key));
   if(row)add(row,item.quantity);
  }
