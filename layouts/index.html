@@ -9,9 +9,9 @@
   loaded = true;
   // Open the mobile configurator directly; do not change URL or saved/dealer parameters.
   if (document.readyState === 'loading') document.documentElement.classList.remove('intro-active');
-  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'mobile-ui.css?v=20261004-1';
+  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'mobile-ui.css?v=20261004-2';
   document.head.append(css);
-  const start = () => { const js = document.createElement('script'); js.src = 'mobile-ui.js?v=20261004-1'; document.head.append(js); };
+  const start = () => { const js = document.createElement('script'); js.src = 'mobile-ui.js?v=20261004-2'; document.head.append(js); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true}); else start();
  }
  width.addEventListener('change', loadMobile); touch.addEventListener('change', loadMobile); loadMobile();

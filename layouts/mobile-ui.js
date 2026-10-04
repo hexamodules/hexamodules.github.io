@@ -1,152 +1,84 @@
-/* Mobile presentation adapter. Existing controls, listeners and price calculation stay authoritative. */
+/* Phone-only presentation. Original controls and their listeners remain authoritative. */
 (() => {
   'use strict';
-  const root = document.documentElement;
-  const width = matchMedia('(max-width: 700px)');
-  const touch = matchMedia('(any-pointer: coarse)');
-  const eligible = () => width.matches && (touch.matches || navigator.maxTouchPoints > 0);
-  const $ = s => document.querySelector(s);
-  const panel = $('.configuration'), scroll = $('.panel-scroll');
-  if (!panel || !scroll) return;
-  let active = false, current = 'vehicle', expanded = false, pending = false;
-  const moved = new Map();
-  const make = (tag, className) => { const el = document.createElement(tag); el.className = className; el.dataset.moduleI18n = ''; return el; };
-  const head = make('div', 'mobile-sheet-head');
-  const handle = make('button', 'mobile-sheet-handle'); handle.type = 'button'; handle.setAttribute('aria-controls', 'mobile-sheet-content');
-  const row = make('div', 'mobile-price-row');
-  const price = make('div', 'mobile-price');
-  const priceLabel = make('span', 'mobile-price-label');
-  const total = make('output', 'mobile-price-total'); total.setAttribute('aria-live', 'polite');
-  const quote = make('button', 'mobile-quote'); quote.type = 'button';
-  price.append(priceLabel, total); row.append(price, quote); head.append(handle, row);
-  const nav = make('div', 'mobile-tabs'); nav.setAttribute('role', 'tablist');
-  const other = make('section', 'mobile-other'); other.id = 'mobile-other'; delete other.dataset.moduleI18n;
-  other.setAttribute('role', 'tabpanel'); other.setAttribute('aria-labelledby', 'mobile-tab-other');
-  const vehicles = make('div', 'mobile-vehicle-cards');
-  const vehicleButtons = new Map();
-  const categories = ['vehicle', 'furniture', 'interior', 'equipment', 'review', 'other'];
-  const labels = {ja:['車種','家具','内装','装備','見積','その他'], en:['Vehicle','Furniture','Interior','Equipment','Quote','More']};
-  const buttons = categories.map(key => {
-    const b = make('button', 'mobile-tab'); b.type = 'button'; b.id = 'mobile-tab-' + key;
-    b.dataset.mobileTab = key; b.setAttribute('role', 'tab');
-    b.setAttribute('aria-controls', key === 'other' ? other.id : 'pane-' + key);
-    b.addEventListener('click', () => select(key, true)); nav.append(b); return b;
-  });
-  // Keep original DOM nodes and restore their exact positions when returning to desktop.
-  function move(el, parent, before = null) {
-    if (!el || moved.has(el)) return;
-    const marker = document.createComment('mobile-ui original position'); el.before(marker);
-    moved.set(el, marker); parent.insertBefore(el, before);
-  }
-  const setText = (el, value) => { if (el.textContent !== value) el.textContent = value; };
-  const en = () => root.lang.toLowerCase().startsWith('en');
-  function size(open) {
-    expanded = open; root.classList.toggle('mobile-sheet-expanded', open);
-    handle.setAttribute('aria-expanded', String(open));
-    setText(handle, open ? (en() ? '⌄ View 3D' : '⌄ 3Dを見る') : (en() ? '⌃ Show options' : '⌃ 選択肢を広げる'));
-  }
-  function select(key, open = expanded) {
-    current = key; root.dataset.mobilePane = key;
-    buttons.forEach(b => { const on = b.dataset.mobileTab === key; b.setAttribute('aria-selected', String(on)); b.tabIndex = on ? 0 : -1; });
-    other.hidden = key !== 'other';
-    scroll.scrollTop = 0; size(open);
-  }
-  handle.addEventListener('click', () => size(!expanded));
-  quote.addEventListener('click', () => select('review', true));
-  nav.addEventListener('keydown', e => {
-    if (!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
-    e.preventDefault(); const index = categories.indexOf(current);
-    const next = e.key === 'Home' ? 0 : e.key === 'End' ? categories.length - 1 : (index + (e.key === 'ArrowRight' ? 1 : -1) + categories.length) % categories.length;
-    select(categories[next], true); buttons[next].focus();
-  });
-  let startY = null;
-  handle.addEventListener('pointerdown', e => { startY = e.clientY; handle.setPointerCapture(e.pointerId); });
-  handle.addEventListener('pointerup', e => {
-    if (startY !== null && Math.abs(e.clientY - startY) > 24) { size(e.clientY < startY); suppressClick = true; }
-    startY = null;
-  });
-  handle.addEventListener('pointercancel', () => { startY = null; });
-  let suppressClick = false;
-  handle.addEventListener('click', e => { if (suppressClick) { suppressClick = false; e.stopImmediatePropagation(); } }, true);
-  const selection = 'button[aria-pressed]:not([data-lang]):not([data-view]):not([data-night-toggle]),input[type=checkbox],select';
-  panel.addEventListener('click', e => { if (active && e.target.closest(selection)) pending = true; }, true);
-  panel.addEventListener('change', e => { if (active && e.target.matches('input,select')) pending = true; }, true);
-  // app.js writes data-assets only after models have loaded and the new scene is ready.
-  new MutationObserver(() => {
-    if (active && pending && $('#loading')?.style.display === 'none') {
-      pending = false; requestAnimationFrame(() => { if (active) size(false); });
+  const root=document.documentElement, $=s=>document.querySelector(s);
+  const width=matchMedia('(max-width: 700px)'), touch=matchMedia('(any-pointer: coarse)');
+  const panel=$('.configuration'), scroll=$('.panel-scroll'), stage=$('.stage');
+  if(!panel||!scroll||!stage)return;
+  const keys=['vehicle','front','bed','cabinet','floor','ceiling','wall','equipment','other','review'];
+  const names={ja:['車種','フロント','ベッド','キャビネット','床','天井','壁','装備','その他','まとめ'],en:['Vehicle','Front','Bed','Cabinet','Floor','Ceiling','Walls','Equipment','More','Summary']};
+  const en=()=>root.lang.startsWith('en'), label=k=>names[en()?'en':'ja'][keys.indexOf(k)];
+  const make=(tag,cls,text='')=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;e.dataset.moduleI18n='';return e;};
+  const button=(cls,text,fn)=>{const e=make('button',cls,text);e.type='button';e.addEventListener('click',fn);return e;};
+  const set=(e,t)=>{if(e.textContent!==t)e.textContent=t;};
+  let active=false, opened=false, current='vehicle', opener=null, scheduled=false;
+  const moved=new Map(), details=new Map(), attrs=new Map();
+  function move(e,parent){if(!e||moved.has(e))return;const m=document.createComment('mobile original position');e.before(m);moved.set(e,m);parent.append(e);}
+  const hud=make('div','mobile-hud');
+  const back=make('a','mobile-home','← Hexa');back.href=location.pathname.includes('/hexa-layouts/')?'../hexa-module-pages/auto.html':'../auto.html';
+  const chips=make('div','mobile-chips');chips.setAttribute('aria-label','選択中');
+  const launch=button('mobile-launch','＋ 選ぶ',()=>open(current));launch.setAttribute('aria-controls','mobile-sheet');
+  hud.append(back,chips,launch);
+  const blocker=button('mobile-backdrop','',()=>close());blocker.setAttribute('aria-label','閉じる');blocker.tabIndex=-1;
+  const head=make('div','mobile-sheet-head'),title=make('strong','mobile-title');title.id='mobile-title';
+  const dismiss=button('mobile-close','×',()=>close());dismiss.setAttribute('aria-label','閉じる');head.append(title,dismiss);
+  const nav=make('nav','mobile-tabs');
+  const tabs=new Map(keys.map(k=>{const b=button('mobile-tab','',()=>open(k,false));nav.append(b);return[k,b];}));
+  const other=make('section','mobile-other'), review=make('section','mobile-review'), vehicleCards=make('div','mobile-vehicle-cards');
+  const number=make('p','mobile-number'), specs=make('div','mobile-specs'), status=make('p','mobile-status');status.setAttribute('role','status');
+  const send=button('mobile-send','取扱店に送る',async()=>{
+    const text=number.textContent+'\n'+specs.innerText;
+    try {if(navigator.share)await navigator.share({title:'Hexa',text,url:location.href});else {await navigator.clipboard.writeText(text+'\n'+location.href);set(status,en()?'Copied. Paste into your message to your dealer.':'コピーしました。取扱店へのメッセージに貼り付けてください。');}}
+    catch(e){if(e.name!=='AbortError')set(status,en()?'Copy the URL from the address bar.':'アドレス欄のURLをコピーしてください。');}
+  });review.append(number,specs,send,status);
+  const shareUrl=button('mobile-share-url','URLを共有',async()=>{
+    try {if(navigator.share)await navigator.share({title:'Hexa',url:location.href});else {await navigator.clipboard.writeText(location.href);set(shareUrl,en()?'URL copied':'URLをコピーしました');}}
+    catch(e){if(e.name!=='AbortError')set(shareUrl,en()?'Copy the address bar URL':'アドレス欄のURLをコピーしてください');}
+  });other.append(shareUrl);
+  const chipButtons=new Map(keys.filter(k=>!['other','review'].includes(k)).map(k=>{const b=button('mobile-chip','',()=>open(k));chips.append(b);return[k,b];}));
+  function close(restore=true){opened=false;root.classList.remove('mobile-popup-open');launch.setAttribute('aria-expanded','false');stage.inert=false;if(restore&&opener?.isConnected)opener.focus();}
+  function open(k,focus=true){if(!active)return;if(!opened)opener=document.activeElement;current=k;opened=true;root.dataset.mobilePane=k;root.classList.add('mobile-popup-open');stage.inert=true;launch.setAttribute('aria-expanded','true');scroll.scrollTop=0;refresh();if(focus)dismiss.focus();}
+  function refresh(){
+    if(!active)return;
+    root.dataset.mobileElectrical=String(!$('#tab-electrical')?.hidden);
+    set(shareUrl,en()?'Share URL':'URLを共有');
+    set(launch,en()?'+ Choose':'＋ 選ぶ');set(title,label(current));set(send,en()?'Send to dealer':'取扱店に送る');
+    tabs.forEach((b,k)=>{set(b,label(k));const v=String(k===current);if(b.getAttribute('aria-current')!==v)b.setAttribute('aria-current',v);});
+    const choices={cabinet:'cab'};
+    chipButtons.forEach((b,k)=>{
+      let value=k==='vehicle'?$('#studio-base-vehicle')?.selectedOptions[0]?.textContent:$(`[data-choice="${choices[k]||k}"]`)?.textContent;
+      if(k==='equipment')value=[...$('#pane-equipment').querySelectorAll('button[aria-pressed=true] strong')].map(e=>e.textContent).join('・');
+      set(b,label(k)+(value?.trim()?' · '+value.trim():''));
+    });
+    for(const s of ['.studio-header','.studio-maker-info','.view-toolbar','#motion-section','.lighting-preview','.equipment-indicators','#electrical-preview','.stage-context','.gesture-hint','.shell-label','.selection-actions'])move($(s),other);
+    if($('#studio-base-vehicle')&&$('#new-vehicle-options'))move($('#studio-vehicle-compatibility'),$('#pane-vehicle')); 
+    const select=$('#studio-base-vehicle');
+    if(select){
+      if(!vehicleCards.isConnected)$('#pane-vehicle').append(vehicleCards);
+      const signature=[...select.options].map(o=>[o.value,o.textContent,o.disabled,select.disabled,select.value].join('|')).join(';');
+      if(vehicleCards.dataset.signature!==signature){vehicleCards.dataset.signature=signature;vehicleCards.replaceChildren();for(const o of select.options){const b=button('mobile-vehicle-card','',()=>{select.value=o.value;select.dispatchEvent(new Event('change',{bubbles:true}));close();});b.innerHTML='<svg viewBox="0 0 160 80" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M15 58V24q0-7 8-7h91l26 23v18H15Z M94 18v40 M25 27h57v18H25Z M103 27h12l14 14h-26Z"/><circle cx="39" cy="59" r="10" fill="white"/><circle cx="117" cy="59" r="10" fill="white"/></svg>';b.append(make('span','',o.textContent));b.disabled=select.disabled||o.disabled;b.setAttribute('aria-pressed',String(select.value===o.value));vehicleCards.append(b);}}
     }
-  }).observe($('#viewport'), {attributes:true, attributeFilter:['data-assets']});
-  function refresh() {
-    if (!active) return;
-    const language = en() ? 'en' : 'ja';
-    buttons.forEach((b, i) => setText(b, labels[language][i]));
-    const dealer=!!new URLSearchParams(location.search).get('dealer');
-    setText(priceLabel, dealer ? (en() ? 'Reference price' : '参考価格') : (en() ? 'Your dealer will provide a quote' : 'お見積もりは取扱店から'));
-    setText(quote, en() ? 'Quote →' : '見積へ →');
-    nav.setAttribute('aria-label', en() ? 'Choose a category' : '選ぶ項目');
-    root.dataset.mobileElectrical = String(!$('#tab-electrical').hidden);
-    root.dataset.mobileShipping = String(!$('#tab-shipping').hidden);
-    const source = $('#reference-price-total');
-    setText(total, dealer ? (source?.textContent.trim() || '—') : '');
-    const scope = $('.price-review-total strong')?.textContent || '';
-    total.setAttribute('aria-label', (scope ? scope + ' ' : '') + total.textContent);
-    size(expanded);
-    // Keep the whole header intact: dealer/language modules rely on its descendants.
-    move($('.studio-header'), other);
-    move($('.studio-maker-info'), other);
-    for (const selector of ['.view-toolbar','#motion-section','.lighting-preview','.equipment-indicators','#electrical-preview','.stage-context','.gesture-hint','.shell-label']) move($(selector), other);
-    move($('#studio-vehicle-compatibility'), $('#pane-vehicle'), $('#pane-vehicle').firstChild);
-    const vehicleSelect = $('#studio-base-vehicle');
-    if (vehicleSelect) {
-      if (!vehicles.isConnected) vehicleSelect.closest('#studio-vehicle-compatibility').after(vehicles);
-      for (const option of vehicleSelect.options) {
-        let card = vehicleButtons.get(option.value);
-        if (!card) {
-          card = make('button', 'mobile-vehicle-card'); card.type = 'button';
-          card.innerHTML = '<svg viewBox="0 0 160 80" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M15 58V24q0-7 8-7h91l26 23v18H15Z"/><path d="M94 18v40M25 27h57v18H25ZM103 27h12l14 14h-26Z"/><circle cx="39" cy="59" r="10" fill="white"/><circle cx="117" cy="59" r="10" fill="white"/></svg><span></span>';
-          const value = option.value;
-          card.addEventListener('click', () => { vehicleSelect.value = value; vehicleSelect.dispatchEvent(new Event('change', {bubbles:true})); });
-          vehicleButtons.set(value, card); vehicles.append(card);
-        }
-        setText(card.querySelector('span'), option.textContent);
-        card.disabled = vehicleSelect.disabled || option.disabled;
-        card.setAttribute('aria-pressed', String(vehicleSelect.value === option.value));
-      }
-    }
-    move($('#floor-required-notice'), scroll, scroll.firstChild);
-    // Interior order on phones follows the requested floor / ceiling / wall sequence.
-    move($('#floor-step'), $('#pane-interior'), $('#pane-interior').firstChild);
+    // Original details remain open only during phone mode; restore their state on desktop.
+    panel.querySelectorAll('.step').forEach(d=>{if(!details.has(d))details.set(d,d.open);d.open=true;});
+    const source=$('#selection-summary');
+    const rows=source?[...source.querySelectorAll('.selection-row')].map(r=>r.textContent.trim()):[];
+    const text=rows.join('\n');if(specs.dataset.value!==text){specs.dataset.value=text;specs.replaceChildren(...rows.map(t=>make('p','',t)));}
+    const id=$('#reference-price-review')?.textContent.match(/HX-L-[A-F0-9]+/)?.[0];
+    // Dealer markup omits the customer number. Use an explicitly separate URL reference there.
+    let h=2166136261;for(const b of new TextEncoder().encode(new URL(location.href).search))h=Math.imul(h^b,16777619);
+    set(number,id||'HX-M-'+(h>>>0).toString(16).toUpperCase().padStart(8,'0'));
   }
-  let scheduled = false;
-  new MutationObserver(records => {
-    if (!active) return;
-    if (!scheduled) { scheduled = true; requestAnimationFrame(() => { scheduled = false; refresh(); }); }
-  }).observe(panel, {subtree:true, childList:true, characterData:true, attributes:true, attributeFilter:['aria-selected']});
-  document.addEventListener('click', e => {
-    if (!active) return;
-    const tab = e.target.closest('[data-studio-tab]');
-    if (tab && !tab.disabled) {
-      const key = tab.dataset.studioTab;
-      select(key === 'electrical' ? 'equipment' : key === 'shipping' ? 'other' : key, true);
-    }
-    if (e.target.closest('#choose-required-floor')) select('interior', true);
-    if (e.target.closest('#contact-edit-vehicle')) select('vehicle', true);
-  });
-  window.addEventListener('studio-locale-change', refresh);
-  function sync() {
-    if (eligible() === active) return;
-    active = eligible(); root.classList.toggle('mobile-ui', active);
-    if (active) {
-      panel.prepend(head, nav); scroll.append(other);
-      scroll.id = 'mobile-sheet-content';
-      select(current, false); refresh();
-    } else {
-      pending = false;
-      for (const [el, marker] of [...moved].reverse()) { marker.replaceWith(el); }
-      moved.clear(); vehicles.remove(); head.remove(); nav.remove(); other.remove(); scroll.removeAttribute('id');
-      root.classList.remove('mobile-sheet-expanded'); delete root.dataset.mobilePane; delete root.dataset.mobileElectrical; delete root.dataset.mobileShipping;
-    }
+  // Only a committed choice closes the sheet. Type/material navigation stays available.
+  const commit='.option,.wall-color-option,.aircon-card,.light-option,[data-battery],[data-inverter],[data-twi-ceiling],[data-quarter-choice],[data-quarter-side],#clear-rear';
+  panel.addEventListener('click',e=>{if(!active)return;const b=e.target.closest(commit);if(b&&!b.disabled)requestAnimationFrame(()=>{refresh();close();});});
+  panel.addEventListener('change',e=>{if(active&&e.target.matches('input[type=checkbox],select'))requestAnimationFrame(()=>{refresh();close();});});
+  panel.addEventListener('keydown',e=>{if(!active||!opened)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const all=[...panel.querySelectorAll('button,a,input,select,textarea,summary')].filter(e=>!e.disabled&&e.tabIndex>=0&&e.getClientRects().length);const first=all[0],last=all.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+  const observer=new MutationObserver(()=>{if(active&&!scheduled){scheduled=true;requestAnimationFrame(()=>{scheduled=false;refresh();});}});
+  observer.observe(panel,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed','aria-selected','hidden','disabled']});
+  window.addEventListener('studio-locale-change',()=>requestAnimationFrame(refresh));
+  function sync(){const next=width.matches&&(touch.matches||navigator.maxTouchPoints>0);if(next===active)return;active=next;root.classList.toggle('mobile-ui',active);
+    if(active){for(const a of ['id','role','aria-modal','aria-labelledby'])attrs.set(a,panel.getAttribute(a));panel.id='mobile-sheet';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mobile-title');document.body.append(hud,blocker);move(panel,document.body);panel.prepend(head,nav);scroll.append(other,review);root.dataset.mobilePane=current;close(false);refresh();}
+    else {close(false);for(const[e,m]of [...moved].reverse())m.replaceWith(e);moved.clear();for(const[d,v]of details)d.open=v;details.clear();for(const[a,v]of attrs)v===null?panel.removeAttribute(a):panel.setAttribute(a,v);[hud,blocker,head,nav,other,review,vehicleCards].forEach(e=>e.remove());delete root.dataset.mobilePane;delete root.dataset.mobileElectrical;}
   }
-  width.addEventListener('change', sync); touch.addEventListener('change', sync); sync();
+  width.addEventListener('change',sync);touch.addEventListener('change',sync);sync();
 })();
