@@ -1,0 +1,86 @@
+/* Mobile reading and touch layout. Desktop rules remain untouched. */
+@media (max-width: 700px) {
+  :root { --gutter: 20px; }
+  body { font-size: 16px; overflow-wrap: anywhere; }
+  main :is(section, article, div, figure), footer > * { min-width: 0; }
+  main :is(p, li, dt, dd, label, input, select, textarea):not(.eyebrow):not(.collection-price) {
+    font-size: 16px !important;
+    line-height: 1.85;
+  }
+  main :is(p, li, dd) { white-space: normal; }
+  main .eyebrow { font-size: 11px; line-height: 1.7; letter-spacing: .1em; white-space: normal; }
+  main :is(small, figcaption), main .collection-price small { font-size: 12px; line-height: 1.75; }
+  main :is(h1, h2, h3) { overflow-wrap: anywhere; }
+  main h1 .name-part { display: inline-block; max-width: 100%; }
+  main :is(img, video, iframe) { max-width: 100%; }
+  main video { width: 100%; }
+  header.site-header, body > header:not(.site-header) {
+    height: auto; min-height: 108px; padding: 8px 20px 0;
+    display: grid; grid-template-columns: 1fr auto; gap: 0 12px;
+  }
+  header.site-header > .brand, body > header:not(.site-header) > .brand {
+    grid-column: 1; grid-row: 1; min-height: 44px; display: flex; align-items: center;
+  }
+  header.site-header .language-switch {
+    grid-column: 2; grid-row: 1; padding: 0; border: 0; gap: 2px;
+  }
+  header.site-header .language-switch button { min-width: 44px; min-height: 44px; font-size: 13px; padding: 8px; }
+  header.site-header nav, body > header:not(.site-header) nav {
+    grid-column: 1 / -1; grid-row: 2; margin: 0; width: 100%;
+    display: flex; justify-content: space-between; gap: 8px; font-size: 14px; white-space: normal;
+    border-top: 1px solid #d8dcd1;
+  }
+  header nav a { min-height: 48px !important; min-width: 44px; display: flex; align-items: center; justify-content: center; padding: 8px 4px !important; }
+  body > header:not(.site-header) > span { display: none; }
+  main :is(.text-link, .back-link, .crumb, .button, .layout-link), footer a {
+    min-height: 44px; font-size: 16px !important; line-height: 1.6;
+    max-width: 100%; white-space: normal;
+  }
+  main :is(.text-link, .back-link, .crumb), footer a { display: inline-flex; align-items: center; }
+  main .button { gap: 20px; }
+  main .button span, main .layout-link b { font-size: 16px !important; white-space: normal; }
+  main button { min-width: 44px; min-height: 44px; }
+  main :is(.about-links, .configurator-actions, .series-range, .related-line) { flex-wrap: wrap; gap: 12px 20px; }
+  main .series-range a { display: inline-flex; align-items: center; min-height: 44px; }
+  .footer-links { flex-wrap: wrap; gap: 8px 20px; margin: 0; }
+  .site-footer .footer-links { grid-column: 1 / -1; }
+  .site-footer .footer-links .text-link { font-size: 14px !important; min-height: 44px; }
+  .home-origin { padding-block: 22px 40px; gap: 22px; }
+  .home-origin-photo figcaption { display: grid; gap: 3px; font-size: 11px; margin-top: 9px; }
+  .home-origin h1 { font-size: clamp(36px, 10vw, 43px); line-height: 1.1; margin: 12px 0 16px; }
+  .home-origin h2 { font-size: 21px; margin-bottom: 10px; }
+  .home-origin-copy > .text-link { margin-top: 14px; }
+  .page-heading { margin-block: 28px 32px; }
+  .collection-intro { padding-block: 32px 28px; }
+  .collection-intro h1 { font-size: 46px; }
+  .collection-intro h2 { font-size: 22px; line-height: 1.65; }
+  .collection-product dl { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .collection-product dt { margin-top: 12px; }
+  .collection-product dd { padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+  .collection-product .collection-price { font-size: 32px; line-height: 1.4; margin-block: 24px; }
+  .collection-product .collection-price small { font-size: 14px; }
+  .collection-material { flex-wrap: wrap; }
+  .collection-flat { grid-template-columns: minmax(0, 1fr); }
+  .spec-line { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; font-size: 14px; }
+  .configurator-intro h1 { font-size: clamp(36px, 10vw, 43px); }
+  .configurator-home-grid .series-copy h2 { font-size: 34px; }
+  .configurator-feature-grid { grid-template-columns: minmax(0, 1fr); }
+  .configurator-home .display-preview-note { flex-wrap: wrap; }
+  .display-preview-note > span { white-space: normal !important; }
+  .spec dl div { grid-template-columns: minmax(0, 1fr); gap: 5px; padding-block: 16px; }
+  .product-heading h1 { font-size: clamp(22px, 5.9vw, 26px); text-wrap: balance; }
+  .material-lead { font-size: 16px; }
+  .about-contents a { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; }
+  .topline .eyebrow { white-space: normal; }
+  .wrap { padding-inline: 20px; }
+  .countertop-material, .wrap > .countertop-material { grid-template-columns: minmax(0, 1fr); }
+  .countertop-material > img { width: 112px; }
+  .controls { flex-wrap: wrap; }
+  .controls button, .finish button { font-size: 14px; }
+  .profile-list > div { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .contact-intro > .eyebrow { margin-top: 24px; }
+  .contact-layout { padding-top: 28px; }
+  .form-field label { flex-wrap: wrap; gap: 8px; }
+  main table { width: 100%; table-layout: fixed; }
+  main :is(th, td) { overflow-wrap: anywhere; }
+}
