@@ -185,3 +185,6 @@ h2{font-size:clamp(26px,2.7vw,40px);line-height:1.65;letter-spacing:.03em;font-w
 .page-intro>h1{font-weight:450;font-size:clamp(32px,3.6vw,48px);line-height:1.6;margin-top:16px;letter-spacing:.015em}
 
 .skip-content:not(:focus){clip-path:inset(50%);width:1px;height:1px;overflow:hidden;padding:0;white-space:nowrap}
+
+/* Preserve the brand spelling inside uppercase headings. */
+.brand-case{text-transform:none;letter-spacing:inherit}
