@@ -7,9 +7,9 @@
     legacyStudioUrl = 'layouts/' + location.search + location.hash;
     window.open(legacyStudioUrl, '_blank', 'noopener');
   }
-  // Existing links to vehicle sections now belong to Hexa Auto.
+  // Existing links to vehicle sections now belong to Hexa Camper.
   if (!legacyStudioUrl && document.body.dataset.page === 'home' && ['#studio','#grid','#faq'].includes(location.hash)) {
-    location.replace('auto.html' + location.search + location.hash);
+    location.replace('camper.html' + location.search + location.hash);
     return;
   }
   const preferenceKey = 'hexa-studio-locale';
