@@ -1,0 +1,43 @@
+{
+  "asset": "interior-floor-oak-filled",
+  "sample_grid_x_mm": [
+    450,
+    750,
+    25
+  ],
+  "sample_grid_z_mm": [
+    450,
+    1350,
+    25
+  ],
+  "uncovered_before": 450,
+  "uncovered_after": 0,
+  "step_identical": true,
+  "floor_height_and_driver_side_identical": true,
+  "adjustment": {
+    "purpose": "Cover the wheelhouse cutout visible below narrow passenger side cabinets.",
+    "target_passenger_edge_x_mm": 760.0,
+    "straight_edge_z_mm": [
+      400,
+      1400
+    ],
+    "blended_region_z_mm": [
+      300,
+      1480
+    ],
+    "original_height_preserved": true,
+    "driver_side_preserved": true,
+    "resin_step_preserved": true,
+    "fusion_source_modified": false,
+    "changes": [
+      {
+        "body": "floor",
+        "max_extension_mm": 328.53759765625
+      },
+      {
+        "body": "メッシュ ボディ786",
+        "max_extension_mm": 328.6909661387492
+      }
+    ]
+  }
+}

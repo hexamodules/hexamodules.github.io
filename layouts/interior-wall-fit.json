@@ -1,0 +1,72 @@
+{
+  "wall": "interior-wall-white",
+  "revision": "driver-wall-floor-pitch100-v1",
+  "method": "Strict triangle surface crossings over 1 mm; closed positions only.",
+  "module_checks": {
+    "seat": [],
+    "front-module": [],
+    "aluminum-front-kitchen": [],
+    "lounge-bed": [],
+    "two-side-bed": [
+      {
+        "a": "運転席側壁_100mmピッチ_14段:1+09_壁板_高さ100.0mm:1/09_壁板_高さ100.0mm",
+        "b": "Mattress - fixed sides 60mm:1/Driver side - wall contour - removable",
+        "point": [
+          -804.0,
+          445.0,
+          80.0
+        ]
+      },
+      {
+        "a": "運転席側壁_100mmピッチ_14段:1+10_壁板_高さ100.0mm:1/10_壁板_高さ100.0mm",
+        "b": "Mattress - fixed sides 60mm:1/Driver side - wall contour - removable",
+        "point": [
+          -800.9,
+          385.0,
+          80.0
+        ]
+      }
+    ],
+    "slide-bed": [
+      {
+        "a": "運転席側壁_100mmピッチ_14段:1+10_壁板_高さ100.0mm:1/10_壁板_高さ100.0mm",
+        "b": "Plywood slide bed - 1800mm:1/ボディ67",
+        "point": [
+          -800.4,
+          365.0,
+          80.0
+        ]
+      }
+    ],
+    "lounge-slide-bed": [
+      {
+        "a": "運転席側壁_100mmピッチ_14段:1+10_壁板_高さ100.0mm:1/10_壁板_高さ100.0mm",
+        "b": "02 Fixed comb deck - original SKY Bridge wall contour:1/Fixed comb top - rounded fingers R20",
+        "point": [
+          -800.7,
+          381.0,
+          80.0
+        ]
+      }
+    ],
+    "aluminum-bed": [
+      {
+        "a": "運転席側壁_100mmピッチ_14段:1+10_壁板_高さ100.0mm:1/10_壁板_高さ100.0mm",
+        "b": "01 Fixed bed structure:1/ボディ105",
+        "point": [
+          -803.6,
+          325.2,
+          80.0
+        ]
+      }
+    ],
+    "side-cabinet": [],
+    "aluminum-side-cabinet": [],
+    "simple-side-cabinet": [],
+    "active-side-cabinet": [],
+    "front-module-rear-130": [],
+    "front-module-rear-140": [],
+    "lounge-fillers": [],
+    "centre-mattresses": []
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "ceiling": "interior-ceiling-oak",
+  "revision": "curved-oak-ceiling-v1",
+  "method": "Strict triangle surface crossings over 1 mm; closed positions only.",
+  "checks": {
+    "vehicle": [],
+    "interior-wall-white": [],
+    "seat": [],
+    "front-module": [],
+    "aluminum-front-kitchen": [],
+    "lounge-bed": [],
+    "two-side-bed": [],
+    "slide-bed": [],
+    "lounge-slide-bed": [],
+    "aluminum-bed": [],
+    "side-cabinet": [],
+    "aluminum-side-cabinet": [],
+    "simple-side-cabinet": [],
+    "active-side-cabinet": [],
+    "front-module-rear-130": [],
+    "front-module-rear-140": [],
+    "lounge-fillers": [],
+    "centre-mattresses": []
+  }
+}

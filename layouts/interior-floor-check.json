@@ -1,0 +1,30 @@
+{
+  "revision": "oak-floor-resin-step-v1",
+  "replacement_bounds_checks": [
+    {
+      "name": "floor",
+      "role": "oak-floor",
+      "bounds_difference_from_vehicle_mm": 0.2274
+    },
+    {
+      "name": "メッシュ ボディ786",
+      "role": "oak-floor",
+      "bounds_difference_from_vehicle_mm": 0.0001
+    },
+    {
+      "name": "step",
+      "role": "resin-step",
+      "bounds_difference_from_vehicle_mm": 0.0762
+    }
+  ],
+  "floor_top_max_y_mm": 3.051757815342171e-05,
+  "new_board": false,
+  "browser_checks": [
+    "8 interior combinations",
+    "floor removed restores translucent floor/step",
+    "finish change retains oak floor",
+    "reload retains all three interior options",
+    "no console errors"
+  ],
+  "notes": "Bounds confirm the exported floor and step align with corresponding simplified vehicle meshes within 0.25 mm; this is not a new collision or manufacturing check."
+}
