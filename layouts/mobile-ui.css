@@ -8,7 +8,7 @@
  html.mobile-ui .configuration {display:none;position:fixed;inset:auto 8px max(8px,env(safe-area-inset-bottom));width:auto;height:auto;max-height:40vh;max-height:40dvh;min-height:0;border:1px solid #dadfd6;border-radius:18px;background:#fff;box-shadow:0 8px 32px #25302926;overflow:hidden;z-index:102;}
  html.mobile-ui.mobile-popup-open .configuration {display:flex;flex-direction:column;}
  html.mobile-ui .configuration-heading,html.mobile-ui .studio-tabs,html.mobile-ui .panel-footer,
- html.mobile-ui .configuration>.vehicle-compatibility,html.mobile-ui #floor-required-notice {display:none!important;}
+ html.mobile-ui #floor-required-notice {display:none!important;}
  html.mobile-ui .mobile-hud {position:fixed;inset:0;z-index:90;pointer-events:none;}
  html.mobile-ui .mobile-hud>* {pointer-events:auto;}
  html.mobile-ui .mobile-home {position:absolute;left:12px;top:max(12px,env(safe-area-inset-top));display:flex;align-items:center;min-height:44px;padding:0 12px;border-radius:24px;background:#ffffffeb;color:#29312d;text-decoration:none;font-size:13px;}
@@ -26,31 +26,28 @@
  html.mobile-ui .mobile-tab[aria-current=true] {background:#edf2e9;color:#20392a;box-shadow:inset 0 -2px #49624f;}
  html.mobile-ui .panel-scroll {flex:0 1 auto;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding:0 0 10px;}
  html.mobile-ui .studio-pane,html.mobile-ui .mobile-other,html.mobile-ui .mobile-review {display:none!important;padding:10px 12px;}
- html.mobile-ui[data-mobile-pane=vehicle] #pane-vehicle,
- html.mobile-ui[data-mobile-pane=front] #pane-furniture,
- html.mobile-ui[data-mobile-pane=bed] #pane-furniture,
- html.mobile-ui[data-mobile-pane=cabinet] #pane-furniture,
- html.mobile-ui[data-mobile-pane=floor] #pane-interior,
- html.mobile-ui[data-mobile-pane=ceiling] #pane-interior,
- html.mobile-ui[data-mobile-pane=wall] #pane-interior,
+ html.mobile-ui[data-mobile-pane=interior] #pane-interior,
+ html.mobile-ui[data-mobile-pane=furniture] #pane-furniture,
  html.mobile-ui[data-mobile-pane=equipment] #pane-equipment,
- html.mobile-ui[data-mobile-pane=other] .mobile-other,
- html.mobile-ui[data-mobile-pane=review] .mobile-review {display:block!important;}
- html.mobile-ui .step {display:none;border:0;margin:0;}
- html.mobile-ui[data-mobile-pane=front] #front-step,
- html.mobile-ui[data-mobile-pane=bed] #bed-step,
- html.mobile-ui[data-mobile-pane=cabinet] #cabinet-step,
- html.mobile-ui[data-mobile-pane=floor] #floor-step,
- html.mobile-ui[data-mobile-pane=ceiling] #ceiling-step,
- html.mobile-ui[data-mobile-pane=wall] #wall-step,
- html.mobile-ui[data-mobile-pane=equipment] #pane-equipment .step {display:block;}
- html.mobile-ui .step>summary,html.mobile-ui .helper,html.mobile-ui .option small,
+ html.mobile-ui[data-mobile-pane=electrical] #pane-electrical,
+ html.mobile-ui[data-mobile-pane=vehicle] #pane-vehicle,
+ html.mobile-ui[data-mobile-pane=shipping] #pane-shipping,
+ html.mobile-ui[data-mobile-pane=review] #pane-review,
+ html.mobile-ui[data-mobile-pane=other] .mobile-other {display:block!important;}
+ html.mobile-ui .studio-pane .step {display:block;border:0;margin:0 0 14px;}
+ html.mobile-ui .studio-pane details>summary {display:flex;pointer-events:none;list-style:none;}
+ html.mobile-ui .studio-pane details>summary .disclosure {display:none;}
+ html.mobile-ui .mobile-review {display:block!important;}
+ html.mobile-ui .mobile-utilities {margin-left:auto;border:0;background:transparent;font-size:12px;}
+ html.mobile-ui .mobile-tab[hidden] {display:none!important;}
+ html.mobile-ui .mobile-tab:disabled {opacity:.4;}
+ html.mobile-ui .helper,html.mobile-ui .option small,
  html.mobile-ui .review-heading,html.mobile-ui .dealer-guidance,html.mobile-ui #reference-price-review,
  html.mobile-ui #dealer-pricing-controls,html.mobile-ui .price,html.mobile-ui .option-price,
  html.mobile-ui .studio-maker-info,html.mobile-ui .stage-context,html.mobile-ui .gesture-hint,
  html.mobile-ui .shell-label,html.mobile-ui .configuration .module-link {display:none!important;}
  html.mobile-ui #finish-step {margin:0 0 6px;padding:0;border:0;}
- html.mobile-ui #finish-title,html.mobile-ui .material-details {display:none;}
+ html.mobile-ui #finish-title {font-size:13px;}
  html.mobile-ui .finish-options {display:flex;gap:8px;}
  html.mobile-ui .finish-options button {display:flex;align-items:center;gap:6px;padding:4px 8px;font-size:11px;}
  html.mobile-ui .finish-options img {width:28px;height:28px;object-fit:cover;}
@@ -67,7 +64,7 @@
  html.mobile-ui .interior-subheading {font-size:12px;margin:8px 0 2px;}
  html.mobile-ui .configuration select,html.mobile-ui .configuration input {font-size:16px;max-width:100%;}
  html.mobile-ui .configuration button:not(.option):not(.mobile-tab) {min-height:44px;}
- html.mobile-ui #studio-base-vehicle {display:none;}
+ html.mobile-ui #studio-base-vehicle {display:block;width:100%;}
  html.mobile-ui #studio-vehicle-compatibility {margin:0;font-size:11px;padding:4px;}
  html.mobile-ui #studio-vehicle-compatibility span {display:none;}
  html.mobile-ui .mobile-other .studio-header {position:static;display:flex;height:auto;padding:0;flex-wrap:wrap;gap:8px;}
@@ -83,9 +80,9 @@
  html.mobile-ui .mobile-status {font-size:12px;}
  html.mobile-ui .mobile-status:empty {display:none;}
  html.mobile-ui.intro-active .mobile-hud,html.mobile-ui.outro-active .mobile-hud {display:none;}
- html.mobile-ui[data-mobile-pane=equipment][data-mobile-electrical=true] #pane-electrical {display:block!important;}
+
  html.mobile-ui .configuration [hidden]:not(.studio-pane) {display:none!important;}
- html.mobile-ui .dealer-option-note,html.mobile-ui .dealer-option-disclosure,html.mobile-ui .vehicle-pane-heading,
+ html.mobile-ui .dealer-option-note,html.mobile-ui .dealer-option-disclosure,
  html.mobile-ui .configuration .dealer-option-badge {display:none!important;}
  html.mobile-ui .mobile-other .dealer-brand {display:flex;}
  html.mobile-ui .twi-finish-grid {display:flex;gap:8px;overflow-x:auto;}

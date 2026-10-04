@@ -4,7 +4,3 @@ html { scroll-padding-top: 16px; }
 body[data-page="auto"] #studio .section-heading { display: flex; flex-direction: column; align-items: stretch; gap: 28px; }
 body[data-page="auto"] #studio .section-intro { margin-top: 0; }
 body[data-page="auto"] #studio .section-intro > p:first-child { max-width: 720px; }
-.studio-tutorial { display: block; width: 100%; max-height: 72svh; background: #e5e6dd; border-radius: 3px; object-fit: contain; }
-html[lang="ja"] .studio-tutorial { aspect-ratio: 9 / 16; }
-html[lang="en"] .studio-tutorial { aspect-ratio: 16 / 9; }
-@media (max-width: 700px) { .studio-tutorial { max-height: none; } }

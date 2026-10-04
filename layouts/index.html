@@ -7,11 +7,10 @@
  function loadMobile() {
   if (loaded || !width.matches || !(touch.matches || navigator.maxTouchPoints > 0)) return;
   loaded = true;
-  // Open the mobile configurator directly; do not change URL or saved/dealer parameters.
-  if (document.readyState === 'loading') document.documentElement.classList.remove('intro-active');
-  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'mobile-ui.css?v=20261004-2';
+  // Keep the same opening and vehicle selection as desktop.
+  const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = 'mobile-ui.css?v=20261004-3';
   document.head.append(css);
-  const start = () => { const js = document.createElement('script'); js.src = 'mobile-ui.js?v=20261004-2'; document.head.append(js); };
+  const start = () => { const js = document.createElement('script'); js.src = 'mobile-ui.js?v=20261004-3'; document.head.append(js); };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true}); else start();
  }
  width.addEventListener('change', loadMobile); touch.addEventListener('change', loadMobile); loadMobile();
