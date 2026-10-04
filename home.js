@@ -7,7 +7,7 @@
     legacyStudioUrl = 'layouts/' + location.search + location.hash;
     window.open(legacyStudioUrl, '_blank', 'noopener');
   }
-  // Existing links to vehicle sections now belong to Hexa Camper.
+  // Existing links to vehicle sections now belong to Hexa Camper Modules.
   if (!legacyStudioUrl && document.body.dataset.page === 'home' && ['#studio','#grid','#faq'].includes(location.hash)) {
     location.replace('camper.html' + location.search + location.hash);
     return;
