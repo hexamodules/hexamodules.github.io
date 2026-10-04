@@ -1,13 +1,13 @@
 import * as THREE from 'three';
 // Presentation materials only. No dimensions, transforms or product selections change.
 export function createVisualMaterials(renderer,scene){
- // Furniture birch only: linear RGB gain, approximately 13% darker in sRGB.
- const birchTone={value:new THREE.Vector3(.72,.72,.78)},birchFinish={value:1};
+ // Furniture birch only: darker video-reference tone; gentle grain contrast and reduced yellow.
+ const birchTone={value:new THREE.Vector3(.40,.40,.46)},birchFinish={value:1};
  function applyBirchTone(mat){
   const previous=mat.onBeforeCompile;
   mat.onBeforeCompile=shader=>{previous(shader);shader.uniforms.birchTone=birchTone;shader.uniforms.birchFinish=birchFinish;
    shader.fragmentShader='uniform vec3 birchTone; uniform float birchFinish;\n'+shader.fragmentShader;
-   shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>','diffuseColor.rgb *= mix(vec3(1.0),birchTone,birchFinish);\n#include <roughnessmap_fragment>');
+   shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>','if(birchFinish > 0.5){ vec3 grain=pow(max(diffuseColor.rgb,vec3(0.0)),vec3(1.08)); float neutral=dot(grain,vec3(0.2126,0.7152,0.0722)); diffuseColor.rgb=mix(vec3(neutral),grain,0.92)*birchTone; }\n#include <roughnessmap_fragment>');
   };
  }
  const anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
@@ -51,7 +51,7 @@ export function createVisualMaterials(renderer,scene){
    shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
     diffuseColor.rgb=mix(diffuseColor.rgb,vec3(0.77,0.69,0.53),0.19*visualBirch);
     diffuseColor.rgb=mix(diffuseColor.rgb,texture2D(plyEdgeMap,vPlySurface.xy).rgb,smoothstep(0.4,0.8,vPlySurface.z));`);
-  };if(mat.userData.birchTone)applyBirchTone(mat);mat.customProgramCacheKey=()=>(mat.userData.visualHexa?'hexa-ply-edge-v2':'birch-ply-edge-v2')+(mat.userData.birchTone?'-tone-v1':'');mat.needsUpdate=true;
+  };if(mat.userData.birchTone)applyBirchTone(mat);mat.customProgramCacheKey=()=>(mat.userData.visualHexa?'hexa-ply-edge-v2':'birch-ply-edge-v2')+(mat.userData.birchTone?'-tone-v2':'');mat.needsUpdate=true;
  }
 
  function lighting(night){scene.environmentIntensity=night?.035:.6}
