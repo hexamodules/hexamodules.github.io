@@ -14,6 +14,9 @@
     document.querySelectorAll('[data-ja-alt][data-en-alt]').forEach(image => {
       image.alt = image.dataset[language === 'en' ? 'enAlt' : 'jaAlt'];
     });
+    document.querySelectorAll('[data-ja-label][data-en-label]').forEach(element => {
+      element.setAttribute('aria-label', element.dataset[language === 'en' ? 'enLabel' : 'jaLabel']);
+    });
     for (const {link, href} of links) {
       if (href.startsWith('#')) continue;
       const url = new URL(href, location.href);
