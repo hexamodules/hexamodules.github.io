@@ -69,9 +69,15 @@
 
 /* The completed van has one next step and one quiet download action. */
 .outro-ready .outro-edit,.outro-views,#outro-night-toggle{display:none!important}
-.outro-specification{display:block;pointer-events:auto;min-height:44px;margin:8px auto 0;padding:10px 18px;border:1px solid #b7c1ae;background:#f5f6f0;color:#344238;border-radius:5px;font-size:12px}
+.outro-specification{display:block;pointer-events:auto;min-height:44px;margin:0;padding:10px 18px;border:1px solid #b7c1ae;background:#f5f6f0;color:#344238;border-radius:5px;font-size:12px}
 .outro-specification:disabled{opacity:.55;pointer-events:none}
 #outro-pdf-status{font-size:10px;margin:4px 0 0}#outro-pdf-status:empty{display:none}
-@media(max-width:850px){.outro-action{left:16px;right:16px;bottom:max(12px,env(safe-area-inset-bottom))}.outro-contact,.outro-specification{width:min(100%,340px);min-height:48px}.outro-equipment{bottom:185px}}
+@media(max-width:850px){.outro-action{left:16px;right:16px;bottom:max(12px,env(safe-area-inset-bottom))}.outro-contact,.outro-specification{min-height:48px}.outro-equipment{bottom:185px}}
 
 #pane-review #toggle-checks{display:none!important}
+
+/* Wrap only when both complete button labels no longer fit. */
+.outro-buttons{display:flex;flex-wrap:wrap;justify-content:center;align-items:stretch;gap:8px}
+.outro-buttons>button{width:auto;flex:0 0 auto;white-space:nowrap;min-height:48px}
+.outro-buttons .outro-contact>span:first-child{text-wrap:nowrap}
+@media(max-width:850px){.outro-buttons>button{padding:12px 10px}.outro-buttons .outro-contact{gap:8px}}
