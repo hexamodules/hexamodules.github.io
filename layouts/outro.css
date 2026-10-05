@@ -68,7 +68,12 @@
 @media(max-width:850px){#saved-layout-recall input{font-size:16px}}
 
 /* The completed van has one next step and one quiet download action. */
-.outro-ready .outro-edit,.outro-views,#outro-night-toggle{display:none!important}
+.outro-views{display:none!important}
+.outro-edit{left:26px;right:auto}.outro-night-toggle{left:auto;right:26px;border-color:transparent}
+@media(max-width:850px){.outro-edit{left:12px;right:auto}.outro-night-toggle{left:auto;right:12px}}
+.outro-equipment-details{display:grid;gap:8px;margin-bottom:8px}.outro-equipment-details:empty{display:none}
+.outro-equipment-details p{margin:0;font-size:11px;line-height:1.6;padding:6px 8px;border:1px solid #c8cebf;border-radius:5px}
+@media(max-width:850px){#outro-equipment-content{flex-wrap:wrap}.outro-equipment-details{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}.outro-equipment-details p{font-size:9px;padding:5px}}
 .outro-specification{display:block;pointer-events:auto;min-height:44px;margin:0;padding:10px 18px;border:1px solid #b7c1ae;background:#f5f6f0;color:#344238;border-radius:5px;font-size:12px}
 .outro-specification:disabled{opacity:.55;pointer-events:none}
 #outro-pdf-status{font-size:10px;margin:4px 0 0}#outro-pdf-status:empty{display:none}

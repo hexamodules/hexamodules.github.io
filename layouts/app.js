@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261005-buttons';
+import {createOutro} from './outro.js?v=20261005-controls';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -707,7 +707,7 @@ const frontDoorHinge=new THREE.Vector3(785,500,4130);
 let outroGroups=[],outroLightGroups=[],outroTailPanels=[],outroPreset='rear';
 function updateOutroLighting(){
  const button=$('#outro-night-toggle');
- button.hidden=!lightsAvailable();
+ button.hidden=false;
  button.setAttribute('aria-pressed',Boolean(state.night));
  button.textContent=state.night?'☀ 昼の表示に戻す':'☾ ナイトモード';
  document.documentElement.classList.toggle('outro-night',Boolean(state.night));
@@ -822,7 +822,13 @@ const outro=createOutro({
  prepare:async()=>{
   outroState={...state};outroView=activeView;controls.enabled=false;controls.maxDistance=28000;
   $('#outro-equipment-content').append($('.equipment-indicators'),$('#electrical-preview'));
-  $('#outro-equipment').hidden=![state.electrical==='standard',state.ac!=='none',state.heater!=='none',state.insulation!=='none'].some(Boolean);
+  const details=$('#outro-equipment-details');details.replaceChildren();
+  for(const [label,value] of [['照明',lightsAvailable()?lightingLabel():null],['エアコン',airconEnabled()?'CUBE AIR460B':null]]){
+   if(!value)continue;
+   const row=document.createElement('p'),title=document.createElement('span'),description=document.createElement('span');
+   title.textContent=label;description.textContent=value;row.append(title,document.createTextNode(' · '),description);details.append(row);
+  }
+  $('#outro-equipment').hidden=![lightsAvailable(),electricalEnabled(),airconEnabled(),heaterEnabled(),insulationEnabled()].some(Boolean);
   updateOutroLighting();$('#outro-night-toggle').disabled=true;
   // Store extended furniture for the driving scene. The editing pose is retained.
   await apply({...state,expanded:false,frontExpanded:false,rearExpanded:false,storage:false},{history:false});
@@ -885,7 +891,7 @@ initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:()=>{
 }});
 
 $('#outro-night-toggle').onclick=()=>{
- if(!outro.ready||!lightsAvailable())return;
+ if(!outro.ready)return;
  state={...state,night:!state.night};outroState={...outroState,night:state.night};
  // Change only the lighting: retain the full shell, open doors and current orbit.
  setLighting();scene.fog=null;grid.visible=false;lightingUI();updateOutroLighting();
