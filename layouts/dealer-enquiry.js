@@ -53,7 +53,12 @@ export function initDealerEnquiry({describe,catalogue}){
   catch{snapshot=null;status='selectionError';}
   refresh();dialog.showModal();
  }
- button.onclick=open;
+ document.addEventListener('click',e=>{
+  if(!isTestDealerEnquiry())return;
+  const contact=e.target.closest('#outro-contact');
+  if(!contact||contact.disabled)return;
+  e.preventDefault();e.stopImmediatePropagation();open();
+ },true);
  dialog.querySelector('.enquiry-close').onclick=()=>dialog.close();
  form.addEventListener('input',()=>{fields.name.setCustomValidity(fields.name.value.trim()?'':(en()?'Please enter your name.':'お名前をご入力ください。'));});
  form.addEventListener('submit',async event=>{
