@@ -778,13 +778,13 @@ function enquiryPreview(){
  try{
   updateInteriorPresentation();renderer.render(scene,camera);
   const source=renderer.domElement,canvas=document.createElement('canvas');
-  // Keep all three images within the existing 600,000-character POST limit.
-  for(const edge of [1000,850,700,550]){
+  // One JPEG, at quality 0.85; reduce dimensions only if above 400 KiB.
+  for(const edge of [1600,1400,1200,1000,800]){
    const scale=Math.min(1,edge/Math.max(source.width,source.height));
    canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
    canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
-   const data=canvas.toDataURL('image/jpeg',.75);
-   if(data.startsWith('data:image/jpeg;base64,')&&data.length<=160000)return data;
+   const data=canvas.toDataURL('image/jpeg',.85);
+   if(data.startsWith('data:image/jpeg;base64,')&&data.length<=546159)return data;
   }
  }catch{/* Images are optional. */}
  return '';
@@ -796,10 +796,13 @@ function enquiryPreviews(){
  const images=[];
  try{
   controls.enabled=false;controls.enableDamping=false;
-  const capture=()=>{try{const data=enquiryPreview();if(data)images.push(data);}catch{/* Skip unavailable views. */}};
-  capture();
-  for(const view of ['inside','rear']){try{frameOutro(view);capture();}catch{/* Skip unavailable views. */}}
- }finally{
+  // Fit the whole vehicle into the image, without the completion-screen text margins.
+  frameOpening=null;
+  openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],
+   copySelector:'.outro-copy',actionSelector:'.outro-action',direction:[3465,2563,-6138],
+   fitArea:stage=>({left:stage.width*.04,right:stage.width*.96,top:stage.height*.04,bottom:stage.height*.96})})();
+  const data=enquiryPreview();if(data)images.push(data);
+ }catch{/* Images are optional; restore the current view even if framing fails. */}finally{
   frameOpening=saved.frame;outroPreset=saved.preset;activeView=saved.view;viewFitScale=saved.fit;
   camera.position.copy(saved.eye);controls.target.copy(saved.target);camera.up.copy(saved.up);camera.fov=saved.fov;
   controls.maxPolarAngle=saved.polar;controls.update();camera.quaternion.copy(saved.quaternion);camera.updateProjectionMatrix();

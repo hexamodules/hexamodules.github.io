@@ -97,7 +97,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
    if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{pendingImages=captureImages()||[];}catch{pendingImages=[];}}
    pending=true;status='';fieldset.disabled=true;refresh();
    controller=new AbortController();timer=setTimeout(()=>controller.abort(),30000);
-   const payload={receipt,...body,createdAt,images:pendingImages.slice(0,3)};
+   const payload={receipt,...body,createdAt,images:pendingImages.slice(0,1)};
    while(payload.images.length&&JSON.stringify(payload).length>600000)payload.images.pop();
    const serialized=JSON.stringify(payload);if(serialized.length>600000)throw Error('PAYLOAD_TOO_LARGE');
    try{await fetch(ENQUIRY_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:serialized,signal:controller.signal});}
