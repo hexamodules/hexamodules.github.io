@@ -5,7 +5,7 @@ import {NETWORK_FIELDS,normalizeNetworkValues} from './dealer-network.js?v=2';
 
 // Browser-only setup drafts. Public previews exclude routing, staff and network application details.
 const DRAFT_KEY='hexa-dealer-setup-draft-v1',PREVIEW_KEY='hexa-dealer-preview-profiles-v1';
-const FIELDS={...NETWORK_FIELDS,outsourceInstallation:3,customSupport:3,optionElectrical:3,optionAircon:3,optionHeater:3,optionInsulation:3,dealerName:100,installation:3,market:2,companyName:120,postalCode:12,address:240,companyPhone:40,contactName:100,contactDepartment:100,website:500,enquiryEmail:254};
+const FIELDS={procurementMode:9,laborDailyCost:7,...NETWORK_FIELDS,outsourceInstallation:3,customSupport:3,optionElectrical:3,optionAircon:3,optionHeater:3,optionInsulation:3,dealerName:100,installation:3,market:2,companyName:120,postalCode:12,address:240,companyPhone:40,contactName:100,contactDepartment:100,website:500,enquiryEmail:254};
 export const SAMPLE_DEALER_LOGO='assets/dealers/sample-a.svg';
 // Only local, decoded raster uploads are persisted. No remote logo URLs or uploaded SVG markup.
 const cleanLogo=logo=>typeof logo==='string'&&logo.length<=500000&&/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(logo)?logo:SAMPLE_DEALER_LOGO;
@@ -17,6 +17,8 @@ function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))||fa
 function values(input={}){
  const source=input&&typeof input==='object'?input:{};
  const result={...Object.fromEntries(Object.entries(FIELDS).map(([key,max])=>[key,clean(source[key],max)])),logo:cleanLogo(source.logo),logoName:clean(source.logoName,160),pricing:normalizeRetailerPrices(source.pricing)};
+ result.procurementMode=source.procurementMode==='assembled'?'assembled':'flat';
+ result.laborDailyCost=source.laborDailyCost===undefined?'15000':clean(String(source.laborDailyCost),7);
  result.outsourceInstallation=['yes','no'].includes(result.installation)&&result.outsourceInstallation==='yes'?'yes':'';
  if(!setupCanArrange(result))for(const key of ['customSupport','optionElectrical','optionAircon','optionHeater','optionInsulation'])result[key]='';
  return normalizeNetworkValues(result);

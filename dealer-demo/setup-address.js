@@ -1,4 +1,4 @@
-import {postcodeKey} from './setup-fields.js?v=20261005';
+import {postcodeKey} from './setup-fields.js?v=20261005-procurement';
 const cache=new Map();
 async function addressRows(code,market){
  const path=market==='au'?'au-postcodes.json':`jp-postcodes-20260831/${code.slice(0,3)}.json`;

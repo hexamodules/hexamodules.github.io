@@ -1,5 +1,5 @@
 import {NETWORK_WORK_FIELDS,hasInstallerNetwork} from '../layouts/dealer-network.js?v=2';
-import {pricingSetupErrors} from './setup-pricing.js?v=20261005';
+import {pricingSetupErrors} from './setup-pricing.js?v=20261005-procurement';
 export const normaliseInput=value=>String(value||'').normalize('NFKC').trim().replace(/[ー−‐‑‒–—―]/g,'-');
 const validPhone=value=>{const phone=normaliseInput(value);return /^[+()\d\s.-]+$/.test(phone)&&phone.replace(/\D/g,'').length>=6};
 const validEmail=value=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);

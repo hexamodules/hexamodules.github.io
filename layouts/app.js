@@ -7,7 +7,7 @@ import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} fr
 import {createISeatControls,createISeatVisuals} from './i-seat.js?v=6';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
 import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261005';
-import {selectedDealer} from './dealer-preview.js?v=20261005';
+import {selectedDealer} from './dealer-preview.js?v=20261005-procurement';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
 import {createDealerOptionsUI} from './dealer-options-ui.js?v=4';
 import {createCountertopVisuals} from './countertops.js?v=1';
