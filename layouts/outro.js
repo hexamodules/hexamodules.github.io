@@ -1,4 +1,4 @@
-import {initDealerEnquiry,isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005-sheet2';
+import {initDealerEnquiry,isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005-finish';
 import {createLayoutSaveAction} from './saved-layouts.js?v=1';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
@@ -166,7 +166,7 @@ export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,rest
   try{await navigator.clipboard.writeText(content);$('#contact-result').textContent='見積もり依頼をコピーしました。取扱店へはまだ送信されていません。'}
   catch{$('#contact-result').textContent='コピーできませんでした。「見積もり依頼の下書きを保存」をお使いください。'}
  };
- if(isTestDealerEnquiry())initDealerEnquiry({describe,catalogue,captureImage:captureEnquiry});
+ if(isTestDealerEnquiry())initDealerEnquiry({describe,catalogue,captureImages:captureEnquiry});
  else if(!quoteDemo)createLayoutSaveAction({describe});
  return {play,edit,get active(){return active},get ready(){return ready}};
 }

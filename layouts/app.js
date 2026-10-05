@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261005-sheet2';
+import {createOutro} from './outro.js?v=20261005-finish';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -104,7 +104,7 @@ const normalizeShipping=s=>{
 };
 const vehiclePreferences=(s=state)=>shippingForAustralia()&&s.vehicleSourcing?{fuel:s.sourcingFuel,drivetrain:s.sourcingDrive,vehicle_budget:{amount:s.sourcingBudget,currency:'AUD',scope:'vehicle_only'}}:null;
 const shippingSupport=(s=state)=>shippingForAustralia()?{type:'external_agent_referral',vehicle_sourcing_referral_requested:s.vehicleSourcing===true,shipping_registration_referral_requested:s.shippingAgent===true,vehicle_preferences:vehiclePreferences(s),registration_destination:registrationDetails(s,s.shippingAgent===true)}:null;
-const parseState=()=>{const q=new URLSearchParams(location.search);let bed=[...FULL,...SINGLE].includes(q.get('bed'))?q.get('bed'):'none';const value=normalizeDealerOptionState({vehiclePurchase:q.get('vehicle_purchase'),newVehicleGrade:q.get('new_vehicle_grade'),newVehiclePowertrain:q.get('new_vehicle_powertrain'),iSeatSlide:q.get('i_seat_slide'),iSeatPose:q.get('i_seat_pose'),iSeatColor:q.get('i_seat_color'),iSeatMatchMattress:q.get('i_seat_match')==='1',bedMattressColor:q.get('bed_mattress_color'),frontMattressColor:q.get('front_mattress_color'),bedMattress:q.get('bed_mattress')==='1',frontMattress:q.get('front_mattress')==='1',vehicle:q.get('vehicle')==='super-gl'?'super-gl':'dx',twiCeiling:q.get('twi_ceiling')||'none',twiBarLights:q.get('twi_bar')!=='0',twiIndirectLights:q.get('twi_indirect')!=='0',quarterPanels:q.get('quarter')||'none',floorSlide:bed==='two-side-bed'&&q.get('floor_slide')==='1',...parseElectrical(q),registrationState:q.get('registration_state'),registrationPostcode:q.get('postcode')||'',registrationLocality:q.get('locality'),sourcingFuel:q.get('sourcing_fuel'),sourcingDrive:q.get('sourcing_drive'),sourcingBudget:Number(q.get('vehicle_budget')),vehicleSourcing:shippingForAustralia()&&q.get('sourcing')==='1',shippingAgent:shippingForAustralia()&&q.get('shipping')==='1',insulation:q.get('insulation')===INSULATION.value?INSULATION.value:'none',heater:q.get('heater')===HEATER.value?HEATER.value:'none',ac:q.get('ac')===AIRCON.value?AIRCON.value:'none',ceilingLights:q.get('ceiling_lights')==='1',tailgateLights:q.get('tailgate_lights')==='1',night:q.get('night')==='1',front:FRONT.includes(q.get('front'))?q.get('front'):'none',bed,cab:SINGLE.includes(bed)&&CAB.includes(q.get('cab'))?q.get('cab'):'none',finish:q.get('finish')==='black'?'black':'birch',wall:Object.hasOwn(WALL_COLORS,q.get('wall'))?q.get('wall'):'none',panel:Object.hasOwn(WALL_COLORS,q.get('wall'))?'auto':Object.hasOwn(WALL_COLORS,q.get('panel'))?q.get('panel'):'none',ceiling:normalizeCeiling(q.get('ceiling')),floor:Object.hasOwn(FLOOR_COLORS,q.get('floor'))?q.get('floor'):'none',expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false},dealerOptions);if(value.ceilingLights&&value.ceiling==='none')value.ceiling=ceilingPalette.default;if(value.tailgateLights&&!isSuperGL(value)&&value.panel==='none')value.panel='teffy';if(airconEnabled(value)&&!isSuperGL(value)){if(!wallEnabled(value))value.wall='white';value.panel='auto'}return normalizeNewVehicle(normalizeISeat(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(value)))))};
+const parseState=()=>{const q=new URLSearchParams(location.search);let bed=[...FULL,...SINGLE].includes(q.get('bed'))?q.get('bed'):'none';const value=normalizeDealerOptionState({vehiclePurchase:q.get('vehicle_purchase'),newVehicleGrade:q.get('new_vehicle_grade'),newVehiclePowertrain:q.get('new_vehicle_powertrain'),iSeatSlide:q.get('i_seat_slide'),iSeatPose:q.get('i_seat_pose'),iSeatColor:q.get('i_seat_color'),iSeatMatchMattress:q.get('i_seat_match')==='1',bedMattressColor:q.get('bed_mattress_color'),frontMattressColor:q.get('front_mattress_color'),bedMattress:q.get('bed_mattress')==='1',frontMattress:q.get('front_mattress')==='1',vehicle:q.get('vehicle')==='super-gl'?'super-gl':'dx',twiCeiling:q.get('twi_ceiling')||'none',twiBarLights:q.get('twi_bar')!=='0',twiIndirectLights:q.get('twi_indirect')!=='0',quarterPanels:q.get('quarter')||'none',floorSlide:bed==='two-side-bed'&&q.get('floor_slide')==='1',...parseElectrical(q),registrationState:q.get('registration_state'),registrationPostcode:q.get('postcode')||'',registrationLocality:q.get('locality'),sourcingFuel:q.get('sourcing_fuel'),sourcingDrive:q.get('sourcing_drive'),sourcingBudget:Number(q.get('vehicle_budget')),vehicleSourcing:shippingForAustralia()&&q.get('sourcing')==='1',shippingAgent:shippingForAustralia()&&q.get('shipping')==='1',insulation:q.get('insulation')===INSULATION.value?INSULATION.value:'none',heater:q.get('heater')===HEATER.value?HEATER.value:'none',ac:q.get('ac')===AIRCON.value?AIRCON.value:'none',ceilingLights:q.get('ceiling_lights')==='1',tailgateLights:q.get('tailgate_lights')==='1',night:q.get('night')==='1',front:FRONT.includes(q.get('front'))?q.get('front'):'none',bed,cab:SINGLE.includes(bed)&&CAB.includes(q.get('cab'))?q.get('cab'):'none',finish:q.get('finish')==='black'?'black':'birch',wall:Object.hasOwn(WALL_COLORS,q.get('wall'))?q.get('wall'):'none',panel:Object.hasOwn(WALL_COLORS,q.get('wall'))?'auto':Object.hasOwn(WALL_COLORS,q.get('panel'))?q.get('panel'):'none',ceiling:normalizeCeiling(q.get('ceiling')),floor:Object.hasOwn(FLOOR_COLORS,q.get('floor'))?q.get('floor'):'none',expanded:q.get('expanded')==='1',frontExpanded:q.get('front_expanded')==='1',rearExpanded:q.get('rear_expanded')==='1',storage:q.get('storage')==='1',flat:q.get('flat')==='1'},dealerOptions);if(value.ceilingLights&&value.ceiling==='none')value.ceiling=ceilingPalette.default;if(value.tailgateLights&&!isSuperGL(value)&&value.panel==='none')value.panel='teffy';if(airconEnabled(value)&&!isSuperGL(value)){if(!wallEnabled(value))value.wall='white';value.panel='auto'}return normalizeNewVehicle(normalizeISeat(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(value)))))};
 let needsFrame=true;
 // Home matches the owner's elevated side view; keep the named side preset available.
 const DEFAULT_VIEW='home';
@@ -498,7 +498,7 @@ function shippingUI(){
  const requested=state.vehicleSourcing||state.shippingAgent;
  $('#selection-summary').insertAdjacentHTML('beforeend',`<div id="shipping-summary">${rows.map(([title,on])=>`<div class="selection-row"><span>${title}</span><b>${on?'外部エージェントの紹介を希望':'希望しない'}</b></div>`).join('')}${preferenceSummary}${destinationSummary}${requested?'<div class="selection-row shipping-referral-summary"><span>Shipping</span><b>外部エージェントへの紹介希望です。各手配は紹介先のエージェントが行います。</b></div>':''}</div>`);
 }
-function urlFor(s=state){const q=new URLSearchParams({vehicle:s.vehicle||'dx',front:s.front,bed:s.bed,cab:s.cab,finish:s.finish||state.finish});addNewVehicleParams(q,s);if(s.front==='i-seat'){q.set('i_seat_slide',String(s.iSeatSlide||0));q.set('i_seat_pose',s.iSeatPose||'forward');q.set('i_seat_color',s.iSeatColor||'light-green');}if(twiCeilingEnabled(s)){q.set('twi_ceiling',s.twiCeiling);if(s.twiBarLights===false)q.set('twi_bar','0');if(s.twiIndirectLights===false)q.set('twi_indirect','0')}if(quarterCount(s))q.set('quarter',s.quarterPanels);if(s.bed==='two-side-bed'&&s.floorSlide)q.set('floor_slide','1');if(s.bedMattress)q.set('bed_mattress','1');if(s.frontMattress)q.set('front_mattress','1');if(bedMattressEnabled(s))q.set('bed_mattress_color',s.bedMattressColor||'light-green');if(frontMattressEnabled(s))q.set('front_mattress_color',s.frontMattressColor||'light-green');if(wallEnabled(s))q.set('wall',s.wall);if(panelEnabled(s))q.set('panel',Object.hasOwn(WALL_COLORS,s.panel)?s.panel:'auto');if(ceilingEnabled(s))q.set('ceiling',s.ceiling);if(floorEnabled(s))q.set('floor',s.floor);if(airconEnabled(s))q.set('ac',AIRCON.value);if(heaterEnabled(s))q.set('heater',HEATER.value);if(insulationEnabled(s))q.set('insulation',INSULATION.value);if(electricalEnabled(s)){q.set('electrical','standard');q.set('battery',String(s.batteryAh));if(s.inverterW)q.set('inverter',String(s.inverterW))}if(shippingForAustralia()){if(s.vehicleSourcing){q.set('sourcing','1');if(s.sourcingFuel)q.set('sourcing_fuel',s.sourcingFuel);if(s.sourcingDrive)q.set('sourcing_drive',s.sourcingDrive);if(s.sourcingBudget)q.set('vehicle_budget',String(s.sourcingBudget))}if(s.shippingAgent){q.set('shipping','1');addRegistrationParams(q,s)}}if(s.ceilingLights)q.set('ceiling_lights','1');if(s.tailgateLights)q.set('tailgate_lights','1');if(s.night)q.set('night','1');q.set('location',getStudioLocation().id);q.set('lang',getLanguage());if(reviewMode)q.set("review","1");dealerParams(q);return `${location.pathname}?${q}`}
+function urlFor(s=state){const q=new URLSearchParams({vehicle:s.vehicle||'dx',front:s.front,bed:s.bed,cab:s.cab,finish:s.finish||state.finish});addNewVehicleParams(q,s);if(s.front==='i-seat'){q.set('i_seat_slide',String(s.iSeatSlide||0));q.set('i_seat_pose',s.iSeatPose||'forward');q.set('i_seat_color',s.iSeatColor||'light-green');}if(twiCeilingEnabled(s)){q.set('twi_ceiling',s.twiCeiling);if(s.twiBarLights===false)q.set('twi_bar','0');if(s.twiIndirectLights===false)q.set('twi_indirect','0')}if(quarterCount(s))q.set('quarter',s.quarterPanels);if(s.bed==='two-side-bed'&&s.floorSlide)q.set('floor_slide','1');if(s.bedMattress)q.set('bed_mattress','1');if(s.frontMattress)q.set('front_mattress','1');if(bedMattressEnabled(s))q.set('bed_mattress_color',s.bedMattressColor||'light-green');if(frontMattressEnabled(s))q.set('front_mattress_color',s.frontMattressColor||'light-green');if(wallEnabled(s))q.set('wall',s.wall);if(panelEnabled(s))q.set('panel',Object.hasOwn(WALL_COLORS,s.panel)?s.panel:'auto');if(ceilingEnabled(s))q.set('ceiling',s.ceiling);if(floorEnabled(s))q.set('floor',s.floor);if(airconEnabled(s))q.set('ac',AIRCON.value);if(heaterEnabled(s))q.set('heater',HEATER.value);if(insulationEnabled(s))q.set('insulation',INSULATION.value);if(electricalEnabled(s)){q.set('electrical','standard');q.set('battery',String(s.batteryAh));if(s.inverterW)q.set('inverter',String(s.inverterW))}if(shippingForAustralia()){if(s.vehicleSourcing){q.set('sourcing','1');if(s.sourcingFuel)q.set('sourcing_fuel',s.sourcingFuel);if(s.sourcingDrive)q.set('sourcing_drive',s.sourcingDrive);if(s.sourcingBudget)q.set('vehicle_budget',String(s.sourcingBudget))}if(s.shippingAgent){q.set('shipping','1');addRegistrationParams(q,s)}}if(s.ceilingLights)q.set('ceiling_lights','1');if(s.tailgateLights)q.set('tailgate_lights','1');if(s.night)q.set('night','1');for(const [key,param] of [['expanded','expanded'],['frontExpanded','front_expanded'],['rearExpanded','rear_expanded'],['storage','storage'],['flat','flat']])if(s[key])q.set(param,'1');q.set('location',getStudioLocation().id);q.set('lang',getLanguage());if(reviewMode)q.set("review","1");dealerParams(q);return `${location.pathname}?${q}`}
 function moveBody(node,delta){node.position.add(new THREE.Vector3(...delta))}
 function rotateBody(node,pivot,axis,degrees){let q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...axis),THREE.MathUtils.degToRad(degrees));node.quaternion.copy(q);let v=new THREE.Vector3(...pivot);node.position.copy(v).sub(v.clone().applyQuaternion(q))}
 function bedLength(s=state){return s.bed==='none'?0:1800}
@@ -776,17 +776,42 @@ function contactPreview(){
 }
 function enquiryPreview(){
  try{
-  renderer.render(scene,camera);
+  updateInteriorPresentation();renderer.render(scene,camera);
   const source=renderer.domElement,canvas=document.createElement('canvas');
-  const scale=Math.min(1,1200/Math.max(source.width,source.height));
-  canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
-  canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
-  for(const quality of [.8,.7,.6]){const data=canvas.toDataURL('image/jpeg',quality);if(data.startsWith('data:image/jpeg;base64,')&&(data.length-23)*3/4<=300*1024)return data;}
- }catch{/* Images are optional; a canvas failure must not block an enquiry. */}
+  // Keep all three images within the existing 600,000-character POST limit.
+  for(const edge of [1000,850,700,550]){
+   const scale=Math.min(1,edge/Math.max(source.width,source.height));
+   canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+   canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+   const data=canvas.toDataURL('image/jpeg',.75);
+   if(data.startsWith('data:image/jpeg;base64,')&&data.length<=160000)return data;
+  }
+ }catch{/* Images are optional. */}
  return '';
 }
+function enquiryPreviews(){
+ const saved={eye:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone(),
+  quaternion:camera.quaternion.clone(),fov:camera.fov,frame:frameOpening,preset:outroPreset,view:activeView,
+  fit:viewFitScale,polar:controls.maxPolarAngle,damping:controls.enableDamping,enabled:controls.enabled};
+ const images=[];
+ try{
+  controls.enabled=false;controls.enableDamping=false;
+  const capture=()=>{try{const data=enquiryPreview();if(data)images.push(data);}catch{/* Skip unavailable views. */}};
+  capture();
+  for(const view of ['inside','rear']){try{frameOutro(view);capture();}catch{/* Skip unavailable views. */}}
+ }finally{
+  frameOpening=saved.frame;outroPreset=saved.preset;activeView=saved.view;viewFitScale=saved.fit;
+  camera.position.copy(saved.eye);controls.target.copy(saved.target);camera.up.copy(saved.up);camera.fov=saved.fov;
+  controls.maxPolarAngle=saved.polar;controls.update();camera.quaternion.copy(saved.quaternion);camera.updateProjectionMatrix();
+  controls.enableDamping=saved.damping;controls.enabled=saved.enabled;
+  $$('[data-outro-view]').forEach(b=>{const on=b.dataset.outroView===saved.preset;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
+  $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===saved.view));
+  updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
+ }
+ return images;
+}
 const outro=createOutro({
- captureEnquiry:enquiryPreview,
+ captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
  getVehicleState:()=>outroState||state,
  getLocation:()=>getStudioLocation().id,
