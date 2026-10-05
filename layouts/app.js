@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261005-enquiry';
+import {createOutro} from './outro.js?v=20261005-sheet2';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -774,7 +774,19 @@ function contactPreview(){
  preview.getContext('2d').drawImage(canvas,sx*ratio,sy*ratio,sw*ratio,sh*ratio,0,0,preview.width,preview.height);
  return preview.toDataURL('image/png');
 }
+function enquiryPreview(){
+ try{
+  renderer.render(scene,camera);
+  const source=renderer.domElement,canvas=document.createElement('canvas');
+  const scale=Math.min(1,1200/Math.max(source.width,source.height));
+  canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
+  canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+  for(const quality of [.8,.7,.6]){const data=canvas.toDataURL('image/jpeg',quality);if(data.startsWith('data:image/jpeg;base64,')&&(data.length-23)*3/4<=300*1024)return data;}
+ }catch{/* Images are optional; a canvas failure must not block an enquiry. */}
+ return '';
+}
 const outro=createOutro({
+ captureEnquiry:enquiryPreview,
  catalogue:priceCatalogue,
  getVehicleState:()=>outroState||state,
  getLocation:()=>getStudioLocation().id,
@@ -830,9 +842,10 @@ const outro=createOutro({
   // Layout shrinks back after the overlay closes; fit against that final size.
   requestAnimationFrame(()=>{setView(outroView);controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));controls.enabled=true;needsFrame=true});
  },
- describe:()=>{
-  renderer.render(scene,camera);
-  return {configuration:{...(outroState||state)},summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:contactPreview()};
+ describe:({includeImage=true}={})=>{
+  if(includeImage){try{renderer.render(scene,camera)}catch{/* Optional preview only. */}}
+  const configuration={...(outroState||state)},customerSummary=$$('#selection-summary .selection-row').filter(row=>!row.querySelector('.selection-module')||configuration.front==='i-seat'&&/i[\s-]?seat/i.test(row.textContent)).map(row=>({label:row.children[0].textContent.trim(),value:[...row.children].slice(1).map(c=>c.textContent.trim()).join(' ')})).filter(r=>r.label&&r.value);
+  return {configuration,layoutNumber:pricing.quote(configuration).number,customerSummary,summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:includeImage?(()=>{try{return contactPreview()}catch{return ''}})():''};
  }
 });
 $('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};

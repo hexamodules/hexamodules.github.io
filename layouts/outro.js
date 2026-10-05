@@ -1,11 +1,11 @@
-import {initDealerEnquiry,isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005';
+import {initDealerEnquiry,isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005-sheet2';
 import {createLayoutSaveAction} from './saved-layouts.js?v=1';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {initQuoteDemo} from './quote-demo.js?v=20261005';
 // Save first, then present the selected van. Contact is a local, unsent draft.
-export function createOutro({catalogue,prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
+export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
  const $=s=>document.querySelector(s),root=document.documentElement,layer=$('#studio-outro');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const locked=[...document.querySelectorAll('.configuration,.stage-context,.lighting-preview,.motion-popover,.view-toolbar,.gesture-hint,.shell-label,#open-help,.brand')];
@@ -166,7 +166,7 @@ export function createOutro({catalogue,prepare,pose,showcase,restore,describe,ge
   try{await navigator.clipboard.writeText(content);$('#contact-result').textContent='見積もり依頼をコピーしました。取扱店へはまだ送信されていません。'}
   catch{$('#contact-result').textContent='コピーできませんでした。「見積もり依頼の下書きを保存」をお使いください。'}
  };
- if(isTestDealerEnquiry())initDealerEnquiry({describe,catalogue});
+ if(isTestDealerEnquiry())initDealerEnquiry({describe,catalogue,captureImage:captureEnquiry});
  else if(!quoteDemo)createLayoutSaveAction({describe});
  return {play,edit,get active(){return active},get ready(){return ready}};
 }
