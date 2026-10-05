@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261005';
+import {createOutro} from './outro.js?v=20261005-enquiry';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -32,7 +32,7 @@ const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const reviewMode=false; // Production capture tools are unavailable on this static site.
 if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false)return;
 const dealerOptions=dealerOptionAvailability(selectedDealer());
-const priceCatalogue=await fetch('assets/reference-prices.json?v=20261005-selection-only').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
+const priceCatalogue=await fetch('assets/reference-prices.json?v=20261005-enquiry').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=cabinet-names-1').then(r=>r.json());
 const modules=Object.fromEntries(M.map(m=>[m.id,m]));
 modules['i-seat']={id:'i-seat',name:'i seat',en:'i seat',selection_description:'1,400mm'};
@@ -775,6 +775,7 @@ function contactPreview(){
  return preview.toDataURL('image/png');
 }
 const outro=createOutro({
+ catalogue:priceCatalogue,
  getVehicleState:()=>outroState||state,
  getLocation:()=>getStudioLocation().id,
  prepare:async()=>{

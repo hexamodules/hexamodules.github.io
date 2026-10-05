@@ -1,3 +1,4 @@
+import {isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005';
 import {calculateLayoutReference} from './reference-pricing.js?v=20261005';
 import {bedMattressEnabled,mattressIncluded,mattressColor} from './mattress-state.js?v=2';
 import {lightingCutoutSummary} from './lighting-cutouts.js?v=1';
@@ -32,7 +33,7 @@ export function createReferencePricing({catalogue,getState,getLocation,getLangua
   popup.document.write(`<!doctype html><html lang="${en()?'en':'ja'}"><meta charset="utf-8"><title>Hexa ${number}</title><style>body{font:14px sans-serif;margin:30px;color:#222}table{border-collapse:collapse;width:100%;font-size:10px}td,th{padding:8px;border:1px solid #ccc}h1{font-size:22px}@media print{button{display:none}tr{break-inside:avoid}}</style><h1>${en()?'Hexa layout summary':'Hexa レイアウトのまとめ'}</h1><p>${number} · ${date}</p><p>${esc(summary.vehicle)} / ${esc(summary.finish)}</p><ul>${summary.items.map(n=>`<li>${esc(n)}</li>`).join('')}</ul><p>${esc(summary.lighting)}</p><p>${esc(note())}</p><p><a href="${esc(location.href)}">${en()?'Open this layout':'このレイアウトを開く'}</a></p><button onclick="window.print()">印刷 / PDF保存</button></html>`);popup.document.close();
  }
  save.onclick=printSummary;
- document.addEventListener('click',e=>{if(e.target.closest('#outro-contact')){e.preventDefault();e.stopImmediatePropagation();printSummary();}},true);
+ document.addEventListener('click',e=>{if(!isTestDealerEnquiry()&&e.target.closest('#outro-contact')){e.preventDefault();e.stopImmediatePropagation();printSummary();}},true);
  function quote(s=getState()){return {type:'layout_summary',...customerSummary(s),service_items:[],formal_quote_issuer:'dealer'};}
  function summary(){return '\n'+note();}
  return {update,quote,summary};

@@ -7,77 +7,88 @@
       "category": "床（必須）",
       "name": "ウォールナット",
       "selection_value": "walnut",
-      "name_en": "Floor · Walnut"
+      "name_en": "Floor · Walnut",
+      "number": 1
     },
     {
       "key": "floor:teak",
       "category": "床（必須）",
       "name": "チーク",
       "selection_value": "teak",
-      "name_en": "Floor · Teak"
+      "name_en": "Floor · Teak",
+      "number": 2
     },
     {
       "key": "floor:oak",
       "category": "床（必須）",
       "name": "オーク",
       "selection_value": "oak",
-      "name_en": "Floor · Oak"
+      "name_en": "Floor · Oak",
+      "number": 3
     },
     {
       "key": "floor:dark-canvas",
       "category": "床（必須）",
       "name": "ダークキャンバス",
       "selection_value": "dark-canvas",
-      "name_en": "Floor · Dark canvas"
+      "name_en": "Floor · Dark canvas",
+      "number": 4
     },
     {
       "key": "floor:light-canvas",
       "category": "床（必須）",
       "name": "ライトキャンバス",
       "selection_value": "light-canvas",
-      "name_en": "Floor · Light canvas"
+      "name_en": "Floor · Light canvas",
+      "number": 5
     },
     {
       "key": "ceiling:white-ash",
       "category": "天井",
       "name": "ホワイトアッシュ",
       "selection_value": "white-ash",
-      "name_en": "Ceiling · White ash"
+      "name_en": "Ceiling · White ash",
+      "number": 6
     },
     {
       "key": "ceiling:walnut",
       "category": "天井",
       "name": "ウォールナット",
       "selection_value": "walnut",
-      "name_en": "Ceiling · Walnut"
+      "name_en": "Ceiling · Walnut",
+      "number": 7
     },
     {
       "key": "ceiling:black-cherry",
       "category": "天井",
       "name": "ブラックチェリー",
       "selection_value": "black-cherry",
-      "name_en": "Ceiling · Black cherry"
+      "name_en": "Ceiling · Black cherry",
+      "number": 8
     },
     {
       "key": "panel:white",
       "category": "カラーパネル",
       "name": "ホワイト",
       "selection_value": "white",
-      "name_en": "Colour panels · White"
+      "name_en": "Colour panels · White",
+      "number": 9
     },
     {
       "key": "panel:teffy",
       "category": "カラーパネル",
       "name": "テフィ（TEFFY）",
       "selection_value": "teffy",
-      "name_en": "Colour panels · Teffy"
+      "name_en": "Colour panels · Teffy",
+      "number": 10
     },
     {
       "key": "panel:volcanic-gray",
       "category": "カラーパネル",
       "name": "ボルカニックグレー",
       "selection_value": "volcanic-gray",
-      "name_en": "Colour panels · Volcanic gray"
+      "name_en": "Colour panels · Volcanic gray",
+      "number": 11
     },
     {
       "key": "wall:white",
@@ -89,7 +100,8 @@
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "number": 12
     },
     {
       "key": "wall:teffy",
@@ -101,7 +113,8 @@
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "number": 13
     },
     {
       "key": "wall:volcanic-gray",
@@ -113,7 +126,8 @@
         "同色カラーパネル",
         "窓の内側の断熱",
         "窓の外側の断熱・目隠し用ラッピング"
-      ]
+      ],
+      "number": 14
     },
     {
       "key": "module:front-module",
@@ -125,7 +139,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Front module · Plywood"
+      "name_en": "Front module · Plywood",
+      "number": 15
     },
     {
       "key": "module:aluminum-front-kitchen",
@@ -137,7 +152,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Front module · Aluminium"
+      "name_en": "Front module · Aluminium",
+      "number": 16
     },
     {
       "key": "module:slide-bed",
@@ -149,7 +165,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Simple slide-out bed · Plywood"
+      "name_en": "Simple slide-out bed · Plywood",
+      "number": 17
     },
     {
       "key": "module:lounge-slide-bed",
@@ -161,7 +178,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Storage slide-out bed · Plywood"
+      "name_en": "Storage slide-out bed · Plywood",
+      "number": 18
     },
     {
       "key": "module:aluminum-bed",
@@ -173,7 +191,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Slide-out bed · Aluminium"
+      "name_en": "Slide-out bed · Aluminium",
+      "number": 19
     },
     {
       "key": "module:lounge-bed",
@@ -185,7 +204,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Lounge bed · Plywood"
+      "name_en": "Lounge bed · Plywood",
+      "number": 20
     },
     {
       "key": "module:two-side-bed",
@@ -197,7 +217,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Lounge bed with optional floor slide · Plywood"
+      "name_en": "Lounge bed with optional floor slide · Plywood",
+      "number": 21
     },
     {
       "key": "module:side-cabinet",
@@ -209,7 +230,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with flip-up table · Plywood"
+      "name_en": "Side cabinet with flip-up table · Plywood",
+      "number": 22
     },
     {
       "key": "module:aluminum-side-cabinet",
@@ -221,7 +243,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with sink · Aluminium"
+      "name_en": "Side cabinet with sink · Aluminium",
+      "number": 23
     },
     {
       "key": "module:simple-side-cabinet",
@@ -233,7 +256,8 @@
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet · Aluminium"
+      "name_en": "Side cabinet · Aluminium",
+      "number": 24
     },
     {
       "key": "module:active-side-cabinet",
@@ -245,14 +269,16 @@
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with fridge · Aluminium"
+      "name_en": "Side cabinet with fridge · Aluminium",
+      "number": 25
     },
     {
       "key": "two-side-bed:floor-slide",
       "category": "家具オプション",
       "name": "中央通路の床スライド（脱着式）",
       "applies_to": "two-side-bed",
-      "name_en": "Removable centre floor slide"
+      "name_en": "Removable centre floor slide",
+      "number": 26
     },
     {
       "key": "twi-ceiling:clear",
@@ -261,7 +287,8 @@
       "name_en": "TWI hinoki ceiling · Clear (lighting included)",
       "includes": [
         "integrated_lighting"
-      ]
+      ],
+      "number": "GL-C"
     },
     {
       "key": "twi-ceiling:walnut",
@@ -270,25 +297,29 @@
       "name_en": "TWI hinoki ceiling · Walnut (lighting included)",
       "includes": [
         "integrated_lighting"
-      ]
+      ],
+      "number": "GL-C"
     },
     {
       "key": "twi-quarter",
       "category": "TWI クォーターパネル",
       "name": "TWI クォーターパネル（1枚）",
-      "name_en": "TWI quarter panel (one side)"
+      "name_en": "TWI quarter panel (one side)",
+      "number": "GL-Q"
     },
     {
       "key": "mattress:bed",
       "category": "マットレス",
       "name": "ベッド専用マットレス（80mm）",
-      "name_en": "Fitted bed mattress (80 mm)"
+      "name_en": "Fitted bed mattress (80 mm)",
+      "number": "M02"
     },
     {
       "key": "mattress:front",
       "category": "マットレス",
       "name": "フロント収納上クッション（80mm）",
-      "name_en": "Front storage cushion (80 mm)"
+      "name_en": "Front storage cushion (80 mm)",
+      "number": "M03"
     }
   ]
 }
