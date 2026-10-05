@@ -31,11 +31,6 @@
   const selectedSteps=new Map(), completed=new Set(), typeOpen=new Map();
   const other=make('section','mobile-other'), review=make('section','mobile-review'), vehicleCards=make('div','mobile-vehicle-cards');
   const number=make('p','mobile-number'), specs=make('div','mobile-specs'), status=make('p','mobile-status');status.setAttribute('role','status');
-  const send=button('mobile-send','取扱店に送る',async()=>{
-    const text=number.textContent+'\n'+specs.textContent;
-    try {if(navigator.share)await navigator.share({title:'Hexa',text,url:location.href});else {await navigator.clipboard.writeText(text+'\n'+location.href);set(status,en()?'Copied. Paste into your message to your dealer.':'コピーしました。取扱店へのメッセージに貼り付けてください。');}}
-    catch(e){if(e.name!=='AbortError')set(status,en()?'Copy the URL from the address bar.':'アドレス欄のURLをコピーしてください。');}
-  });review.append(send,status);
   const shareUrl=button('mobile-share-url','URLを共有',async()=>{
     try {if(navigator.share)await navigator.share({title:'Hexa',url:location.href});else {await navigator.clipboard.writeText(location.href);set(shareUrl,en()?'URL copied':'URLをコピーしました');}}
     catch(e){if(e.name!=='AbortError')set(shareUrl,en()?'Copy the address bar URL':'アドレス欄のURLをコピーしてください');}
@@ -188,7 +183,7 @@
     refreshSteps();
     set(utilities,en()?'More':'その他');
     set(shareUrl,en()?'Share URL':'URLを共有');
-    set(launch,en()?'+ Choose':'＋ 選ぶ');set(title,current==='other'?label('other'):tabLabel(current));set(send,en()?'Send to dealer':'取扱店に送る');
+    set(launch,en()?'+ Choose':'＋ 選ぶ');set(title,current==='other'?label('other'):tabLabel(current));
     tabs.forEach((b,k)=>{const source=$('#tab-'+k);set(b,tabLabel(k));if(b.hidden!==source.hidden)b.hidden=source.hidden;if(b.disabled!==source.disabled)b.disabled=source.disabled;const v=String(k===current);if(b.getAttribute('aria-current')!==v)b.setAttribute('aria-current',v);});
     const choices={cabinet:'cab'};
     chipButtons.forEach((b,k)=>{

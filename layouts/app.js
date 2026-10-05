@@ -18,11 +18,11 @@ import {createReferencePricing} from './reference-pricing.js?v=20261005-mobile-f
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
 import {createMattressControls,createMattressVisuals} from './mattresses.js?v=7';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=26';
+import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=flow-26';
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261005-finish';
+import {createOutro} from './outro.js?v=flow-20261005-finish';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -641,7 +641,7 @@ function changeRegistration(patch){
 }
 function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 let savingImage=false;
-$('#save-layout').onclick=()=>{if(outro.active||savingImage)return;if(!readyForReview())return;download('Hexa-layout.json',new Blob([JSON.stringify({version:31,vehicle_purchase:newVehicleSpecification(state),i_seat:iSeatSpecification(state),lighting_cutout_requests:lightingCutoutSpecification(state),dealer_context:dealerContext(),dealer_options:dealerOptionExport(state,pricing.quote()),mattresses:mattressSpecification(state),base_vehicle:{grade:state.vehicle,body:'narrow',roof:'standard',doors:5},twi_ceiling:twiCeilingEnabled(state)?{manufacturer:'TWI craft',wood:'hinoki',finish:state.twiCeiling,lighting_included:true,geometry_basis:'photo-based illustration'}:null,quarter_panels:quarterCount(state)?{manufacturer:'TWI craft',side:state.quarterPanels,quantity:quarterCount(state),geometry_basis:'photo-based illustration'}:null,reference_pricing:pricing.quote(),location:{id:getStudioLocation().id,country:getStudioLocation().country},language:getLanguage(),shipping_support:shippingSupport(),electrical_system:electricalSystem(),insulation:insulationEnabled()?{...INSULATION,type:'dealer_option_enquiry',price_included_in_reference:pricing.quote()?.service_items.some(i=>i.key==='insulation'&&i.amount!==null)||false,selected:true}:null,heater:heaterEnabled()?{...HEATER,type:'dealer_option_enquiry',illustration_only:true,selected:true}:null,air_conditioner:airconEnabled()?{...AIRCON,type:'dealer_option_enquiry',illustration_only:true,requires_wall:!isSuperGL(state),wall_color:wallEnabled()?state.wall:null,placement:isSuperGL(state)?'driver-side-quarter-panel-upper-edge-vertical':'rear-driver-side-upper',mounting:activeAirconMount,requires_installer_confirmation:true}:null,lighting:{twi_included:twiCeilingEnabled(state),twi_bar_enabled:twiCeilingEnabled(state)&&state.twiBarLights!==false,twi_indirect_enabled:twiCeilingEnabled(state)&&state.twiIndirectLights!==false,finish:twiCeilingEnabled(state)?'TWI integrated':'silver',cct_kelvin:twiCeilingEnabled(state)?null:3200,ceiling_count:state.ceilingLights?6:0,tailgate_count:state.tailgateLights?2:0,tailgate_mounting:state.tailgateLights?(isSuperGL(state)?'vehicle-tailgate-panel':'colour-tailgate-panel'):null,night_mode:state.night,illustration_only:true},vehicle:vehicleNameEnglish(state),configuration:state,bed_length_mm:bedLength(),offsets_mm:offsets,fit_review:(dealerContext()||isSuperGL(state))?null:reportFor(),color_panels:panelEnabled()?{...PANEL,...WALL_COLORS[panelColor()],light_openings:{...PANEL.light_openings,count:state.tailgateLights?2:0},follows_wall:state.panel==='auto',included_with_wall:wallEnabled(),displayed_count:wallEnabled()?2:3,rear_side_panel_hidden:wallEnabled(),tailgate_open_deg:90}:null,floor_finish:floorEnabled()?{...FLOOR,...FLOOR_COLORS[state.floor],palette_revision:floorPalette.revision}:null,ceiling_finish:ceilingEnabled()?{...CEILING,...CEILING_COLORS[state.ceiling],light_openings:state.ceilingLights?6:0,palette_revision:ceilingPalette.revision}:null,interior_finish:wallEnabled()?{...WALL,...WALL_COLORS[state.wall],palette_revision:wallPalette.revision,closed_position_checks:dealerContext()?[]:[state.front,state.bed,state.cab].flatMap(k=>wallVerification.module_checks[k]||[])}:null,url:urlFor(),modules:[state.front,state.bed,state.cab].filter(k=>modules[k]).map(k=>({id:k,name:modules[k].name,construction:modules[k].construction})),note:'配置イメージ。製作には実車採寸と取付確認が必要。'},null,2)],{type:'application/json'}));$('#notice').textContent='選んだ組み合わせを保存しました。';outro.play()};$('#save-image').onclick=()=>{if(outro.active||savingImage)return;if(!readyForReview())return;savingImage=true;renderer.render(scene,camera);renderer.domElement.toBlob(b=>{savingImage=false;if(!b){$('#notice').textContent='画像を保存できませんでした。もう一度お試しください。';return}download('Hexa-layout.png',b);$('#notice').textContent='この角度の画像を保存しました。';outro.play()})};
+
 initStudio({getLocation:()=>getStudioLocation().id,hasRequiredFloor:()=>floorEnabled(),hasElectrical:()=>dealerOptions.electrical,hasVehicleSelection:()=>vehicleSelectionComplete(state)});initLanguage();
 window.addEventListener('studio-locale-change',()=>{
  if(!shippingForAustralia()){
@@ -814,6 +814,7 @@ function enquiryPreviews(){
  return images;
 }
 const outro=createOutro({
+ captureSpecification:()=>[contactPreview()],
  captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
  getVehicleState:()=>outroState||state,

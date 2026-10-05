@@ -1,11 +1,11 @@
 import {initDealerEnquiry,isTestDealerEnquiry} from './dealer-enquiry.js?v=20261005-finish';
-import {createLayoutSaveAction} from './saved-layouts.js?v=1';
+import {downloadSpecification} from './specification-pdf.js?v=1';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {initQuoteDemo} from './quote-demo.js?v=20261005';
 // Save first, then present the selected van. Contact is a local, unsent draft.
-export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
+export function createOutro({catalogue,captureEnquiry,captureSpecification,prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
  const $=s=>document.querySelector(s),root=document.documentElement,layer=$('#studio-outro');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const locked=[...document.querySelectorAll('.configuration,.stage-context,.lighting-preview,.motion-popover,.view-toolbar,.gesture-hint,.shell-label,#open-help,.brand')];
@@ -38,7 +38,7 @@ export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,rest
   if(!active||finishing||ready)return;
   finishing=true;cancelAnimationFrame(frame);$('#outro-skip').disabled=true;
   try{await preparation;paint(11600);await showcase();ready=true;root.classList.add('outro-ready');
-   $('#outro-contact').disabled=false;$('#outro-edit').disabled=false;
+   $('#outro-contact').disabled=false;$('#outro-specification').disabled=false;$('#outro-edit').disabled=false;
    mark('ready','完成したレイアウトです。ドラッグで回してご覧ください。');
   }catch(e){await fail(e)}finally{finishing=false}
  }
@@ -60,7 +60,7 @@ export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,rest
   if(active)return;
   active=true;ready=false;finishing=false;elapsed=0;layer.hidden=false;root.classList.add('outro-active');
   root.style.setProperty('--outro-copy',0);root.style.setProperty('--outro-action',0);
-  $('#outro-skip').disabled=false;$('#outro-contact').disabled=true;$('#outro-edit').disabled=true;
+  $('#outro-skip').disabled=false;$('#outro-contact').disabled=true;$('#outro-specification').disabled=true;$('#outro-edit').disabled=true;
   locked.forEach(e=>e.inert=true);layer.tabIndex=-1;layer.focus({preventScroll:true});mark('loading','完成車を準備しています');
   preparation=prepare();
   try{await preparation;if(finishing)return;if(reduced.matches){await finish();return}paint(0);last=performance.now();frame=requestAnimationFrame(tick)}catch(e){await fail(e)}
@@ -107,28 +107,28 @@ export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,rest
  syncContact();
  // The manufacturer demonstrates combinations; customers choose their dealer.
  // Embedded studios keep that dealer as the enquiry contact.
- const official=!dealerContext();
- let handoffNote;
- if(official){
-  handoffNote=document.createElement('p');handoffNote.className='outro-dealer-price-note';
-  handoffNote.id='official-dealer-handoff';handoffNote.setAttribute('data-module-i18n','');
-  $('.outro-copy').append(handoffNote);
- }
+ const official=!isTestDealerEnquiry();
  function updateEnquiryRoute(){
-  if(!official)return;
   const en=root.lang==='en';
-  for(const [selector,label] of [
-   ['#outro-contact span:first-child',en?'Save layout as PDF':'このレイアウトをPDFで保存'],
-   ['#review-enquiry',en?'View your completed layout →':'完成したレイアウトを見る →']
-  ]){const el=$(selector);el.setAttribute('data-module-i18n','');el.textContent=label;}
-  handoffNote.textContent=en?'Choose your dealer and share this page URL or your saved configuration. Quotes and installation enquiries go directly to the dealer.':'このページのURLや保存した組み合わせを、ご希望の取扱店へお伝えください。ご相談・お見積もりは取扱店が直接承ります。';
+  $('#outro-contact span:first-child').textContent=official?(en?'Find a dealer':'取扱店を探す'):(en?'Enquire with your dealer':'取扱店に相談する');
+  $('#review-enquiry').setAttribute('data-module-i18n','');
+  $('#review-enquiry').textContent=en?'View your completed van':'完成車を確認する';
+  $('#outro-specification').textContent=en?'Download specification':'仕様書をダウンロード';
  }
  window.addEventListener('studio-locale-change',updateEnquiryRoute);updateEnquiryRoute();
+ $('#outro-specification').onclick=async()=>{
+  if(!ready)return;
+  const button=$('#outro-specification'),status=$('#outro-pdf-status'),en=root.lang==='en';
+  button.disabled=true;status.textContent=en?'Preparing PDF…':'PDFを作成しています…';
+  try{await downloadSpecification({data:describe({includeImage:false}),catalogue,images:captureSpecification(),lang:root.lang});status.textContent=en?'Specification downloaded.':'仕様書をダウンロードしました。';}
+  catch(error){console.error(error);status.textContent=en?'Could not create the PDF. Please try again.':'PDFを作成できませんでした。もう一度お試しください。';}
+  finally{button.disabled=false;}
+ };
  const quoteDemo=initQuoteDemo({form:contactForm,describe,getLanguage:()=>root.lang});
  $('#outro-contact').onclick=()=>{
   if(official){
    const url=new URL('../dealers.html',location.href);url.search=new URLSearchParams({location:getLocation(),lang:root.lang==='en'?'en':'ja'});
-   window.open(url.href,'_blank','noopener');return;
+   location.assign(url.href);return;
   }
   syncContact();
   quoteDemo?.update();
@@ -167,6 +167,6 @@ export function createOutro({catalogue,captureEnquiry,prepare,pose,showcase,rest
   catch{$('#contact-result').textContent='コピーできませんでした。「見積もり依頼の下書きを保存」をお使いください。'}
  };
  if(isTestDealerEnquiry())initDealerEnquiry({describe,catalogue,captureImages:captureEnquiry});
- else if(!quoteDemo)createLayoutSaveAction({describe});
+
  return {play,edit,get active(){return active},get ready(){return ready}};
 }
