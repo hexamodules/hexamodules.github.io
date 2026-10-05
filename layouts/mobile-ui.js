@@ -16,16 +16,16 @@
   const set=(e,t)=>{if(e.textContent!==t)e.textContent=t;};
   let active=false, opened=false, current='interior', opener=null, scheduled=false;
   const moved=new Map(), details=new Map(), attrs=new Map();
-  function move(e,parent){if(!e||moved.has(e))return;const m=document.createComment('mobile original position');e.before(m);moved.set(e,m);parent.append(e);}
+  function move(e,parent){if(!e?.parentNode||!parent||e===parent||e.contains(parent)||moved.has(e))return;const m=document.createComment('mobile original position');e.before(m);moved.set(e,m);parent.append(e);}
   const hud=make('div','mobile-hud');
   const chips=make('div','mobile-chips');chips.setAttribute('aria-label','選択中');
   const launch=button('mobile-launch','＋ 選ぶ',()=>open(current));launch.setAttribute('aria-controls','mobile-sheet');
   hud.append(chips,launch);
   const blocker=button('mobile-backdrop','',()=>close());blocker.setAttribute('aria-label','閉じる');blocker.tabIndex=-1;
   const head=make('div','mobile-sheet-head'),title=make('strong','mobile-title');title.id='mobile-title';
-  const dismiss=button('mobile-close','×',()=>close());dismiss.setAttribute('aria-label','閉じる');head.append(title,dismiss);
+  const dismiss=button('mobile-close','×',()=>close());dismiss.setAttribute('aria-label','閉じる');head.append(title);
   const nav=make('nav','mobile-tabs');
-  const utilities=button('mobile-utilities','',()=>open('other'));head.insertBefore(utilities,dismiss);
+  const utilities=button('mobile-utilities','',()=>open('other'));head.append(utilities,dismiss);
   const tabs=new Map(keys.map(k=>{const b=button('mobile-tab','',()=>choose(k,false));nav.append(b);return[k,b];}));
   const subnav=make('nav','mobile-subcategories');subnav.setAttribute('aria-label','小分類');
   const selectedSteps=new Map(), completed=new Set(), typeOpen=new Map();
@@ -127,7 +127,7 @@
     }
   }
   function typeGate(key,choices,none,name){
-    if(!choices)return;
+    if(!choices?.parentElement)return;
     let row=choices.parentElement.querySelector(':scope > .mobile-type-gate');
     if(!row){
       row=make('div','mobile-type-gate');
@@ -223,7 +223,7 @@
   observer.observe(panel,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-pressed','aria-selected','hidden','disabled']});
   window.addEventListener('studio-locale-change',()=>requestAnimationFrame(refresh));
   function sync(){const next=width.matches&&(touch.matches||navigator.maxTouchPoints>0);if(next===active)return;active=next;root.classList.toggle('mobile-ui',active);
-    if(active){for(const a of ['id','role','aria-modal','aria-labelledby'])attrs.set(a,panel.getAttribute(a));panel.id='mobile-sheet';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mobile-title');document.body.append(hud,blocker);move(panel,document.body);panel.prepend(head,nav,subnav);scroll.append(other);$('#pane-review').append(review);root.dataset.mobilePane=current;close(false);refresh();}
+    if(active){for(const a of ['id','role','aria-modal','aria-labelledby'])attrs.set(a,panel.getAttribute(a));panel.id='mobile-sheet';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mobile-title');document.body.append(hud,blocker);move(panel,document.body);panel.prepend(head,nav,subnav);scroll.append(other);$('#pane-review')?.append(review);root.dataset.mobilePane=current;close(false);refresh();}
     else {close(false);pendingModule=null;panel.querySelectorAll('.mobile-type-gate,.mobile-choice-done').forEach(e=>e.remove());panel.querySelectorAll('.mobile-spec-rail,.mobile-many-specs,.mobile-spec-collapsed,.mobile-type-source').forEach(e=>e.classList.remove('mobile-spec-rail','mobile-many-specs','mobile-spec-collapsed','mobile-type-source'));for(const[e,m]of [...moved].reverse())m.replaceWith(e);moved.clear();for(const[d,v]of details)d.open=v;details.clear();for(const[a,v]of attrs)v===null?panel.removeAttribute(a):panel.setAttribute(a,v);[hud,blocker,head,nav,subnav,other,review,vehicleCards].forEach(e=>e.remove());panel.querySelectorAll('.mobile-substep,.mobile-card-rail,.mobile-combined-rail').forEach(e=>{e.classList.remove('mobile-substep','mobile-substep-active','mobile-card-rail','mobile-combined-rail');if(e.id.startsWith('mobile-step-'))e.removeAttribute('id');});$('#pane-electrical')?.classList.remove('mobile-package-selected');delete root.dataset.mobilePane;delete root.dataset.mobileElectrical;}
   }
   width.addEventListener('change',sync);touch.addEventListener('change',sync);sync();

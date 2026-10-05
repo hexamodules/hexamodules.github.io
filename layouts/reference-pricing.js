@@ -28,4 +28,4 @@ export function calculateLayoutReference(catalogue,state,region='jp',dealer=null
  const parts=calculateReferencePrice(catalogue,state,region);
  return {...parts,complete:parts.complete&&vehicleSelectionComplete(state),service_items:retailerPriceLines(state,parts.items,dealer),new_vehicle:newVehicleSpecification(state)};
 }
-export {createReferencePricing} from './pricing-presentation.js?v=20261005';
+export {createReferencePricing} from './pricing-presentation.js?v=20261005-mobile-fix';
