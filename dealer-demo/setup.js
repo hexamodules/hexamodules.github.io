@@ -1,8 +1,8 @@
-import {readSetupDraft,saveSetupDraft,saveDealerPreview,SAMPLE_DEALER_LOGO,dealerLogoUrl} from '../layouts/dealer-preview.js?v=10';
-import {createPricingSetup} from './setup-pricing.js?v=2';
-import {setupErrors,normaliseInput} from './setup-fields.js?v=5';
-import {setupAddressLookup} from './setup-address.js?v=2';
-import {DEALER_OPTION_FIELDS,setupDealerOptions,dealerOptionNames,setupCanArrange} from '../layouts/dealer-option-policy.js?v=4';
+import {readSetupDraft,saveSetupDraft,saveDealerPreview,SAMPLE_DEALER_LOGO,dealerLogoUrl} from '../layouts/dealer-preview.js?v=20261005';
+import {createPricingSetup} from './setup-pricing.js?v=20261005';
+import {setupErrors,normaliseInput} from './setup-fields.js?v=20261005';
+import {setupAddressLookup} from './setup-address.js?v=20261005';
+import {DEALER_OPTION_FIELDS,setupDealerOptions,dealerOptionNames,setupCanArrange} from '../layouts/dealer-option-policy.js?v=20261005';
 import {createCustomDealerBadge} from '../layouts/dealer-custom.js?v=3';
 import {installerNetworkDetails} from '../layouts/dealer-network.js?v=2';
 const editing=new URLSearchParams(location.search).get('mode')==='manage';
@@ -15,8 +15,6 @@ const logoInput=document.querySelector('#dealer-logo'),logoStatus=document.query
 if(draft)for(const [key,value] of Object.entries(draft.values)){
  const field=form.elements.namedItem(key);if(field){if(field.type==='checkbox')field.checked=value==='yes';else field.value=value;}
 }
-if(form.elements.laborDailyCost.value==='')form.elements.laborDailyCost.value='15000';
-if(!form.elements.procurementMode.value)form.elements.procurementMode.value='flat';
 if(!form.elements.market.value)form.elements.market.value='jp';
 function values(){
  const latest=readSetupDraft(),availability=latest?.id===draft?.id?latest?.values.networkAvailability:draft?.values.networkAvailability;

@@ -1,4 +1,4 @@
-import {dealerOptionCopy,dealerOptionRequests} from './dealer-option-policy.js?v=4';
+import {dealerOptionCopy,dealerOptionRequests} from './dealer-option-policy.js?v=20261005';
 
 export function createDealerOptionsUI({available,getState,getLanguage}) {
  const $=selector=>document.querySelector(selector);

@@ -1,4 +1,4 @@
-import {dealerCanArrange} from './dealer-option-policy.js?v=4';
+import {dealerCanArrange} from './dealer-option-policy.js?v=20261005';
 // A dealer capability, including work arranged through an installation partner.
 export const isCustomDealer=profile=>dealerCanArrange(profile)&&profile.customSupport===true;
 export const customDealerCopy={

@@ -1,5 +1,5 @@
 import {vehicleTranslations} from './vehicle-language.js?v=2';
-import {resolveDealerLocation} from './dealer-context.js?v=13';
+import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 // UI-only localization: the same model, configuration and camera stay in place.
 const pairs=[
 ['参考構成','Reference configuration'],

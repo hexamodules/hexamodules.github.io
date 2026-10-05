@@ -1,8 +1,8 @@
 import {createLayoutSaveAction} from './saved-layouts.js?v=1';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
-import {dealerContext} from './dealer-context.js?v=13';
+import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
-import {initQuoteDemo} from './quote-demo.js?v=2';
+import {initQuoteDemo} from './quote-demo.js?v=20261005';
 // Save first, then present the selected van. Contact is a local, unsent draft.
 export function createOutro({prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
  const $=s=>document.querySelector(s),root=document.documentElement,layer=$('#studio-outro');

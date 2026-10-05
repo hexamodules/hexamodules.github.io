@@ -1,5 +1,5 @@
-import {selectedDealer,isDealerPreviewRequest} from './dealer-preview.js?v=9';
-import {dealerOptionAvailability} from './dealer-option-policy.js?v=4';
+import {selectedDealer,isDealerPreviewRequest} from './dealer-preview.js?v=20261005';
+import {dealerOptionAvailability} from './dealer-option-policy.js?v=20261005';
 import {isCustomDealer,customDealerCopy,createCustomDealerBadge,updateCustomDealerBadge} from './dealer-custom.js?v=3';
 
 const entry=new URLSearchParams(location.search);

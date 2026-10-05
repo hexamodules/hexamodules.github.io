@@ -1,11 +1,11 @@
 import {DEALERS} from './dealer-config.js?v=2';
-import {normalizeRetailerPrices} from './retailer-prices.js?v=2';
-import {setupDealerOptions,setupCanArrange,dealerCanArrange} from './dealer-option-policy.js?v=4';
+import {normalizeRetailerPrices} from './retailer-prices.js?v=20261005';
+import {setupDealerOptions,setupCanArrange,dealerCanArrange} from './dealer-option-policy.js?v=20261005';
 import {NETWORK_FIELDS,normalizeNetworkValues} from './dealer-network.js?v=2';
 
 // Browser-only setup drafts. Public previews exclude routing, staff and network application details.
 const DRAFT_KEY='hexa-dealer-setup-draft-v1',PREVIEW_KEY='hexa-dealer-preview-profiles-v1';
-const FIELDS={laborDailyCost:10,procurementMode:12,...NETWORK_FIELDS,outsourceInstallation:3,customSupport:3,optionElectrical:3,optionAircon:3,optionHeater:3,optionInsulation:3,dealerName:100,installation:3,market:2,companyName:120,postalCode:12,address:240,companyPhone:40,contactName:100,contactDepartment:100,website:500,enquiryEmail:254};
+const FIELDS={...NETWORK_FIELDS,outsourceInstallation:3,customSupport:3,optionElectrical:3,optionAircon:3,optionHeater:3,optionInsulation:3,dealerName:100,installation:3,market:2,companyName:120,postalCode:12,address:240,companyPhone:40,contactName:100,contactDepartment:100,website:500,enquiryEmail:254};
 export const SAMPLE_DEALER_LOGO='assets/dealers/sample-a.svg';
 // Only local, decoded raster uploads are persisted. No remote logo URLs or uploaded SVG markup.
 const cleanLogo=logo=>typeof logo==='string'&&logo.length<=500000&&/^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(logo)?logo:SAMPLE_DEALER_LOGO;

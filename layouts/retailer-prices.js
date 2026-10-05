@@ -1,8 +1,7 @@
-import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261004';
-// Owner-confirmed reference amounts. Equipment prices include fitting.
-// null is deliberately unpriced, never a free service. Retailer inputs do not override this locked reference baseline.
+import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261005';
+// Public selection labels only. Pricing is unavailable.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;
-const install=(id,ja,en,productKeys)=>({id,ja,en,kind:'installation',price_jpy:LOCKED_REFERENCE.fitting[id]??null,productKeys});
+const install=(id,ja,en,productKeys)=>({id,ja,en,kind:'installation',productKeys});
 export const RETAILER_PRICES=[
  install('fit-floor','床（全柄共通）','Floor · all finishes',['floor:']),
  install('fit-ceiling','DX 天井（全樹種共通）','DX ceiling · all woods',['ceiling:']),
@@ -25,44 +24,28 @@ export const RETAILER_PRICES=[
  ].map(([key,ja,en])=>install('fit-'+key,ja,en,['module:'+key])),
  install('fit-floor-slide','脱着式の床スライド（追加分）','Removable centre floor slide',['two-side-bed:floor-slide']),
  ...[
-  ['ceiling-lights','天井ダウンライト（6灯）','Ceiling downlights · six',86000,null],
-  ['tailgate-lights-dx','DX バックドアライト（2灯）','DX tailgate lights · two',47000,null],
-  ['tailgate-lights-gl','スーパーGL バックドアライト（2灯）','Super GL tailgate lights · two',62000,null],
-  ['insulation','断熱施工','Insulation installation',120000,'insulation'],
-  ['electrical-standard','電装標準（走行40A・外部40A・100Ah）','Standard electrical system · 40A / 40A / 100Ah',370000,'electrical'],
-  ['battery-200','200Ahへの変更（標準100Ahとの差額）','200Ah upgrade · additional to 100Ah',70000,'electrical'],
-  ['battery-300','300Ahへの変更（標準100Ahとの差額）','300Ah upgrade · additional to 100Ah',140000,'electrical'],
-  ['inverter-1000','1000Wインバーター（追加）','1000W inverter · additional',42000,'electrical'],
-  ['inverter-2000','2000Wインバーター（追加）','2000W inverter · additional',68000,'electrical'],
-  ['ac','エアコン CUBE AIR460B（配管カバー付き）','CUBE AIR460B air conditioning with pipe cover',520000,'ac'],
-  ['i-seat','i seat（幅1400mm）','i seat · 1400 mm',690000,null],
-  ['heater','FFヒーター（ベバスト）','Webasto FF heater',480000,'heater'],
- ].map(([id,ja,en,price_jpy,availability])=>({id,ja,en,kind:'equipment',price_jpy:LOCKED_REFERENCE.equipment[id]??price_jpy,availability})),
+  ['ceiling-lights','天井ダウンライト（6灯）','Ceiling downlights · six',null,null],
+  ['tailgate-lights-dx','DX バックドアライト（2灯）','DX tailgate lights · two',null,null],
+  ['tailgate-lights-gl','スーパーGL バックドアライト（2灯）','Super GL tailgate lights · two',null,null],
+  ['insulation','断熱施工','Insulation installation',null,'insulation'],
+  ['electrical-standard','電装標準（走行40A・外部40A・100Ah）','Standard electrical system · 40A / 40A / 100Ah',null,'electrical'],
+  ['battery-200','200Ahへの変更（標準100Ahとの差額）','200Ah upgrade · additional to 100Ah',null,'electrical'],
+  ['battery-300','300Ahへの変更（標準100Ahとの差額）','300Ah upgrade · additional to 100Ah',null,'electrical'],
+  ['inverter-1000','1000Wインバーター（追加）','1000W inverter · additional',null,'electrical'],
+  ['inverter-2000','2000Wインバーター（追加）','2000W inverter · additional',null,'electrical'],
+  ['ac','エアコン CUBE AIR460B（配管カバー付き）','CUBE AIR460B air conditioning with pipe cover',null,'ac'],
+  ['i-seat','i seat（幅1400mm）','i seat · 1400 mm',null,null],
+  ['heater','FFヒーター（ベバスト）','Webasto FF heater',null,'heater'],
+ ].map(([id,ja,en,price_jpy,availability])=>({id,ja,en,kind:'equipment',availability})),
 ];
-const validAmount=n=>Number.isSafeInteger(n)&&n>=0&&n<=100000000;
-export function parseRetailerAmount(value){
- if(typeof value==='number')return validAmount(value)?value:null;
- if(typeof value!=='string'||!/^\d+$/.test(value.trim()))return null;
- const n=Number(value.trim());return validAmount(n)?n:null;
-}
-export function normalizeRetailerPrices(input){
- const obj=input&&typeof input==='object'&&!Array.isArray(input)?input:{};
- return Object.fromEntries(RETAILER_PRICES.map(row=>[row.id,obj[row.id]?.mode==='custom'?{mode:'custom',price_jpy:parseRetailerAmount(obj[row.id]?.price_jpy)}:{mode:'reference'}]));
-}
-export function resolveRetailerPrice(row,settings){
- return {price_jpy:row.price_jpy,source:'hexa_reference'};
-}
+export function normalizeRetailerPrices(){return {};}
+export function resolveRetailerPrice(){return {price_jpy:null,source:'unavailable'};}
 export function retailerPriceLines(state,parts,profile=null){
- const settings=normalizeRetailerPrices(profile?.pricing),lines=[];
+ const lines=[];
  const add=(row,quantity=1)=>{
-  const resolved=resolveRetailerPrice(row,settings);
-  lines.push({key:row.id,kind:row.kind,name:row.ja,name_en:row.en,quantity,unit_price_jpy:resolved.price_jpy,amount_jpy:resolved.price_jpy===null?null:resolved.price_jpy*quantity,price_source:resolved.source,includes_fitting:true,price_basis:row.kind==='equipment'?'equipment_materials_and_fitting':'vehicle_fitting_labour'});
+  lines.push({key:row.id,kind:row.kind,name:row.ja,name_en:row.en,quantity});
  };
- for(const item of []){ // Product reference amounts already include fitting.
-  const row=RETAILER_PRICES.find(r=>r.kind==='installation'&&r.productKeys.some(k=>k.endsWith(':')?item.key.startsWith(k):k===item.key));
-  if(row)add(row,item.quantity);
- }
- // Eligibility is also checked here so a saved hidden option cannot add a charge.
+ // Preserve which options a dealer offers.
  const canArrange=!profile||profile.installation===true||(profile.installation===false&&profile.outsourceInstallation===true);
  const offered=key=>!profile||(canArrange&&profile.dealerOptions?.[key]===true);
  const ids=[];

@@ -1,6 +1,6 @@
-import {readSetupDraft,saveSetupDraft,saveDealerPreview} from '../layouts/dealer-preview.js?v=9';
+import {readSetupDraft,saveSetupDraft,saveDealerPreview} from '../layouts/dealer-preview.js?v=20261005';
 import {installerNetworkDetails,networkReviewRows} from '../layouts/dealer-network.js?v=2';
-import {setupErrors} from './setup-fields.js?v=4';
+import {setupErrors} from './setup-fields.js?v=20261005';
 
 const $=selector=>document.querySelector(selector),form=$('#management-network-form');
 let draft=readSetupDraft();

@@ -30,6 +30,6 @@ export function dealerOptionSummary(state,language='ja') {
  return requested.length?'\n'+copy.title+': '+requested.map(key=>dealerOptionNames[lang][key]).join(' / ')+'\n'+copy.example+'\n'+copy.price+'\n'+copy.scope+'\n':'';
 }
 export function dealerOptionExport(state,estimate=null) {
- return {type:'dealer_option_enquiry',requested:dealerOptionRequests(state),illustration_only:true,price_included_in_reference:estimate?estimate.service_items.filter(i=>i.kind==='equipment').every(i=>i.amount!==null):null,pricing_details:'reference_pricing.service_items',equipment_prices_include_fitting:true,
+ return {type:'dealer_option_enquiry',requested:dealerOptionRequests(state),illustration_only:true,price_included_in_reference:false,
   specification_confirmation:'dealer',procurement_and_installation:'arranged_by_dealer_including_subcontractors',warranty_and_repair_contacts:'to_be_explained_by_dealer',hexa_procures_sells_or_installs_equipment:false};
 }

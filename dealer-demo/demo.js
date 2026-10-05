@@ -1,4 +1,4 @@
-import {selectedDealer,readSetupDraft,readDealerPreview,dealerLogoUrl} from '../layouts/dealer-preview.js?v=9';
+import {selectedDealer,readSetupDraft,readDealerPreview,dealerLogoUrl} from '../layouts/dealer-preview.js?v=20261005';
 import {isCustomDealer,customDealerCopy,createCustomDealerBadge} from '../layouts/dealer-custom.js?v=3';
 (() => {
  const frame=document.querySelector('#dealer-studio'),code=document.querySelector('#embed-code');
