@@ -1,6 +1,6 @@
 // This form prepares a user-reviewed email; no message is sent by the website.
 (() => {
-  const CONTACT_EMAIL = 'sho@skybridge.life';
+  const CONTACT_EMAIL = 'info@hexamodules.com';
   document.querySelectorAll('[data-contact-email]').forEach(link => {
     link.href = 'mailto:' + CONTACT_EMAIL;
     if (link.classList.contains('contact-email')) link.textContent = CONTACT_EMAIL;
