@@ -138,3 +138,37 @@
  html.mobile-ui .mobile-substep fieldset {max-width:100%;}
  html.mobile-ui #cabinet-step:not(:has(#cabinet-options > *)) #cabinet-help {display:block!important;}
 }
+
+/* 2026-10-08: explicit phone flow; no desktop selectors. */
+@media (max-width:700px) {
+ html.mobile-ui #studio-vehicle-compatibility,
+ html.mobile-ui #finish-step,
+ html.mobile-ui #saved-layout-recall,
+ html.mobile-ui #opening-recall,
+ html.mobile-ui #outro-contact[aria-disabled="true"]:disabled,
+ html.mobile-ui #outro-contact[aria-disabled="true"]:disabled + #outro-save-status {display:none!important;}
+ html.mobile-ui .mobile-fixed-chips {position:absolute;top:max(12px,env(safe-area-inset-top));left:12px;right:12px;display:flex;gap:6px;}
+ html.mobile-ui .mobile-finish-toggle {display:flex;flex:1;min-width:0;border-radius:22px;background:#fffffff5;border:1px solid #d5dacf;overflow:hidden;}
+ html.mobile-ui .mobile-finish {flex:1;min-width:0;border:0;background:transparent;padding:7px 8px;font-size:11px;min-height:44px;}
+ html.mobile-ui .mobile-finish[aria-pressed=true] {background:#293b30;color:#fff;}
+ html.mobile-ui .mobile-chips {top:calc(max(12px,env(safe-area-inset-top)) + 52px);}
+ html.mobile-ui .mobile-chip,html.mobile-ui .mobile-tab {min-height:44px;}
+ html.mobile-ui .mobile-popup-open .mobile-fixed-chips {z-index:103;}
+ html.mobile-ui.mobile-popup-open .mobile-hud {z-index:103;}
+ html.mobile-ui.mobile-popup-open .mobile-launch {display:none;}
+ html.mobile-ui .mobile-tabs {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible;}
+ html.mobile-ui .mobile-tab {padding:6px 2px;font-size:11px;}
+ html.mobile-ui .mobile-subcategories {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;gap:5px;padding:7px 10px;}
+ html.mobile-ui .mobile-subcategory {min-width:0;min-height:44px;padding:7px 3px;font-size:11px;text-align:center;overflow-wrap:anywhere;}
+ html.mobile-ui .panel-scroll {flex:1 1 auto;}
+ html.mobile-ui .mobile-flow-footer {display:flex;flex:none;gap:8px;padding:8px 12px;border-top:1px solid #e2e7de;background:#fff;}
+ html.mobile-ui .mobile-flow-footer[hidden] {display:none;}
+ html.mobile-ui .mobile-flow-footer button {flex:1;min-height:44px;font-size:13px;border:1px solid #d5dacf;border-radius:10px;}
+ html.mobile-ui .mobile-flow-next {background:#293b30;color:#fff;}
+ html.mobile-ui .mobile-flow-footer button:disabled {opacity:.4;}
+ html.mobile-ui .mobile-extra {display:block;width:100%;margin-top:8px;}
+ /* PC's CSS circle used a flex basis for its width. In a column it needs an explicit width. */
+ html.mobile-ui .lamp-icon {box-sizing:border-box;flex:0 0 34px;width:34px;height:34px;min-width:34px;min-height:34px;aspect-ratio:1;}
+ html.mobile-ui .configuration :is(button,a,label,select,summary),html.mobile-ui .opening-action :is(button,a,select) {min-height:44px;}
+ html.mobile-ui .configuration :is(small,span,p,label,button,a,legend),html.mobile-ui .opening-action :is(small,span,p,label,button,a) {font-size:max(11px,1em);}
+}
