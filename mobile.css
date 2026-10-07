@@ -87,3 +87,6 @@
   main table { width: 100%; table-layout: fixed; }
   main :is(th, td) { overflow-wrap: anywhere; }
 }
+
+/* Three collection links plus existing footer destinations. */
+.site-footer .footer-links { flex-wrap: wrap; min-width: 0; }
