@@ -1,6 +1,6 @@
 // This form prepares a user-reviewed email; no message is sent by the website.
 (() => {
-  if(new URLSearchParams(location.search).get('topic')==='grid'){const url=new URL('grid.html',location.href);for(const key of ['lang','location']){const value=new URLSearchParams(location.search).get(key);if(value)url.searchParams.set(key,value);}url.hash='grid-enquiry';location.replace(url.href);return;}
+  if(new URLSearchParams(location.search).get('topic')==='grid'){const url=new URL('grid.html',location.href);for(const key of ['lang','location']){const value=new URLSearchParams(location.search).get(key);if(value)url.searchParams.set(key,value);}url.searchParams.set('enquiry','1');location.replace(url.href);return;}
   const CONTACT_EMAIL = 'info@hexamodules.com';
   document.querySelectorAll('[data-contact-email]').forEach(link => {
     link.href = 'mailto:' + CONTACT_EMAIL;
@@ -16,6 +16,20 @@
   const topic = new URLSearchParams(location.search).get('topic');
   if (['products','partner','configurator','other'].includes(topic)) form.elements.topic.value = topic;
 
+  const studioRoute=document.querySelector('#contact-studio-route');
+  form.elements.topic.addEventListener('change',()=>{
+    const route=form.elements.topic.value;
+    if(route==='modules'){
+      studioRoute.querySelector('a').click();
+      form.elements.topic.value='';
+    }
+    if(route==='grid'){
+      try{sessionStorage.setItem('hexa-grid-contact',JSON.stringify({name:form.elements.name.value.trim(),email:form.elements.email.value.trim()}));}catch{}
+      const url=new URL('grid.html',location.href);url.searchParams.set('enquiry','1');url.searchParams.set('lang',document.documentElement.lang);
+      const place=new URLSearchParams(location.search).get('location');if(place)url.searchParams.set('location',place);
+      location.assign(url.href);
+    }
+  });
   const serviceHelp = document.querySelector('#configurator-contact-help');
   const updateTopic = () => { serviceHelp.hidden = form.elements.topic.value !== 'configurator'; };
   form.elements.topic.addEventListener('change', updateTopic);
@@ -38,6 +52,7 @@
 
   form.addEventListener('submit', event => {
     event.preventDefault();
+    if(!['products','partner','configurator','other'].includes(form.elements.topic.value))return;
     for (const field of [form.elements.name,form.elements.message]) {
       field.setCustomValidity(field.value.trim() ? '' : ja() ? '入力してください。' : 'Please complete this field.');
     }

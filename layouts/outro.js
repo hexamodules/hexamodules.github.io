@@ -1,4 +1,4 @@
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261007-direct';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261007-1850';
 import {downloadSpecification} from './specification-pdf.js?v=20261007-direct';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
@@ -110,7 +110,7 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
  const official=!enquiry;
  function updateEnquiryRoute(){
   const en=root.lang==='en';
-  $('#outro-contact span:first-child').textContent=en?'Talk to a dealer':enquiryDealerId()==='hexa-direct'?'販売店に相談する':'取扱店に相談する';
+  $('#outro-contact span:first-child').textContent=en?'Talk to a dealer':enquiryDealerId()==='hexa-direct'?'取扱店に相談する':'取扱店に相談する';
   $('#review-enquiry').setAttribute('data-module-i18n','');
   $('#review-enquiry').textContent=en?'View your completed van':'完成車を確認する';
   $('#outro-specification').textContent=en?'Download specification':'仕様書をダウンロード';

@@ -1012,7 +1012,7 @@
         ]
       },
       {
-        "source": "保存済みFusionモデルおよびENGEL部品の作成記録",
+        "source": "保存済み設計モデルおよびENGEL部品の作成記録",
         "source_model_id": "urn:adsk.wipprod:dm.lineage:TX_1kxHzR_2NXpO-8bclOA",
         "source_version": 4,
         "fridge": "MT35F-Pは型式名。今回の冷蔵庫容量は32L。35Lと表記しない。",

@@ -1,6 +1,6 @@
-import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261005';
-import {dealerContext} from './dealer-context.js?v=20261005';
-import {calculateReferencePrice} from './reference-pricing.js?v=20261005';
+import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
+import {dealerContext} from './dealer-context.js?v=20261007-1850';
+import {calculateReferencePrice} from './reference-pricing.js?v=20261007-1850';
 
 export function isTestDealerEnquiry(){
  return new URLSearchParams(location.search).get('dealer')==='test-hexa'&&dealerContext()?.id==='test-hexa';
@@ -45,7 +45,7 @@ export async function confirmReceipt(endpoint,receipt){
  }
  return status;
 }
-export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],select=enquirySelections,dealerId=enquiryDealerId,buttonSelector='#outro-contact',preserveButtonLabel=false,requireImage=false}){
+export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],select=enquirySelections,dealerId=enquiryDealerId,buttonSelector='#outro-contact',preserveButtonLabel=false,requireImage=false,gridVehicle=false,prefill={}}){
  if(!dealerId())return null;
  const root=document.documentElement,en=()=>root.lang==='en',lang=()=>en()?'en':'ja';
  const button=document.querySelector(buttonSelector);
@@ -60,15 +60,24 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
  <label class="enquiry-consent"><input name="consent" type="checkbox" required><span data-label="consent"></span></label>
  <button type="submit" class="primary-button" hidden></button></fieldset></form><p class="enquiry-result" role="status" aria-live="polite"></p>`;
  document.body.append(dialog);
+ if(gridVehicle){
+  const vehicle=document.createElement('section');vehicle.className='enquiry-vehicle';
+  vehicle.innerHTML=`<p data-label="compatible"></p>${['supply','grade','drive','fuel'].map(key=>`<label><span data-label="${key}"></span><select name="${key}" required></select></label>`).join('')}<div class="enquiry-owned" hidden><label><span data-label="year"></span><input name="year" maxlength="40" disabled></label><label><span data-label="model"></span><input name="model" maxlength="100" disabled></label></div>`;
+  dialog.querySelector('fieldset').prepend(vehicle);
+  const review=document.createElement('section');review.className='enquiry-review';review.hidden=true;
+  review.innerHTML='<h3 tabindex="-1" data-label="reviewTitle"></h3><p class="enquiry-vehicle-summary"></p><dl></dl><button type="button" class="enquiry-edit" data-label="edit"></button>';
+  dialog.querySelector('[type=submit]').before(review);
+ }
  const form=dialog.querySelector('form'),fields=form.elements,fieldset=dialog.querySelector('fieldset'),submit=dialog.querySelector('[type=submit]'),result=dialog.querySelector('.enquiry-result');
+ let reviewing=false;
  let snapshot=null,pending=false,sent=false,receipt='',createdAt='',fingerprint='',status='',pendingImages=[];
  const copy={ja:{title:'取扱店に相談する',intro:'選んだ仕様を取扱店とHexaへ送ります。メールアドレスには金額のない仕様書をお届けします。お見積もりは取扱店からご連絡します。',summary:'選んだ仕様',name:'お名前（必須）',email:'メールアドレス（必須）',phone:'電話番号',region:'地域（都道府県・州）',timing:'希望時期',message:'一言・ご希望（任意）',consent:'入力した連絡先と選んだ仕様を、相談対応のため取扱店とHexaへ送ることに同意します（必須）。',send:'送信する',sending:'送信中…',sent:'送信しました（受付番号：',failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を取扱店へお伝えください。',review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を取扱店へお伝えください。',unavailable:'送信の準備中です。取扱店へこのレイアウトのURLをお伝えください。',selectionError:'選んだ仕様を読み込めませんでした。画面を閉じて、もう一度お試しください。',close:'閉じる'},en:{title:'Enquire with your dealer',intro:'Send your selected specification to your dealer and Hexa. A specification without prices will be sent to your email address. Your dealer will contact you with a quote.',summary:'Your selected specification',name:'Name (required)',email:'Email (required)',phone:'Phone',region:'Region / state',timing:'Preferred timing',message:'Message / requests (optional)',consent:'I agree to share my contact details and selected specification with the dealer and Hexa to handle this enquiry (required).',send:'Send enquiry',sending:'Sending…',sent:'Sent (receipt: ',failed:'We could not confirm receipt. You can retry the same content with the same receipt number. If confirmation keeps failing, share the receipt number with your dealer.',review:'Your enquiry was recorded, but email completion could not be confirmed. Please share the receipt number with your dealer.',unavailable:'Enquiry submission is being prepared. Please share this layout URL with your dealer.',selectionError:'Your selected specification could not be loaded. Close this window and try again.',close:'Close'}};
  if(dealerId()==='hexa-direct'){
   Object.assign(copy.ja,{
-   title:'販売店に相談する',
-   intro:'選んだ仕様をHexaで受け付け、担当の販売店からご連絡します。メールアドレスには金額のない仕様書をお届けします。',
-   consent:'入力した連絡先と選んだ仕様を、相談対応のためHexaと担当の販売店へ共有することに同意します（必須）。',
-   sent:'内容を受け付けました。担当の販売店からご連絡します。（受付番号：',
+   title:'取扱店に相談する',
+   intro:'選んだ仕様をHexaで受け付け、担当の取扱店からご連絡します。メールアドレスには金額のない仕様書をお届けします。',
+   consent:'入力した連絡先と選んだ仕様を、相談対応のためHexaと担当の取扱店へ共有することに同意します（必須）。',
+   sent:'内容を受け付けました。担当の取扱店からご連絡します。（受付番号：',
    failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
    review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
    unavailable:'送信の準備中です。このレイアウトのURLを添えてinfo@hexamodules.comへお問い合わせください。'
@@ -83,13 +92,44 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    unavailable:'Enquiry submission is being prepared. Please email your layout URL to info@hexamodules.com.'
   });
  }
+ if(gridVehicle){
+  copy.ja.intro='担当の取扱店におつなぎして、ご連絡いたします。メールアドレスに仕様書をお届けいたします。';
+  copy.en.intro='We will pass your enquiry to your Hexa dealer, who will contact you. A specification sheet will be sent to your email address.';
+ }
+ const vehicleOptions={supply:[['new','新車で手配を依頼する','Request a new vehicle'],['own','車体を持ち込む','Supply my own vehicle']],grade:[['super-gl','スーパーGL','Super GL'],['dark-prime-2','スーパーGL DARK PRIME Ⅱ','Super GL DARK PRIME Ⅱ']],drive:[['2wd','2WD','2WD'],['4wd','4WD','4WD']],fuel:[['gasoline','ガソリン','Gasoline'],['diesel','ディーゼル','Diesel']]};
+ Object.assign(copy.ja,{compatible:'対応車体: ハイエース スーパーGL(標準ボディ・標準ルーフ)',supply:'車体の手配（必須）',grade:'グレード（必須）',drive:'駆動（必須）',fuel:'燃料（必須）',year:'年式（必須）',model:'型式（車検証の記載）（必須）',reviewTitle:'送信内容をご確認ください',edit:'入力内容を直す',check:'内容を確認する',choose:'選択してください'});
+ Object.assign(copy.en,{compatible:'Compatible vehicle: HiAce Super GL (standard body, standard roof)',supply:'Vehicle supply (required)',grade:'Grade (required)',drive:'Drive (required)',fuel:'Fuel (required)',year:'Model year (required)',model:'Model code (as on vehicle registration) (required)',reviewTitle:'Review your enquiry',edit:'Edit details',check:'Review enquiry',choose:'Select one'});
+ function vehicleData(){return Object.fromEntries(['supply','grade','drive','fuel','year','model'].map(key=>[key,['year','model'].includes(key)&&fields.supply.value==='new'?'':fields[key].value.trim()]));}
+ function updateOwned(){
+  const own=fields.supply.value==='own';dialog.querySelector('.enquiry-owned').hidden=!own;
+  for(const key of ['year','model']){fields[key].disabled=!own;fields[key].required=own;fields[key].setCustomValidity('');}
+ }
+ function updateReview(){
+  if(!gridVehicle)return;
+  dialog.querySelector('.enquiry-review').hidden=!reviewing;
+  for(const el of fieldset.children)if(el.matches('label,.enquiry-vehicle'))el.hidden=reviewing;
+  if(!reviewing)return;
+  const v=vehicleData(),t=copy[lang()];
+  dialog.querySelector('.enquiry-vehicle-summary').textContent=(en()?'Vehicle: ':'車体: ')+['supply','grade','drive','fuel'].map(key=>vehicleOptions[key].find(o=>o[0]===v[key])?.[en()?2:1]||'').concat(v.supply==='own'?[(en()?'Model year: ':'年式: ')+v.year,(en()?'Model code: ':'型式: ')+v.model]:[]).join(' / ');
+  const list=dialog.querySelector('.enquiry-review dl');list.replaceChildren();
+  for(const key of ['name','email','phone','region','timing','message','consent']){const dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=t[key];dd.textContent=key==='consent'?(en()?'Agreed':'同意済み'):fields[key].value.trim()||'—';list.append(dt,dd);}
+ }
+ if(gridVehicle){
+  for(const key of ['name','email'])if(typeof prefill[key]==='string')fields[key].value=prefill[key].slice(0,fields[key].maxLength);
+  fields.supply.addEventListener('change',updateOwned);
+  dialog.querySelector('.enquiry-edit').onclick=()=>{reviewing=false;refresh();fields.supply.focus();};
+ }
  function refresh(){
   const t=copy[lang()];
+  if(gridVehicle){
+   for(const [key,options] of Object.entries(vehicleOptions)){const value=fields[key].value;fields[key].replaceChildren();for(const item of [['',t.choose,t.choose],...options]){const option=document.createElement('option');option.value=item[0];option.textContent=item[en()?2:1];fields[key].append(option);}fields[key].value=value;}
+   updateOwned();updateReview();
+  }
   button.setAttribute('data-module-i18n','');if(!preserveButtonLabel)button.querySelector('span').textContent=en()?'Talk to a dealer':copy.ja.title;
   dialog.querySelector('h2').textContent=t.title;dialog.querySelector('.enquiry-intro').textContent=t.intro;
   dialog.querySelector('summary').textContent=t.summary;dialog.querySelector('.enquiry-close').setAttribute('aria-label',t.close);
   for(const el of dialog.querySelectorAll('[data-label]'))el.textContent=t[el.dataset.label];
-  submit.hidden=!ENQUIRY_ENDPOINT.trim()||!snapshot;submit.disabled=pending||sent;submit.textContent=pending?t.sending:t.send;
+  submit.hidden=!ENQUIRY_ENDPOINT.trim()||!snapshot;submit.disabled=pending||sent;submit.textContent=pending?t.sending:gridVehicle&&!reviewing?t.check:t.send;
   result.textContent=status==='sent'?t.sent+receipt+(en()?')':'）'):status==='failed'?t.failed+' ('+receipt+')':status==='review'?t.review+' ('+receipt+')':status==='selectionError'?t.selectionError:pending?t.sending:!ENQUIRY_ENDPOINT.trim()?t.unavailable:'';
   const list=dialog.querySelector('.enquiry-selections');list.replaceChildren();
   if(snapshot)for(const item of select(catalogue,snapshot.configuration,lang())){const li=document.createElement('li');li.textContent=(item.number==null?'':item.number+' · ')+item.label;list.append(li)}
@@ -107,16 +147,18 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
   e.preventDefault();e.stopImmediatePropagation();open();
  },true);
  dialog.querySelector('.enquiry-close').onclick=()=>dialog.close();
- form.addEventListener('input',()=>{fields.name.setCustomValidity(fields.name.value.trim()?'':(en()?'Please enter your name.':'お名前をご入力ください。'));});
+ form.addEventListener('input',()=>{if(gridVehicle){reviewing=false;for(const key of ['year','model'])fields[key].setCustomValidity('');updateReview();}fields.name.setCustomValidity(fields.name.value.trim()?'':(en()?'Please enter your name.':'お名前をご入力ください。'));});
  form.addEventListener('submit',async event=>{
   event.preventDefault();
+  if(gridVehicle){for(const key of ['year','model'])fields[key].setCustomValidity(fields.supply.value==='own'&&!fields[key].value.trim()?(en()?'Please complete this field.':'入力してください。'):'');}
   if(pending||sent||!ENQUIRY_ENDPOINT.trim()||!snapshot||!dealerId()||!form.reportValidity())return;
+  if(gridVehicle&&!reviewing){reviewing=true;refresh();dialog.querySelector('.enquiry-review h3').focus();return;}
   let controller,timer;
   try{
    const customer=Object.fromEntries(['name','email','phone','region','timing','message'].map(key=>[key,fields[key].value.trim()]));
    if(!customer.name)return;
    customer.consent=fields.consent.checked;if(!customer.consent)return;
-   const body={dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   const body={...(gridVehicle?{vehicle:vehicleData()}:{}),dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
    pending=true;status='';fieldset.disabled=true;refresh();
    const current=JSON.stringify(body);
    if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{const captured=captureImages();pendingImages=(captured&&typeof captured.then==='function'?await captured:captured)||[];}catch{pendingImages=[];}}

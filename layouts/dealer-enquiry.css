@@ -4,7 +4,7 @@
 #dealer-enquiry-dialog .enquiry-close{position:absolute;right:10px;top:8px;width:44px;height:44px;font-size:24px;border:0;background:transparent;color:inherit;cursor:pointer}
 #dealer-enquiry-dialog fieldset{border:0;padding:0;margin:16px 0 0;min-width:0}
 #dealer-enquiry-dialog label{display:block;margin:12px 0}
-#dealer-enquiry-dialog input:not([type=checkbox]),#dealer-enquiry-dialog textarea{display:block;box-sizing:border-box;width:100%;min-height:44px;padding:10px;border:1px solid #aeb8a8;border-radius:4px;background:white;color:#263128;font:16px/1.4 sans-serif}
+#dealer-enquiry-dialog input:not([type=checkbox]),#dealer-enquiry-dialog textarea,#dealer-enquiry-dialog select{display:block;box-sizing:border-box;width:100%;min-height:44px;padding:10px;border:1px solid #aeb8a8;border-radius:4px;background:white;color:#263128;font:16px/1.4 sans-serif}
 #dealer-enquiry-dialog .enquiry-consent{display:flex;gap:10px;align-items:flex-start}
 #dealer-enquiry-dialog [type=checkbox]{width:22px;height:22px;flex-shrink:0;margin-top:3px}
 #dealer-enquiry-dialog [type=submit]{width:100%;min-height:48px}
@@ -13,3 +13,8 @@
 #dealer-enquiry-dialog summary{cursor:pointer;min-height:44px}
 #dealer-enquiry-dialog li{overflow-wrap:anywhere}
 @media(max-width:430px){#dealer-enquiry-dialog{padding:22px 16px}}
+
+#dealer-enquiry-dialog .enquiry-review{overflow-wrap:anywhere}
+#dealer-enquiry-dialog .enquiry-review dd{margin:0 0 12px;white-space:pre-wrap}
+#dealer-enquiry-dialog .enquiry-edit{min-height:44px;margin-bottom:16px;font:inherit;cursor:pointer}
+#dealer-enquiry-dialog .enquiry-vehicle,#dealer-enquiry-dialog .enquiry-review{margin:0;padding:0}

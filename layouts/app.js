@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261007-direct';
+import {createOutro} from './outro.js?v=20261007-1850';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -158,7 +158,7 @@ const mattressVisuals=createMattressVisuals({renderer,onTextureReady:()=>{needsF
 const iSeatVisuals=createISeatVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
 const countertopVisuals=await createCountertopVisuals({renderer});
 let activeAirconMount=null;
-function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colors||{};let rgb=col.opaque_albedo||col.metal_f0||col.transparent_color||[148,151,146];let woodKind=/birch|oak|オーク材|wood grain|birch edge/.test(l),switchable=/SKY HEXA plywood|HEXA lightweight - charcoal/.test(n);let edge=/cut edge|birch edge/.test(l);let metal=Boolean(col.metal_f0),isVehicle=key==='vehicle'||key===TAILGATE||key===SLIDING_DOOR||key===FRONT_DOOR||key===BODY_COMPLETION;if(/graphite satin metallic/.test(l))rgb=[61,65,69];
+function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colors||{};let rgb=col.opaque_albedo||col.metal_f0||col.transparent_color||[148,151,146];let woodKind=/birch|oak|オーク材|wood grain|birch edge/.test(l),switchable=/SKY Hexa plywood|Hexa lightweight - charcoal/.test(n);let edge=/cut edge|birch edge/.test(l);let metal=Boolean(col.metal_f0),isVehicle=key==='vehicle'||key===TAILGATE||key===SLIDING_DOOR||key===FRONT_DOOR||key===BODY_COMPLETION;if(/graphite satin metallic/.test(l))rgb=[61,65,69];
  const color=new THREE.Color(`rgb(${rgb.join(',')})`);
  // Keep the chosen melamine face colour identical to its swatch. The wood
  // grooves/edges remain lit, while the broad face is independent of room shadows.
@@ -515,7 +515,7 @@ function resetNodes(g){g.visible=false;g.position.set(...(offsets[g.name]||[0,0,
 function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.userData.cushions)continue;let id=n.userData.source_root_index,path=n.userData.path;
  if(key==='lounge-bed'&&state.storage){if(n.userData.motion){let p=[...n.userData.motion.pivot];p[2]+=(bedLength()-1920)*Math.min(1,Math.max(0,(p[2]-1250)/500));rotateBody(n,p,n.userData.motion.axis,100)}const first=[5,6,7,8,61,62,81,82,83,84,85,86,87,88,89,90,91,92,93,96];const second=[5,6,61,62,86,87,88,89,90,91,92,93];if(first.includes(id))moveBody(n,[0,0,-360-(second.includes(id)?280:0)])}
  if(key==='slide-bed'&&state.expanded&&/^ボディ[56](?: |$)/.test(n.name))moveBody(n,[fit.travel,0,0]);
- if(key==='lounge-slide-bed'){if(state.expanded&&path.startsWith('04 Sliding'))moveBody(n,[fit.travel,0,0]);if(state.storage&&path.startsWith('05 Rear')){if(n.name.startsWith('HEXA hinged'))rotateBody(n,[-480,269,0],[0,0,1],110);moveBody(n,[0,0,-1200])}}
+ if(key==='lounge-slide-bed'){if(state.expanded&&path.startsWith('04 Sliding'))moveBody(n,[fit.travel,0,0]);if(state.storage&&path.startsWith('05 Rear')){if(n.name.startsWith('Hexa hinged'))rotateBody(n,[-480,269,0],[0,0,1],110);moveBody(n,[0,0,-1200])}}
  if(key==='aluminum-bed'){if((state.frontExpanded&&path.startsWith('03 '))||(state.rearExpanded&&path.startsWith('02 ')))moveBody(n,[path.startsWith('03 ')?fit.front_travel:fit.rear_travel,0,0]);if(state.storage&&path.startsWith('04 '))moveBody(n,[0,0,-750])}
  if(key==='two-side-bed'&&path.startsWith('Plywood two-side')){
   const sliding=/^ボディ(13[1-5]|142|14[5-8])$/.test(n.name);
