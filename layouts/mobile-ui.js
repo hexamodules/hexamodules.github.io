@@ -5,13 +5,13 @@
   const width=matchMedia('(max-width: 700px)'), touch=matchMedia('(any-pointer: coarse)');
   const panel=$('.configuration'), scroll=$('.panel-scroll'), stage=$('.stage');
   if(!panel||!scroll||!stage)return;
-  const chipKeys=['vehicle','front','bed','cabinet','floor','ceiling','wall','equipment','other','review'];
+  const chipKeys=['vehicle','front','bed','mattress','cabinet','floor','ceiling','wall','equipment','other','review'];
   const originals=[...panel.querySelectorAll('[data-studio-tab]')];
   const keys=originals.map(b=>b.dataset.studioTab);
   const flow=['interior','furniture','equipment','review'];
   const flowLabel=k=>flow.includes(k)?String(flow.indexOf(k)+1).padStart(2,'0')+' '+({interior:en()?'Interior':'内装',furniture:en()?'Furniture':'家具',equipment:en()?'Equipment':'装備',review:en()?'Summary':'まとめ'}[k]):tabLabel(k);
   const tabLabel=k=>$('#tab-'+k)?.textContent.trim()||'';
-  const names={ja:['車種','フロント','ベッド','キャビネット','床','天井','壁','装備','その他','まとめ'],en:['Vehicle','Front','Bed','Cabinet','Floor','Ceiling','Walls','Equipment','More','Summary']};
+  const names={ja:['車種','フロント','ベッド','マットレス','キャビネット','床','天井','壁','装備','その他','まとめ'],en:['Vehicle','Front','Bed','Mattress','Cabinet','Floor','Ceiling','Walls','Equipment','More','Summary']};
   const en=()=>root.lang.startsWith('en'), label=k=>names[en()?'en':'ja'][chipKeys.indexOf(k)];
   const make=(tag,cls,text='')=>{const e=document.createElement(tag);e.className=cls;e.textContent=text;e.dataset.moduleI18n='';return e;};
   const button=(cls,text,fn)=>{const e=make('button',cls,text);e.type='button';e.addEventListener('click',fn);return e;};
@@ -41,8 +41,20 @@
     catch(e){if(e.name!=='AbortError')set(shareUrl,en()?'Copy the address bar URL':'アドレス欄のURLをコピーしてください');}
   });other.append(shareUrl);
   const extraButtons=keys.filter(k=>!flow.includes(k)).map(k=>{const b=button('mobile-extra','',()=>choose(k));other.append(b);return [k,b];});
-  const chipButtons=new Map(chipKeys.filter(k=>!['other','review'].includes(k)).map(k=>{const b=button('mobile-chip','',()=>{if(k==='vehicle'){if(window.confirm(en()?'Changing vehicle starts over. Return to the start?':'車種を変えると最初からになります。戻りますか')){const url=new URL(location.href);const keep=new URLSearchParams();for(const key of ['dealer','lang','location'])if(url.searchParams.has(key))keep.set(key,url.searchParams.get(key));url.search=keep.toString();url.hash='';location.assign(url.href);}return;}const pane={front:'furniture',bed:'furniture',cabinet:'furniture',floor:'interior',ceiling:'interior',wall:'interior'}[k]||k;choose(pane);const id={cabinet:'cabinet'}[k]||k;selectStep(pane,id+'-step');} );chips.append(b);return[k,b];}));
+  const chipButtons=new Map(chipKeys.filter(k=>!['other','review'].includes(k)).map(k=>{const b=button('mobile-chip','',()=>{if(k==='vehicle'){if(window.confirm(en()?'Changing vehicle starts over. Return to the start?':'車種を変えると最初からになります。戻りますか')){const url=new URL(location.href);const keep=new URLSearchParams();for(const key of ['dealer','lang','location'])if(url.searchParams.has(key))keep.set(key,url.searchParams.get(key));url.search=keep.toString();url.hash='';location.assign(url.href);}return;}const pane={front:'furniture',bed:'furniture',mattress:'furniture',cabinet:'furniture',floor:'interior',ceiling:'interior',wall:'interior'}[k]||k;choose(pane);const id={cabinet:'cabinet'}[k]||k;selectStep(pane,id+'-step');} );chips.append(b);return[k,b];}));
   fixed.append(chipButtons.get('vehicle'),finishes);
+  const mattressStep=make('section','step');mattressStep.id='mattress-step';
+  const mattressHomes=new Map();
+  function placeMattresses(show){
+    if(active&&!mattressStep.isConnected)$('#pane-furniture')?.append(mattressStep);
+    for(const [key,home] of mattressHomes){
+      const card=mattressStep.querySelector(`[data-mattress-module="${key}"]`);
+      if(!home.isConnected){card?.remove();mattressHomes.delete(key);}
+      else if(!show){if(card)home.querySelector('.option').after(card);mattressHomes.delete(key);}
+    }
+    if(show)panel.querySelectorAll('.module-option-set > [data-mattress-module]').forEach(card=>{mattressHomes.set(card.dataset.mattressModule,card.parentElement);mattressStep.append(card);});
+  }
+  window.addEventListener('studio-mattress-open',()=>{if(active){choose('furniture',false);selectStep('furniture','mattress-step');}});
   const footer=make('div','mobile-flow-footer');
   const back=button('mobile-flow-back','',()=>navigate(-1)), next=button('mobile-flow-next','',()=>navigate(1));footer.append(back,next);
   // Keep original controls in place so delegated PC handlers keep working.
@@ -52,7 +64,7 @@
     if(k==='electrical')nodes=[pane.querySelector('#standard-package-card'),...pane.querySelectorAll('.electrical-option-section')];
     if(k==='vehicle')nodes=[...pane.querySelectorAll('.vehicle-purchase-options,.new-vehicle-grade,.new-vehicle-powertrain')];
     if(k==='interior')nodes=['floor-step','ceiling-step','wall-step'].map(id=>$('#'+id));
-    if(k==='furniture')nodes=['front-step','bed-step','cabinet-step'].map(id=>$('#'+id));
+    if(k==='furniture')nodes=['front-step','bed-step',...(panel.querySelector('[data-mattress-module]')?['mattress-step']:[]),'cabinet-step'].map(id=>$('#'+id));
     return nodes.filter(e=>e&&!e.closest('[hidden]:not(.studio-pane)')).map((e,i)=>{
       if(!e.id)e.id='mobile-step-'+k+'-'+i;
       const heading=e.querySelector(':scope > summary > span, h2, h3, legend, strong');
@@ -124,6 +136,7 @@
     const selected=originals.find(b=>b.getAttribute('aria-selected')==='true');
     if(current!=='other'&&selected)current=selected.dataset.studioTab;
     root.dataset.mobilePane=current;
+    placeMattresses(current==='furniture'&&selectedSteps.get(current)==='mattress-step');
     refreshSteps();
     set(utilities,en()?'More':'その他');
     set(shareUrl,en()?'Share URL':'URLを共有');
@@ -137,6 +150,11 @@
     const choices={cabinet:'cab'};
     chipButtons.forEach((b,k)=>{
       let value=k==='vehicle'?$('#studio-base-vehicle')?.selectedOptions[0]?.textContent:$(`[data-choice="${choices[k]||k}"]`)?.textContent;
+      if(k==='mattress'){
+        const cards=[...panel.querySelectorAll('[data-mattress-module]')];flag(b,'hidden',!cards.length);
+        value=cards.map(c=>(cards.length>1?label(c.dataset.mattressSlot)+': ':'')+c.dataset.mattressLabel).join(' / ');
+        set(b,label(k)+': '+value);return;
+      }
       if(k==='equipment')value=[...$('#pane-equipment').querySelectorAll('button[aria-pressed=true] strong')].map(e=>e.textContent).join('・');
       if(['front','bed','cabinet'].includes(k)){
         const step=$('#'+k+'-step');
@@ -168,7 +186,7 @@
   window.addEventListener('studio-locale-change',()=>requestAnimationFrame(refresh));
   function sync(){const next=width.matches&&(touch.matches||navigator.maxTouchPoints>0);if(next===active)return;active=next;root.classList.toggle('mobile-ui',active);
     if(active){for(const a of ['id','role','aria-modal','aria-labelledby'])attrs.set(a,panel.getAttribute(a));panel.id='mobile-sheet';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mobile-title');document.body.append(hud,blocker);move(panel,document.body);panel.prepend(head,nav,subnav);panel.append(footer);scroll.append(other);$('#pane-review')?.append(review);root.dataset.mobilePane=current;close(false);refresh();}
-    else {close(false);panel.querySelectorAll('.mobile-type-gate,.mobile-choice-done').forEach(e=>e.remove());panel.querySelectorAll('.mobile-spec-rail,.mobile-many-specs,.mobile-spec-collapsed,.mobile-type-source').forEach(e=>e.classList.remove('mobile-spec-rail','mobile-many-specs','mobile-spec-collapsed','mobile-type-source'));for(const[e,m]of [...moved].reverse())m.replaceWith(e);moved.clear();for(const[d,v]of details)d.open=v;details.clear();for(const[a,v]of attrs)v===null?panel.removeAttribute(a):panel.setAttribute(a,v);[hud,blocker,head,nav,subnav,footer,other,review,vehicleCards].forEach(e=>e.remove());panel.querySelectorAll('.mobile-substep,.mobile-card-rail,.mobile-combined-rail').forEach(e=>{e.classList.remove('mobile-substep','mobile-substep-active','mobile-card-rail','mobile-combined-rail');if(e.id.startsWith('mobile-step-'))e.removeAttribute('id');});$('#pane-electrical')?.classList.remove('mobile-package-selected');delete root.dataset.mobilePane;delete root.dataset.mobileElectrical;}
+    else {placeMattresses(false);mattressStep.remove();close(false);panel.querySelectorAll('.mobile-type-gate,.mobile-choice-done').forEach(e=>e.remove());panel.querySelectorAll('.mobile-spec-rail,.mobile-many-specs,.mobile-spec-collapsed,.mobile-type-source').forEach(e=>e.classList.remove('mobile-spec-rail','mobile-many-specs','mobile-spec-collapsed','mobile-type-source'));for(const[e,m]of [...moved].reverse())m.replaceWith(e);moved.clear();for(const[d,v]of details)d.open=v;details.clear();for(const[a,v]of attrs)v===null?panel.removeAttribute(a):panel.setAttribute(a,v);[hud,blocker,head,nav,subnav,footer,other,review,vehicleCards].forEach(e=>e.remove());panel.querySelectorAll('.mobile-substep,.mobile-card-rail,.mobile-combined-rail').forEach(e=>{e.classList.remove('mobile-substep','mobile-substep-active','mobile-card-rail','mobile-combined-rail');if(e.id.startsWith('mobile-step-'))e.removeAttribute('id');});$('#pane-electrical')?.classList.remove('mobile-package-selected');delete root.dataset.mobilePane;delete root.dataset.mobileElectrical;}
   }
   width.addEventListener('change',sync);touch.addEventListener('change',sync);sync();
 })();

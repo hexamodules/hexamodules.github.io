@@ -3,42 +3,60 @@ import * as THREE from 'three';
 import {MATTRESS_BEDS,MATTRESS_COLORS,mattressColor,mattressIncluded,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
 
 export function createMattressControls({getState,getLanguage,onChange}){
+ // Presentation-only answers: order booleans and shared URLs remain unchanged.
+ const answers=new Map(), editing=new Set();
+ let previous={};
+ function syncAnswers(){const s=getState();for(const slot of ['bed','front']){if(previous[slot]!==s[slot]){answers.delete(slot);editing.delete(slot);}previous[slot]=s[slot];}}
+ const slots=()=>{syncAnswers();const s=getState();return ['front','bed'].filter(slot=>slot==='front'?s.front==='front-module':MATTRESS_BEDS.includes(s.bed));};
+ const status=slot=>{syncAnswers();const s=getState();return (slot==='bed'?bedMattressEnabled(s):frontMattressEnabled(s))?'with':answers.get(slot)==='none'?'none':'pending';};
  const text=(ja,en)=>getLanguage()==='en'?en:ja;
  function inline(key){
+  syncAnswers();
   const s=getState(),slot=key==='front-module'?'front':MATTRESS_BEDS.includes(key)?'bed':null;
   if(!slot||s[slot]!==key)return '';
   const included=slot==='bed'&&mattressIncluded(s),on=slot==='bed'?bedMattressEnabled(s):frontMattressEnabled(s);
   const color=mattressColor(s,slot);
-  const title=slot==='bed'?text('専用マットレス','Fitted mattress'):text('収納上クッション','Storage cushion');
+  const choice=status(slot),collapsed=choice==='none'&&!editing.has(slot);
   const photo=`<img class="mattress-photo" src="assets/mattress-fabric.jpg" width="1000" height="667" alt="${text('ファブリックマットレスの使用例','Fabric mattress in a completed van')}" loading="lazy">`;
-  return `<section class="mattress-options" data-mattress-module="${key}" data-module-i18n>
-   ${included?`<div class="mattress-included"><span aria-hidden="true">✓</span><strong>${text('専用マットレス付き','Fitted mattress included')}</strong><small>${text('標準付属','Included')}</small></div>`:`<fieldset class="mattress-order-options"><legend>${title}</legend><label class="mattress-order"><input type="radio" name="${slot}-mattress-order" data-mattress-order="${slot}" value="none" ${!on?'checked':''}><span><strong>${text('なし','Without')}</strong></span></label><label class="mattress-order mattress-with"><input type="radio" name="${slot}-mattress-order" data-mattress-order="${slot}" value="with" ${on?'checked':''}><span><strong>${text('あり','With')}</strong></span></label></fieldset>`}
+  return `<section class="mattress-options" data-mattress-module="${key}" data-mattress-slot="${slot}" data-mattress-status="${choice}" data-mattress-label="${choice==='with'?text('あり','With')+'('+text(color.ja,color.en)+')':choice==='none'?text('なし','None'):text('未選択','Not selected')}" data-module-i18n>
+   ${included?`<div class="mattress-included"><span aria-hidden="true">✓</span><strong>${text('専用マットレス付き','Fitted mattress included')}</strong><small>${text('標準付属','Included')}</small></div>`:collapsed?`<button type="button" class="mattress-edit" data-mattress-edit="${slot}">${text('マットレス: なし(変更)','Mattress: None (change)')}</button>`:`<fieldset class="mattress-order-options"><legend>${slot==='bed'?text('このベッドには、専用マットレスを付けられます。','You can add a fitted mattress to this bed.'):text('収納の上に、クッションを付けられます。','You can add a cushion on top of the storage.')}</legend><div class="mattress-actions">${['with','none'].map(value=>`<button type="button" data-mattress-order="${slot}" value="${value}" aria-pressed="${choice===value}">${value==='with'?text('付ける','Add'):text('付けない','Without')}</button>`).join('')}</div></fieldset>`}
    ${on?`${photo}<p class="mattress-spec">${text('ウレタン80mm · ファブリック','80 mm foam · Fabric')}</p>`:''}
    ${on?`<fieldset class="mattress-colors"><legend>${text('カラー','Colour')} · ${text(color.ja,color.en)}</legend><div class="mattress-color-list">${MATTRESS_COLORS.map(c=>`<label class="mattress-color"><input type="radio" name="${slot}-mattress-color" data-mattress-color="${slot}" value="${c.id}" ${c.id===color.id?'checked':''}><img src="${c.image}" width="56" height="56" alt=""><span>${text(c.ja.replace(/^(ライト|ダーク)/,'$1<wbr>'),c.en)}</span></label>`).join('')}</div></fieldset>`:''}
    ${on?`<small class="mattress-view-note">${text('構造が見えるよう、3Dでは半透明で表示します。','Shown translucent in 3D so you can see the structure.')}</small>`:''}
   </section>`;
  }
  function summary(){
-  const s=getState(),items=mattressLabels(s);
-  return items.length?`<div id="mattress-summary" class="selection-row" data-module-i18n><span>${text('マットレス','Mattresses')}</span><b>${items.join('<br>')}</b></div>`:'';
+  const s=getState(),items=slots().map(slot=>{
+   const choice=status(slot),c=mattressColor(s,slot);
+   const label=(slot==='bed'?text('ベッド専用','Fitted bed mattress'):text('フロント収納上','Front storage cushion'))+' · '+(choice==='with'?'80mm · '+text(c.ja,c.en)+' · '+(slot==='bed'&&mattressIncluded(s)?text('標準付属','Included'):text('追加あり','Added')):choice==='none'?text('なし','None'):text('未選択','Not selected'));
+   return `<button type="button" data-mattress-return="${slot}" class="${choice==='pending'?'mattress-pending':''}">${label}</button>`;
+  });
+  return items.length?`<div id="mattress-summary" class="selection-row" data-module-i18n><span>${text('マットレス','Mattresses')}</span><b>${items.join('')}</b></div>`:'';
  }
- function mattressLabels(s){
-  const items=[];
-  const color=slot=>{const c=mattressColor(s,slot);return text(c.ja,c.en)};
-  if(bedMattressEnabled(s))items.push(text('ベッド専用 · 80mm','Fitted bed mattress · 80 mm')+' · '+color('bed')+' · '+(mattressIncluded(s)?text('標準付属','Included'):text('追加あり','Added')));
-  if(frontMattressEnabled(s))items.push(text('フロント収納上 · 80mm','Front storage cushion · 80 mm')+' · '+color('front')+' · '+text('追加あり','Added'));
-  return items;
- }
+ document.addEventListener('click',async e=>{
+  const back=e.target.closest('[data-mattress-return]');
+  if(back){
+   const slot=back.dataset.mattressReturn;
+   if(document.documentElement.classList.contains('mobile-ui'))window.dispatchEvent(new CustomEvent('studio-mattress-open',{detail:{slot}}));
+   else {document.querySelector('#tab-furniture')?.click();const step=document.querySelector('#'+slot+'-step');if(step)step.open=true;}
+   requestAnimationFrame(()=>{const card=document.querySelector(`[data-mattress-slot="${slot}"]`);card?.scrollIntoView({block:'nearest'});card?.querySelector('button,input')?.focus({preventScroll:true});});return;
+  }
+  const edit=e.target.closest('[data-mattress-edit]');
+  if(edit){editing.add(edit.dataset.mattressEdit);const card=edit.closest('[data-mattress-module]');card.outerHTML=inline(card.dataset.mattressModule);document.querySelector(`[data-mattress-order="${edit.dataset.mattressEdit}"]`)?.focus({preventScroll:true});return;}
+  const button=e.target.closest('button[data-mattress-order]');if(!button)return;
+  const slot=button.dataset.mattressOrder,value=button.value;
+  if(!['bed','front'].includes(slot)||!['none','with'].includes(value))return;
+  answers.set(slot,value);editing.delete(slot);
+  await onChange({[slot+'Mattress']:value==='with'});
+  document.querySelector(value==='none'?`[data-mattress-edit="${slot}"]`:`[data-mattress-order="${slot}"][value="with"]`)?.focus({preventScroll:true});
+ });
  document.addEventListener('change',async e=>{
   const colorSlot=e.target.dataset?.mattressColor;
   if(['bed','front'].includes(colorSlot)&&MATTRESS_COLORS.some(c=>c.id===e.target.value)){
    const value=e.target.value;await onChange({[colorSlot+'MattressColor']:value});
    document.querySelector(`[data-mattress-color="${colorSlot}"][value="${value}"]`)?.focus({preventScroll:true});return;
   }
-  const slot=e.target.dataset?.mattressOrder;if(!['bed','front'].includes(slot))return;
-  const value=e.target.value;if(!['none','with'].includes(value)||!e.target.checked)return;
-  await onChange({[slot+'Mattress']:value==='with'});
-  document.querySelector(`[data-mattress-order="${slot}"][value="${value}"]`)?.focus({preventScroll:true});
+
  });
  return {inline,summary,refresh(){
   for(const element of document.querySelectorAll('[data-mattress-module]'))element.outerHTML=inline(element.dataset.mattressModule);

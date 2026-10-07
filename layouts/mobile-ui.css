@@ -172,3 +172,10 @@
  html.mobile-ui .configuration :is(button,a,label,select,summary),html.mobile-ui .opening-action :is(button,a,select) {min-height:44px;}
  html.mobile-ui .configuration :is(small,span,p,label,button,a,legend),html.mobile-ui .opening-action :is(small,span,p,label,button,a) {font-size:max(11px,1em);}
 }
+
+@media (max-width:700px){
+ html.mobile-ui .mobile-card-rail > .module-option-set:has(.mattress-options){display:block;grid-column:1/-1}
+ html.mobile-ui .mobile-card-rail .mattress-options{order:0}
+ html.mobile-ui #mattress-step > .mattress-options{border:1px solid #aab99e;border-radius:8px;background:#f5f7f1;margin-bottom:12px}
+ html.mobile-ui[data-mobile-pane=furniture] .mobile-subcategories:has([data-step=mattress-step]){grid-template-columns:repeat(4,minmax(0,1fr))}
+}

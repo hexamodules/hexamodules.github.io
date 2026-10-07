@@ -213,3 +213,11 @@
 
 .lighting-cutout-review{white-space:pre-line;border-left:2px solid #b0bbac;padding:10px 12px;background:#f4f6f0;line-height:1.9}
 .opening-action .twi-attribution{max-width:640px;font-size:11px;color:#4a5a4c;line-height:1.7;margin:10px auto 0}
+
+/* Mattress question stays with its selected module. */
+.mattress-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.mattress-actions button,.mattress-edit{min-height:44px;padding:10px;border:1px solid #aab99e;border-radius:7px;background:#fff;color:#35462d;font:inherit;cursor:pointer}
+.mattress-actions button[aria-pressed=true]{background:#e6eddf;border-color:#53624a}
+.mattress-order-options legend{font-size:12px}
+#mattress-summary button{display:block;border:0;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:underline;cursor:pointer;min-height:44px}
+#mattress-summary .mattress-pending{color:#858b80;font-weight:400}

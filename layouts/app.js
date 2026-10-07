@@ -16,7 +16,7 @@ import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {createReferencePricing} from './reference-pricing.js?v=20261005-mobile-fix';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
-import {createMattressControls,createMattressVisuals} from './mattresses.js?v=7';
+import {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
 import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=flow-26';
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
