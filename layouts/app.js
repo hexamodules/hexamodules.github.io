@@ -22,7 +22,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261007-1850';
+import {createOutro} from './outro.js?v=20261007-2000';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';

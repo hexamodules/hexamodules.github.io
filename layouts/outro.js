@@ -1,5 +1,5 @@
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261007-1850';
-import {downloadSpecification} from './specification-pdf.js?v=20261007-direct';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261007-2000';
+import {downloadSpecification} from './specification-pdf.js?v=20261007-2000';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';

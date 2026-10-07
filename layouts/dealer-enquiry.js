@@ -96,10 +96,18 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
   copy.ja.intro='担当の取扱店におつなぎして、ご連絡いたします。メールアドレスに仕様書をお届けいたします。';
   copy.en.intro='We will pass your enquiry to your Hexa dealer, who will contact you. A specification sheet will be sent to your email address.';
  }
+ Object.assign(copy.ja,{completeTitle:'送信完了しました',completeMessage:'内容を受け付けました。担当の取扱店からご連絡します。',reference:'受付番号: '});
+ Object.assign(copy.en,{completeTitle:'Sent',completeMessage:'We have received your enquiry. Your Hexa dealer will contact you.',reference:'Reference: '});
  const vehicleOptions={supply:[['new','新車で手配を依頼する','Request a new vehicle'],['own','車体を持ち込む','Supply my own vehicle']],grade:[['super-gl','スーパーGL','Super GL'],['dark-prime-2','スーパーGL DARK PRIME Ⅱ','Super GL DARK PRIME Ⅱ']],drive:[['2wd','2WD','2WD'],['4wd','4WD','4WD']],fuel:[['gasoline','ガソリン','Gasoline'],['diesel','ディーゼル','Diesel']]};
  Object.assign(copy.ja,{compatible:'対応車体: ハイエース スーパーGL(標準ボディ・標準ルーフ)',supply:'車体の手配（必須）',grade:'グレード（必須）',drive:'駆動（必須）',fuel:'燃料（必須）',year:'年式（必須）',model:'型式（車検証の記載）（必須）',reviewTitle:'送信内容をご確認ください',edit:'入力内容を直す',check:'内容を確認する',choose:'選択してください'});
  Object.assign(copy.en,{compatible:'Compatible vehicle: HiAce Super GL (standard body, standard roof)',supply:'Vehicle supply (required)',grade:'Grade (required)',drive:'Drive (required)',fuel:'Fuel (required)',year:'Model year (required)',model:'Model code (as on vehicle registration) (required)',reviewTitle:'Review your enquiry',edit:'Edit details',check:'Review enquiry',choose:'Select one'});
  function vehicleData(){return Object.fromEntries(['supply','grade','drive','fuel','year','model'].map(key=>[key,['year','model'].includes(key)&&fields.supply.value==='new'?'':fields[key].value.trim()]));}
+ const fuelOptionLabels={gasoline:['ガソリン(2.0L・2WDのみ)','Petrol (2.0L, 2WD only)'],diesel:['ディーゼル(2.8L)','Diesel (2.8L)']};
+ function updateFuel(){
+  const fourWheel=fields.drive.value==='4wd';
+  fields.fuel.querySelector('option[value="gasoline"]').disabled=fourWheel;
+  if(fourWheel&&fields.fuel.value==='gasoline')fields.fuel.value='diesel';
+ }
  function updateOwned(){
   const own=fields.supply.value==='own';dialog.querySelector('.enquiry-owned').hidden=!own;
   for(const key of ['year','model']){fields[key].disabled=!own;fields[key].required=own;fields[key].setCustomValidity('');}
@@ -117,20 +125,22 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
  if(gridVehicle){
   for(const key of ['name','email'])if(typeof prefill[key]==='string')fields[key].value=prefill[key].slice(0,fields[key].maxLength);
   fields.supply.addEventListener('change',updateOwned);
+  fields.drive.addEventListener('change',updateFuel);
   dialog.querySelector('.enquiry-edit').onclick=()=>{reviewing=false;refresh();fields.supply.focus();};
  }
  function refresh(){
-  const t=copy[lang()];
+  const t=copy[lang()],complete=status==='sent'||status==='review';
+  form.hidden=complete;dialog.querySelector('details').hidden=complete;
   if(gridVehicle){
-   for(const [key,options] of Object.entries(vehicleOptions)){const value=fields[key].value;fields[key].replaceChildren();for(const item of [['',t.choose,t.choose],...options]){const option=document.createElement('option');option.value=item[0];option.textContent=item[en()?2:1];fields[key].append(option);}fields[key].value=value;}
-   updateOwned();updateReview();
+   for(const [key,options] of Object.entries(vehicleOptions)){const value=fields[key].value;fields[key].replaceChildren();for(const item of [['',t.choose,t.choose],...options]){const option=document.createElement('option');option.value=item[0];option.textContent=key==='fuel'&&item[0]?fuelOptionLabels[item[0]][en()?1:0]:item[en()?2:1];fields[key].append(option);}fields[key].value=value;}
+   updateFuel();updateOwned();updateReview();
   }
   button.setAttribute('data-module-i18n','');if(!preserveButtonLabel)button.querySelector('span').textContent=en()?'Talk to a dealer':copy.ja.title;
-  dialog.querySelector('h2').textContent=t.title;dialog.querySelector('.enquiry-intro').textContent=t.intro;
+  dialog.querySelector('h2').textContent=complete?t.completeTitle:t.title;dialog.querySelector('.enquiry-intro').textContent=complete?(status==='review'?t.review:t.completeMessage):t.intro;
   dialog.querySelector('summary').textContent=t.summary;dialog.querySelector('.enquiry-close').setAttribute('aria-label',t.close);
   for(const el of dialog.querySelectorAll('[data-label]'))el.textContent=t[el.dataset.label];
   submit.hidden=!ENQUIRY_ENDPOINT.trim()||!snapshot;submit.disabled=pending||sent;submit.textContent=pending?t.sending:gridVehicle&&!reviewing?t.check:t.send;
-  result.textContent=status==='sent'?t.sent+receipt+(en()?')':'）'):status==='failed'?t.failed+' ('+receipt+')':status==='review'?t.review+' ('+receipt+')':status==='selectionError'?t.selectionError:pending?t.sending:!ENQUIRY_ENDPOINT.trim()?t.unavailable:'';
+  result.textContent=complete?t.reference+receipt:status==='failed'?t.failed+' ('+receipt+')':status==='review'?t.review+' ('+receipt+')':status==='selectionError'?t.selectionError:pending?t.sending:!ENQUIRY_ENDPOINT.trim()?t.unavailable:'';
   const list=dialog.querySelector('.enquiry-selections');list.replaceChildren();
   if(snapshot)for(const item of select(catalogue,snapshot.configuration,lang())){const li=document.createElement('li');li.textContent=(item.number==null?'':item.number+' · ')+item.label;list.append(li)}
  }
@@ -165,7 +175,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    if(requireImage&&!pendingImages.length){fingerprint='';throw Error('IMAGE_UNAVAILABLE');}
    pending=true;status='';fieldset.disabled=true;refresh();
    controller=new AbortController();timer=setTimeout(()=>controller.abort(),30000);
-   const payload={receipt,...body,createdAt,images:pendingImages.slice(0,1)};
+   const payload={receipt,...body,createdAt,images:pendingImages.slice(0,gridVehicle?3:1)};
    while(payload.images.length&&JSON.stringify(payload).length>600000)payload.images.pop();
    const serialized=JSON.stringify(payload);if(serialized.length>600000)throw Error('PAYLOAD_TOO_LARGE');
    try{await fetch(ENQUIRY_ENDPOINT,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:serialized,signal:controller.signal});}
@@ -175,7 +185,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    sent=confirmed==='SENT'||confirmed==='REVIEW_REQUIRED'||confirmed==='PROCESSING';
    status=confirmed==='SENT'?'sent':sent?'review':'failed';
   }catch{status='failed';}
-  finally{clearTimeout(timer);pending=false;fieldset.disabled=sent;refresh();}
+  finally{clearTimeout(timer);pending=false;fieldset.disabled=sent;refresh();if(sent){dialog.scrollTop=0;dialog.querySelector('.enquiry-close').focus({preventScroll:true});}}
  });
  window.addEventListener('studio-locale-change',()=>queueMicrotask(refresh));refresh();
  return {open};

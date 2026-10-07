@@ -39,8 +39,9 @@
     const data = new FormData(form);
     const subject = 'Hexa — ' + form.elements.topic.selectedOptions[0].textContent;
     const content = [
-      ...(data.get('company').trim() ? [`${ja() ? '会社・ブランド名' : 'Company / brand'}: ${data.get('company').trim()}`] : []),
+      `${ja() ? 'お問い合わせ内容' : 'Topic'}: ${form.elements.topic.selectedOptions[0].textContent}`,
       `${ja() ? 'お名前' : 'Name'}: ${data.get('name').trim()}`,
+      ...(data.get('company').trim() ? [`${ja() ? '会社・ブランド名' : 'Company / brand'}: ${data.get('company').trim()}`] : []),
       `Email: ${data.get('email').trim()}`,
       ...(data.get('phone').trim() ? [`${ja() ? '電話番号' : 'Phone'}: ${data.get('phone').trim()}`] : []),
       '', data.get('message').trim()
