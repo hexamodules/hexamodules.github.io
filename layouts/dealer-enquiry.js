@@ -45,10 +45,10 @@ export async function confirmReceipt(endpoint,receipt){
  }
  return status;
 }
-export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
- if(!enquiryDealerId())return null;
+export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],select=enquirySelections,dealerId=enquiryDealerId,buttonSelector='#outro-contact',preserveButtonLabel=false,requireImage=false}){
+ if(!dealerId())return null;
  const root=document.documentElement,en=()=>root.lang==='en',lang=()=>en()?'en':'ja';
- const button=document.querySelector('#outro-contact');
+ const button=document.querySelector(buttonSelector);
  const dialog=document.createElement('dialog');dialog.id='dealer-enquiry-dialog';dialog.setAttribute('aria-labelledby','dealer-enquiry-title');dialog.setAttribute('data-module-i18n','');
  dialog.innerHTML=`<button type="button" class="enquiry-close">×</button><h2 id="dealer-enquiry-title"></h2><p class="enquiry-intro"></p><details><summary></summary><ul class="enquiry-selections"></ul></details><form><fieldset>
  <label><span data-label="name"></span><input name="name" autocomplete="name" required maxlength="100"></label>
@@ -63,7 +63,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
  const form=dialog.querySelector('form'),fields=form.elements,fieldset=dialog.querySelector('fieldset'),submit=dialog.querySelector('[type=submit]'),result=dialog.querySelector('.enquiry-result');
  let snapshot=null,pending=false,sent=false,receipt='',createdAt='',fingerprint='',status='',pendingImages=[];
  const copy={ja:{title:'取扱店に相談する',intro:'選んだ仕様を取扱店とHexaへ送ります。メールアドレスには金額のない仕様書をお届けします。お見積もりは取扱店からご連絡します。',summary:'選んだ仕様',name:'お名前（必須）',email:'メールアドレス（必須）',phone:'電話番号',region:'地域（都道府県・州）',timing:'希望時期',message:'一言・ご希望（任意）',consent:'入力した連絡先と選んだ仕様を、相談対応のため取扱店とHexaへ送ることに同意します（必須）。',send:'送信する',sending:'送信中…',sent:'送信しました（受付番号：',failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を取扱店へお伝えください。',review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を取扱店へお伝えください。',unavailable:'送信の準備中です。取扱店へこのレイアウトのURLをお伝えください。',selectionError:'選んだ仕様を読み込めませんでした。画面を閉じて、もう一度お試しください。',close:'閉じる'},en:{title:'Enquire with your dealer',intro:'Send your selected specification to your dealer and Hexa. A specification without prices will be sent to your email address. Your dealer will contact you with a quote.',summary:'Your selected specification',name:'Name (required)',email:'Email (required)',phone:'Phone',region:'Region / state',timing:'Preferred timing',message:'Message / requests (optional)',consent:'I agree to share my contact details and selected specification with the dealer and Hexa to handle this enquiry (required).',send:'Send enquiry',sending:'Sending…',sent:'Sent (receipt: ',failed:'We could not confirm receipt. You can retry the same content with the same receipt number. If confirmation keeps failing, share the receipt number with your dealer.',review:'Your enquiry was recorded, but email completion could not be confirmed. Please share the receipt number with your dealer.',unavailable:'Enquiry submission is being prepared. Please share this layout URL with your dealer.',selectionError:'Your selected specification could not be loaded. Close this window and try again.',close:'Close'}};
- if(enquiryDealerId()==='hexa-direct'){
+ if(dealerId()==='hexa-direct'){
   Object.assign(copy.ja,{
    title:'販売店に相談する',
    intro:'選んだ仕様をHexaで受け付け、担当の販売店からご連絡します。メールアドレスには金額のない仕様書をお届けします。',
@@ -85,24 +85,24 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
  }
  function refresh(){
   const t=copy[lang()];
-  button.setAttribute('data-module-i18n','');button.querySelector('span').textContent=en()?'Talk to a dealer':copy.ja.title;
+  button.setAttribute('data-module-i18n','');if(!preserveButtonLabel)button.querySelector('span').textContent=en()?'Talk to a dealer':copy.ja.title;
   dialog.querySelector('h2').textContent=t.title;dialog.querySelector('.enquiry-intro').textContent=t.intro;
   dialog.querySelector('summary').textContent=t.summary;dialog.querySelector('.enquiry-close').setAttribute('aria-label',t.close);
   for(const el of dialog.querySelectorAll('[data-label]'))el.textContent=t[el.dataset.label];
   submit.hidden=!ENQUIRY_ENDPOINT.trim()||!snapshot;submit.disabled=pending||sent;submit.textContent=pending?t.sending:t.send;
   result.textContent=status==='sent'?t.sent+receipt+(en()?')':'）'):status==='failed'?t.failed+' ('+receipt+')':status==='review'?t.review+' ('+receipt+')':status==='selectionError'?t.selectionError:pending?t.sending:!ENQUIRY_ENDPOINT.trim()?t.unavailable:'';
   const list=dialog.querySelector('.enquiry-selections');list.replaceChildren();
-  if(snapshot)for(const item of enquirySelections(catalogue,snapshot.configuration,lang())){const li=document.createElement('li');li.textContent=item.number+' · '+item.label;list.append(li)}
+  if(snapshot)for(const item of select(catalogue,snapshot.configuration,lang())){const li=document.createElement('li');li.textContent=(item.number==null?'':item.number+' · ')+item.label;list.append(li)}
  }
  function open(){
   if(pending){refresh();dialog.showModal();return;}
-  try{const next=describe({includeImage:false});if(snapshot&&snapshot.url!==next.url&&!pending){sent=false;status='';fieldset.disabled=false;}snapshot=next;enquirySelections(catalogue,snapshot.configuration,lang());if(status==='selectionError')status='';}
+  try{const next=describe({includeImage:false});if(snapshot&&snapshot.url!==next.url&&!pending){sent=false;status='';fieldset.disabled=false;}snapshot=next;select(catalogue,snapshot.configuration,lang());if(status==='selectionError')status='';}
   catch{snapshot=null;status='selectionError';}
   refresh();dialog.showModal();
  }
  document.addEventListener('click',e=>{
-  if(!enquiryDealerId())return;
-  const contact=e.target.closest('#outro-contact');
+  if(!dealerId())return;
+  const contact=e.target.closest(buttonSelector);
   if(!contact||contact.disabled)return;
   e.preventDefault();e.stopImmediatePropagation();open();
  },true);
@@ -110,15 +110,17 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
  form.addEventListener('input',()=>{fields.name.setCustomValidity(fields.name.value.trim()?'':(en()?'Please enter your name.':'お名前をご入力ください。'));});
  form.addEventListener('submit',async event=>{
   event.preventDefault();
-  if(pending||sent||!ENQUIRY_ENDPOINT.trim()||!snapshot||!enquiryDealerId()||!form.reportValidity())return;
+  if(pending||sent||!ENQUIRY_ENDPOINT.trim()||!snapshot||!dealerId()||!form.reportValidity())return;
   let controller,timer;
   try{
    const customer=Object.fromEntries(['name','email','phone','region','timing','message'].map(key=>[key,fields[key].value.trim()]));
    if(!customer.name)return;
    customer.consent=fields.consent.checked;if(!customer.consent)return;
-   const body={dealer:enquiryDealerId(),lang:lang(),customer,selections:enquirySelections(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   const body={dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   pending=true;status='';fieldset.disabled=true;refresh();
    const current=JSON.stringify(body);
-   if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{pendingImages=captureImages()||[];}catch{pendingImages=[];}}
+   if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{const captured=captureImages();pendingImages=(captured&&typeof captured.then==='function'?await captured:captured)||[];}catch{pendingImages=[];}}
+   if(requireImage&&!pendingImages.length){fingerprint='';throw Error('IMAGE_UNAVAILABLE');}
    pending=true;status='';fieldset.disabled=true;refresh();
    controller=new AbortController();timer=setTimeout(()=>controller.abort(),30000);
    const payload={receipt,...body,createdAt,images:pendingImages.slice(0,1)};

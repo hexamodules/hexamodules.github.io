@@ -1,5 +1,6 @@
 // This form prepares a user-reviewed email; no message is sent by the website.
 (() => {
+  if(new URLSearchParams(location.search).get('topic')==='grid'){const url=new URL('grid.html',location.href);for(const key of ['lang','location']){const value=new URLSearchParams(location.search).get(key);if(value)url.searchParams.set(key,value);}url.hash='grid-enquiry';location.replace(url.href);return;}
   const CONTACT_EMAIL = 'info@hexamodules.com';
   document.querySelectorAll('[data-contact-email]').forEach(link => {
     link.href = 'mailto:' + CONTACT_EMAIL;
@@ -13,7 +14,7 @@
   const status = document.querySelector('#contact-status');
   const ja = () => document.documentElement.lang === 'ja';
   const topic = new URLSearchParams(location.search).get('topic');
-  if (['products','grid','partner','configurator','other'].includes(topic)) form.elements.topic.value = topic;
+  if (['products','partner','configurator','other'].includes(topic)) form.elements.topic.value = topic;
 
   const serviceHelp = document.querySelector('#configurator-contact-help');
   const updateTopic = () => { serviceHelp.hidden = form.elements.topic.value !== 'configurator'; };
