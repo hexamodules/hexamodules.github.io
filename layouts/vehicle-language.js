@@ -20,7 +20,7 @@ export const vehicleTranslations = [
  ['TWIの天井を選ぶと、照明も付属します。','Choose a TWI ceiling to include its integrated lighting.'],
  ['ナイトモードで確認できます','Preview in night mode'],
  ['スーパーGLへのエアコン取付イメージです。','Air conditioning installation preview for Super GL.'],
- ['スーパーGLでは、DX用の壁面パネルは追加されません。','DX wall panels are not added to the Super GL.'],
+ ['スーパーGLでは、DX用の壁面板張り仕上げは追加されません。','DX wall board finish is not added to the Super GL.'],
  ['スーパーGLの配置イメージ','Super GL layout preview'],
  ['TWI製品の形状は表示用の参考形状です。製作時には実車との取り合いを確認します。','TWI products are shown as illustrative shapes. Fit is checked against the actual vehicle before production.']
 ];

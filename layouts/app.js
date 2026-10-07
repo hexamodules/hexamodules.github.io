@@ -65,7 +65,7 @@ const lightingLabel=(s=state)=>[twiCeilingEnabled(s)?'TWI天井付属照明':nul
 const lightsAvailable=(s=state)=>twiCeilingEnabled(s)||s.ceilingLights||s.tailgateLights;
 const panelEnabled=(s=state)=>wallEnabled(s)||Object.hasOwn(WALL_COLORS,s.panel);
 const panelColor=(s=state)=>wallEnabled(s)?s.wall:Object.hasOwn(WALL_COLORS,s.panel)?s.panel:lastPanelColor;
-const CEILING={key:'interior-ceiling-oak',name:'天然木突板天井',material:'天然木突板',length_mm:2731.422,width_mm:1259,thickness_mm:6.5,rows:15,light_openings:6,revision:'curved-veneer-ceiling-v2'};
+const CEILING={key:'interior-ceiling-oak',name:'天井板張り仕上げ',material:'天然木突板',length_mm:2731.422,width_mm:1259,thickness_mm:6.5,rows:15,light_openings:6,revision:'curved-veneer-ceiling-v2'};
 const ceilingPalette=await fetch('assets/ceiling-finishes.json?v=veneer-1').then(r=>r.json());
 const CEILING_COLORS=Object.fromEntries(ceilingPalette.colors.map(c=>[c.value,c]));
 const ceilingEnabled=(s=state)=>Object.hasOwn(CEILING_COLORS,s.ceiling);
@@ -413,7 +413,7 @@ function configureUI(){
  $('#wall-color-section').hidden=!panelOn;
  $('#wall-color-options').innerHTML=wallPalette.colors.map(c=>`<button type="button" class="wall-color-option ${panelOn&&panelFinish===c.value?'active':''}" data-wall-color="${c.value}" aria-pressed="${panelOn&&panelFinish===c.value}"><img src="${c.image}" alt="${c.label}の合板見本" width="220" height="220"><span>${c.label}</span></button>`).join('');
  $('#panel-inclusion-help').hidden=!panelOn;
- $('#panel-inclusion-help').textContent=wallEnabled()?'壁面パネルには、同色のカラーパネルも付きます。':'窓下3枚のパネルだけを取り付けます。';
+ $('#panel-inclusion-help').textContent=wallEnabled()?'壁面板張り仕上げには、同色のカラーパネルも付きます。':'窓下3枚のパネルだけを取り付けます。';
  $('#wall-view').hidden=!wallEnabled();$('#wall-view-help').hidden=!wallEnabled();
  $('#panel-view').hidden=!panelOn;$('#tailgate-view').hidden=!panelOn;
  $('#panel-view').textContent=wallEnabled()?'カラーパネルを見る':'カラーパネル3枚を見る';
@@ -425,7 +425,7 @@ function configureUI(){
  $('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>内装</span><b>${interiorLabel()}</b></div><div class="selection-row"><span>照明</span><b>${lightingLabel()}</b></div>`);lightingUI();airconUI();heaterUI();insulationUI();electricalUI();shippingUI();pricing.update();dealerOptionsUI.update();
  if(state.bed==='two-side-bed')$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>床スライド</span><b>${state.floorSlide?'脱着式・追加あり':'追加なし'}</b></div>`);
  $('#layout-name').textContent='あなたの過ごし方を、この一台に。';
- updateStudio({front:name(state.front),bed:name(state.bed),cab:name(state.cab),finish:state.finish==='black'?'ヘキサ合板':'バーチ合板',ceiling:twiCeilingEnabled(state)?twiCeilingLabel(state):ceilingEnabled()?CEILING_COLORS[state.ceiling].label:'なし',wall:isSuperGL(state)?quarterLabel(state):panelEnabled()?(wallEnabled()?'壁面パネル':'カラーパネル')+' · '+WALL_COLORS[panelColor()].label:'なし',floor:floorEnabled()?FLOOR_COLORS[state.floor].label:'未選択',lights:lightingLabel(),ac:airconEnabled()?'CUBE AIR460B':'なし',heater:heaterEnabled()?'Webasto':'なし',insulation:insulationEnabled()?'選択中':'なし'});
+ updateStudio({front:name(state.front),bed:name(state.bed),cab:name(state.cab),finish:state.finish==='black'?'ヘキサ合板':'バーチ合板',ceiling:twiCeilingEnabled(state)?twiCeilingLabel(state):ceilingEnabled()?CEILING_COLORS[state.ceiling].label:'なし',wall:isSuperGL(state)?quarterLabel(state):panelEnabled()?(wallEnabled()?'壁面板張り仕上げ':'カラーパネル')+' · '+WALL_COLORS[panelColor()].label:'なし',floor:floorEnabled()?FLOOR_COLORS[state.floor].label:'未選択',lights:lightingLabel(),ac:airconEnabled()?'CUBE AIR460B':'なし',heater:heaterEnabled()?'Webasto':'なし',insulation:insulationEnabled()?'選択中':'なし'});
  vehicleControls.update();newVehicleControls.update();
  for(const [slot,key] of [['front',state.front],['bed',state.bed],['cab',state.cab]]){const el=$(`[data-choice="${slot}"]`);el.classList.toggle('has-construction',!!modules[key]);if(modules[key])el.innerHTML=`<span class="choice-name">${name(key)}</span> ${constructionBadge(modules[key])}`;}
 }
@@ -439,7 +439,7 @@ function airconUI(){
  const on=airconEnabled();
  $$('[data-aircon]').forEach(b=>{const selected=b.dataset.aircon===(on?AIRCON.value:'none');b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
  $('#aircon-view').hidden=!on;
- $('#aircon-status').textContent=isSuperGL(state)?(on?'スーパーGLへのエアコン取付イメージです。':'スーパーGLでは、DX用の壁面パネルは追加されません。'):on?`${WALL_COLORS[state.wall].label}の壁に設置しています。`:wallEnabled()?'選択中の壁仕上げにエアコンを追加できます。':'エアコンを選ぶと、壁仕上げも自動で追加されます。';
+ $('#aircon-status').textContent=isSuperGL(state)?(on?'スーパーGLへのエアコン取付イメージです。':'スーパーGLでは、DX用の壁面板張り仕上げは追加されません。'):on?`${WALL_COLORS[state.wall].label}の壁に設置しています。`:wallEnabled()?'選択中の壁仕上げにエアコンを追加できます。':'エアコンを選ぶと、壁仕上げも自動で追加されます。';
  if(dealerOptions.ac)$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row" data-dealer-option-row="ac"><span>エアコン</span><b>${on?AIRCON.label+'（配管カバー付き）':'なし'}</b></div>`);
 }
 function heaterUI(){

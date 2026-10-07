@@ -5,7 +5,7 @@ export function calculateReferencePrice(catalogue,state,region='jp') {
  const choices=new Map((catalogue?.items||[]).map(item=>[item.key,item])),items=[];
  const add=(key,quantity=1)=>{
   const item=choices.get(key);if(!item)return;
-  const prefix=['床（必須）','天井','カラーパネル','壁面パネル（カラーパネル込み）'].includes(item.category)?item.category.replace('（必須）','')+' · ':'';
+  const prefix=['床（必須）','天井','カラーパネル','壁面板張り仕上げ（カラーパネル込み）'].includes(item.category)?item.category.replace('（必須）','')+' · ':'';
   const structure=item.construction?' · '+(item.construction==='plywood'?'プライウッド':'アルミ'):'';
   items.push({key,quantity,name:prefix+item.name+structure+(quantity>1?' × '+quantity:''),name_en:(item.name_en||item.name)+(quantity>1?' × '+quantity:''),...(item.includes?{includes:item.includes}:{})});
  };

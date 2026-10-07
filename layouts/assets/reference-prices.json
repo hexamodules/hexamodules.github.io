@@ -92,10 +92,10 @@
     },
     {
       "key": "wall:white",
-      "category": "壁面パネル（カラーパネル込み）",
+      "category": "壁面板張り仕上げ（カラーパネル込み）",
       "name": "ホワイト",
       "selection_value": "white",
-      "name_en": "Wall panels + colour panels · White",
+      "name_en": "Wall board finish + colour panels · White",
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
@@ -105,10 +105,10 @@
     },
     {
       "key": "wall:teffy",
-      "category": "壁面パネル（カラーパネル込み）",
+      "category": "壁面板張り仕上げ（カラーパネル込み）",
       "name": "テフィ（TEFFY）",
       "selection_value": "teffy",
-      "name_en": "Wall panels + colour panels · Teffy",
+      "name_en": "Wall board finish + colour panels · Teffy",
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
@@ -118,10 +118,10 @@
     },
     {
       "key": "wall:volcanic-gray",
-      "category": "壁面パネル（カラーパネル込み）",
+      "category": "壁面板張り仕上げ（カラーパネル込み）",
       "name": "ボルカニックグレー",
       "selection_value": "volcanic-gray",
-      "name_en": "Wall panels + colour panels · Volcanic gray",
+      "name_en": "Wall board finish + colour panels · Volcanic gray",
       "includes": [
         "同色カラーパネル",
         "窓の内側の断熱",
