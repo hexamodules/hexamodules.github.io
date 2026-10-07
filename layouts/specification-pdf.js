@@ -1,4 +1,4 @@
-import {enquirySelections} from './dealer-enquiry.js?v=20261005-finish';
+import {enquirySelections} from './dealer-enquiry.js?v=20261007-direct';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';

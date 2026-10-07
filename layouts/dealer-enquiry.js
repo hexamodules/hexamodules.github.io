@@ -5,6 +5,10 @@ import {calculateReferencePrice} from './reference-pricing.js?v=20261005';
 export function isTestDealerEnquiry(){
  return new URLSearchParams(location.search).get('dealer')==='test-hexa'&&dealerContext()?.id==='test-hexa';
 }
+export function enquiryDealerId(){
+ if(!new URLSearchParams(location.search).has('dealer'))return 'hexa-direct';
+ return isTestDealerEnquiry()?'test-hexa':null;
+}
 export function enquirySelections(catalogue,state,lang){
  if(!catalogue?.items?.length)throw Error('Selection catalogue unavailable');
  const entries=new Map(catalogue.items.map(item=>[item.key,item]));
@@ -42,7 +46,7 @@ export async function confirmReceipt(endpoint,receipt){
  return status;
 }
 export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
- if(!isTestDealerEnquiry())return null;
+ if(!enquiryDealerId())return null;
  const root=document.documentElement,en=()=>root.lang==='en',lang=()=>en()?'en':'ja';
  const button=document.querySelector('#outro-contact');
  const dialog=document.createElement('dialog');dialog.id='dealer-enquiry-dialog';dialog.setAttribute('aria-labelledby','dealer-enquiry-title');dialog.setAttribute('data-module-i18n','');
@@ -59,9 +63,29 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
  const form=dialog.querySelector('form'),fields=form.elements,fieldset=dialog.querySelector('fieldset'),submit=dialog.querySelector('[type=submit]'),result=dialog.querySelector('.enquiry-result');
  let snapshot=null,pending=false,sent=false,receipt='',createdAt='',fingerprint='',status='',pendingImages=[];
  const copy={ja:{title:'取扱店に相談する',intro:'選んだ仕様を取扱店とHexaへ送ります。メールアドレスには金額のない仕様書をお届けします。お見積もりは取扱店からご連絡します。',summary:'選んだ仕様',name:'お名前（必須）',email:'メールアドレス（必須）',phone:'電話番号',region:'地域（都道府県・州）',timing:'希望時期',message:'一言・ご希望（任意）',consent:'入力した連絡先と選んだ仕様を、相談対応のため取扱店とHexaへ送ることに同意します（必須）。',send:'送信する',sending:'送信中…',sent:'送信しました（受付番号：',failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を取扱店へお伝えください。',review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を取扱店へお伝えください。',unavailable:'送信の準備中です。取扱店へこのレイアウトのURLをお伝えください。',selectionError:'選んだ仕様を読み込めませんでした。画面を閉じて、もう一度お試しください。',close:'閉じる'},en:{title:'Enquire with your dealer',intro:'Send your selected specification to your dealer and Hexa. A specification without prices will be sent to your email address. Your dealer will contact you with a quote.',summary:'Your selected specification',name:'Name (required)',email:'Email (required)',phone:'Phone',region:'Region / state',timing:'Preferred timing',message:'Message / requests (optional)',consent:'I agree to share my contact details and selected specification with the dealer and Hexa to handle this enquiry (required).',send:'Send enquiry',sending:'Sending…',sent:'Sent (receipt: ',failed:'We could not confirm receipt. You can retry the same content with the same receipt number. If confirmation keeps failing, share the receipt number with your dealer.',review:'Your enquiry was recorded, but email completion could not be confirmed. Please share the receipt number with your dealer.',unavailable:'Enquiry submission is being prepared. Please share this layout URL with your dealer.',selectionError:'Your selected specification could not be loaded. Close this window and try again.',close:'Close'}};
+ if(enquiryDealerId()==='hexa-direct'){
+  Object.assign(copy.ja,{
+   title:'販売店に相談する',
+   intro:'選んだ仕様をHexaで受け付け、担当の販売店からご連絡します。メールアドレスには金額のない仕様書をお届けします。',
+   consent:'入力した連絡先と選んだ仕様を、相談対応のためHexaと担当の販売店へ共有することに同意します（必須）。',
+   sent:'内容を受け付けました。担当の販売店からご連絡します。（受付番号：',
+   failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
+   review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
+   unavailable:'送信の準備中です。このレイアウトのURLを添えてinfo@hexamodules.comへお問い合わせください。'
+  });
+  Object.assign(copy.en,{
+   title:'Talk to a dealer',
+   intro:'Hexa will receive your selected specification. A Hexa dealer will be in touch with you shortly. A specification without prices will be sent to your email address.',
+   consent:'I agree to share my contact details and selected specification with Hexa and the assigned dealer to handle this enquiry (required).',
+   sent:'Thank you. A Hexa dealer will be in touch with you shortly. (receipt: ',
+   failed:'We could not confirm receipt. You can retry the same content with the same receipt number. If confirmation keeps failing, contact info@hexamodules.com with your receipt number.',
+   review:'Your enquiry was recorded, but email completion could not be confirmed. Please contact info@hexamodules.com with your receipt number.',
+   unavailable:'Enquiry submission is being prepared. Please email your layout URL to info@hexamodules.com.'
+  });
+ }
  function refresh(){
   const t=copy[lang()];
-  button.setAttribute('data-module-i18n','');button.querySelector('span').textContent=en()?'Talk to a dealer':'取扱店に相談する';
+  button.setAttribute('data-module-i18n','');button.querySelector('span').textContent=en()?'Talk to a dealer':copy.ja.title;
   dialog.querySelector('h2').textContent=t.title;dialog.querySelector('.enquiry-intro').textContent=t.intro;
   dialog.querySelector('summary').textContent=t.summary;dialog.querySelector('.enquiry-close').setAttribute('aria-label',t.close);
   for(const el of dialog.querySelectorAll('[data-label]'))el.textContent=t[el.dataset.label];
@@ -77,7 +101,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
   refresh();dialog.showModal();
  }
  document.addEventListener('click',e=>{
-  if(!isTestDealerEnquiry())return;
+  if(!enquiryDealerId())return;
   const contact=e.target.closest('#outro-contact');
   if(!contact||contact.disabled)return;
   e.preventDefault();e.stopImmediatePropagation();open();
@@ -86,13 +110,13 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[]}){
  form.addEventListener('input',()=>{fields.name.setCustomValidity(fields.name.value.trim()?'':(en()?'Please enter your name.':'お名前をご入力ください。'));});
  form.addEventListener('submit',async event=>{
   event.preventDefault();
-  if(pending||sent||!ENQUIRY_ENDPOINT.trim()||!snapshot||!isTestDealerEnquiry()||!form.reportValidity())return;
+  if(pending||sent||!ENQUIRY_ENDPOINT.trim()||!snapshot||!enquiryDealerId()||!form.reportValidity())return;
   let controller,timer;
   try{
    const customer=Object.fromEntries(['name','email','phone','region','timing','message'].map(key=>[key,fields[key].value.trim()]));
    if(!customer.name)return;
    customer.consent=fields.consent.checked;if(!customer.consent)return;
-   const body={dealer:'test-hexa',lang:lang(),customer,selections:enquirySelections(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   const body={dealer:enquiryDealerId(),lang:lang(),customer,selections:enquirySelections(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
    const current=JSON.stringify(body);
    if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{pendingImages=captureImages()||[];}catch{pendingImages=[];}}
    pending=true;status='';fieldset.disabled=true;refresh();
