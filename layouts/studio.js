@@ -66,4 +66,4 @@ export function updateStudio(values){
  for(const [key,text] of Object.entries(values)){const output=$(`[data-choice="${key}"]`);if(output)output.textContent=text}
  $('#stage-spec').textContent=values.bed==='なし'?'自由に組み合わせる':'BED / 1,800 mm';
 }
-export function updateReviewIndicator(needed){$('#review-indicator').hidden=!needed;$('#fit-summary').textContent=needed?'配置の確認事項があります':'配置について';}
+export function updateReviewIndicator(needed){$('#review-indicator').hidden=true;$('#fit-summary').textContent=needed?'配置の確認事項があります':'配置について';}
