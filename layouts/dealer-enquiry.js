@@ -168,7 +168,8 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    const customer=Object.fromEntries(['name','email','phone','region','timing','message'].map(key=>[key,fields[key].value.trim()]));
    if(!customer.name)return;
    customer.consent=fields.consent.checked;if(!customer.consent)return;
-   const body={...(gridVehicle?{vehicle:vehicleData()}:{}),dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:snapshot.url,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   const layoutUrl=new URL(snapshot.url,location.href);layoutUrl.searchParams.set('complete','1');
+   const body={...(gridVehicle?{vehicle:vehicleData()}:{}),dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:layoutUrl.href,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
    pending=true;status='';fieldset.disabled=true;refresh();
    const current=JSON.stringify(body);
    if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{const captured=captureImages();pendingImages=(captured&&typeof captured.then==='function'?await captured:captured)||[];}catch{pendingImages=[];}}

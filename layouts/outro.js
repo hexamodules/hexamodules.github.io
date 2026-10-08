@@ -1,5 +1,5 @@
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261007-2000';
-import {downloadSpecification} from './specification-pdf.js?v=20261008-link-center';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261008-complete';
+import {downloadSpecification} from './specification-pdf.js?v=20261008-complete';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
@@ -56,14 +56,14 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
   console.error(error);try{await restore()}catch(e){console.error(e)}unlock();
   $('#notice').textContent='保存後の表示を読み込めませんでした。組み合わせは保持しています。';
  }
- async function play(){
+ async function play({immediate=false}={}){
   if(active)return;
   active=true;ready=false;finishing=false;elapsed=0;layer.hidden=false;root.classList.add('outro-active');
   root.style.setProperty('--outro-copy',0);root.style.setProperty('--outro-action',0);
   $('#outro-skip').disabled=false;$('#outro-contact').disabled=true;$('#outro-specification').disabled=true;$('#outro-edit').disabled=true;
   locked.forEach(e=>e.inert=true);layer.tabIndex=-1;layer.focus({preventScroll:true});mark('loading','完成車を準備しています');
   preparation=prepare();
-  try{await preparation;if(finishing)return;if(reduced.matches){await finish();return}paint(0);last=performance.now();frame=requestAnimationFrame(tick)}catch(e){await fail(e)}
+  try{await preparation;if(finishing)return;if(immediate||reduced.matches){await finish();return}paint(0);last=performance.now();frame=requestAnimationFrame(tick)}catch(e){await fail(e)}
  }
  $('#outro-skip').onclick=finish;$('#outro-edit').onclick=edit;
  document.addEventListener('keydown',e=>{if(!active||e.key!=='Escape'||$('#contact-dialog').open||$('#dealer-enquiry-dialog')?.open)return;e.preventDefault();if(ready)edit();else finish()});

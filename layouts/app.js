@@ -1,6 +1,6 @@
 import {capturePhoto} from './photo-camera.js?v=20261008-center';
 import {createVisualMaterials} from './visual-materials.js?v=2';
-import {initLayoutRecall} from './saved-layouts.js?v=1';
+import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
 import {initRetailerSimulation} from './retailer-simulation.js?v=1';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {createNewVehicleControls} from './new-vehicle-controls.js?v=1';
@@ -23,15 +23,16 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261008-center';
+import {createOutro} from './outro.js?v=20261008-complete';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 (async()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const completeEntry=new URLSearchParams(location.search).get('complete')==='1';
 const reviewMode=false; // Production capture tools are unavailable on this static site.
-if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false)return;
+if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false){document.documentElement.classList.remove('complete-loading');return;}
 const dealerOptions=dealerOptionAvailability(selectedDealer());
 const priceCatalogue=await fetch('assets/reference-prices.json?v=20261005-enquiry').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=cabinet-names-1').then(r=>r.json());
@@ -934,11 +935,26 @@ pickCanvas.addEventListener('pointerup',e=>{
  }
 });
 
-if(document.documentElement.classList.contains('intro-active')&&!reviewMode)await opening.play();
-else await apply();
-initLayoutRecall({begin:()=>opening.start(),restore:async saved=>{if(outro.active)await outro.edit();if(opening.active)await opening.start?.();await apply({...state,...saved,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,night:false},{history:true});$('#tab-review').click();setView('rear');}});
+async function restoreLayout(saved,{complete=false}={}){
+ if(outro.active)await outro.edit();
+ if(opening.active)await opening.start?.();
+ await apply({...state,...saved,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,night:false},{history:true});
+ $('#tab-review').click();setView('rear');
+ if(complete){await outro.play({immediate:true});renderer.render(scene,camera);}
+}
+if(completeEntry){
+ try{
+  const recalled=await initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout,complete:true});
+  if(!recalled)await restoreLayout(state,{complete:true});
+ }finally{document.documentElement.classList.remove('complete-loading');}
+}else{
+ if(document.documentElement.classList.contains('intro-active')&&!reviewMode)await opening.play();
+ else await apply();
+ initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout});
+}
 
 })().catch(e=>{
+ document.documentElement.classList.remove('complete-loading');
  console.error(e);
  // Temporary Safari diagnostics: retain the first three stack lines verbatim.
  const message=document.querySelector('#loading p');

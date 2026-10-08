@@ -1,4 +1,4 @@
-import {enquirySelections} from './dealer-enquiry.js?v=20261007-direct';
+import {enquirySelections} from './dealer-enquiry.js?v=20261008-complete';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';
@@ -37,6 +37,7 @@ export function imagePdf(jpeg,width,height,url,linkRect){
 }
 export async function createSpecification({data,catalogue,images,lang='ja'}){
  const en=lang==='en',rows=specificationRows(data,catalogue,lang);
+ const layoutUrl=new URL(data.url,location.href);layoutUrl.searchParams.set('complete','1');
  if(!images?.[0])throw Error('Completed van image unavailable');
  await document.fonts.ready;
  const [logo,photo]=await Promise.all([loadImage(new URL('./assets/hexa-logo.jpg',import.meta.url).href),loadImage(images[0])]);
@@ -55,7 +56,7 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
  ctx.fillText(message,46,426);font(17);ctx.fillText(en?'Your selected specification':'お選びいただいた仕様',34,480);
  // Reserve the complete URL before fitting the specification rows.
  font(7);
- const linkText=(data.layoutNumber?(en?'Layout ':'レイアウト番号 ')+data.layoutNumber+(en?' · ':' ・ '):'')+data.url;
+ const linkText=(data.layoutNumber?(en?'Layout ':'レイアウト番号 ')+data.layoutNumber+(en?' · ':' ・ '):'')+layoutUrl.href;
  const linkLines=wrap(ctx,linkText,503),linkHeight=58+linkLines.length*9,linkTop=812-linkHeight;
  const rowSpace=linkTop-27-494;
  // Measure first, then fit the complete list into one page. Never truncate rows.
@@ -83,7 +84,7 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
  ctx.fillStyle=ink;ctx.fillRect(46,linkTop+28,503,22);
  font(11,true);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(en?'Open in the Layout Studio ↗':'レイアウトスタジオで開く ↗',297.5,linkTop+43);ctx.textAlign='left';
  font(7);linkLines.forEach((line,i)=>ctx.fillText(line,46,linkTop+61+i*9));
- return imagePdf(canvas.toDataURL('image/jpeg',.94),canvas.width,canvas.height,data.url,[34,30,561,842-linkTop]);
+ return imagePdf(canvas.toDataURL('image/jpeg',.94),canvas.width,canvas.height,layoutUrl.href,[34,30,561,842-linkTop]);
 }
 export async function downloadSpecification(options){
  const blob=await createSpecification(options),url=URL.createObjectURL(blob),a=document.createElement('a');

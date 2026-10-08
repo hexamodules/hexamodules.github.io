@@ -96,3 +96,8 @@
 }
 
 @media(max-width:360px), (max-height:600px) and (max-width:850px) and (orientation:landscape){.location-connection>span{display:none}}
+
+/* Keep shared layouts covered until the completed van is ready. */
+.complete-loading body *{visibility:hidden!important}
+.complete-loading #loading,.complete-loading #loading *{visibility:visible!important}
+.complete-loading #loading{display:flex!important}
