@@ -1,4 +1,4 @@
-import {enquirySelections} from './dealer-enquiry.js?v=20261007-2000';
+import {enquirySelections} from './dealer-enquiry.js?v=20261007-direct';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';
@@ -53,14 +53,19 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
  ctx.fillStyle='#e5eddd';ctx.fillRect(34,392,527,57);font(16,true);
  const message=en?'Discuss this layout with your dealer.':'このレイアウトで、取扱店にご相談いただけます';
  ctx.fillText(message,46,426);font(17);ctx.fillText(en?'Your selected specification':'お選びいただいた仕様',34,480);
+ // Reserve the complete URL before fitting the specification rows.
+ font(7);
+ const linkText=(data.layoutNumber?(en?'Layout ':'レイアウト番号 ')+data.layoutNumber+(en?' · ':' ・ '):'')+data.url;
+ const linkLines=wrap(ctx,linkText,503),linkHeight=58+linkLines.length*9,linkTop=812-linkHeight;
+ const rowSpace=linkTop-27-494;
  // Measure first, then fit the complete list into one page. Never truncate rows.
  let size=9,measured,total;
  do{
   font(size);measured=rows.map(row=>({...row,lines:wrap(ctx,row.value,245)}));total=0;
   for(let i=0;i<measured.length;i+=2)total+=Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
-  if(total<=258)break;size-=.25;
+  if(total<=rowSpace)break;size-=.25;
  }while(size>=6.5);
- if(total>258)throw Error('Specification exceeds one page');
+ if(total>rowSpace)throw Error('Specification exceeds one page');
  let y=494;
  for(let i=0;i<measured.length;i+=2){
   const rowHeight=Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
@@ -72,9 +77,13 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
   }
   y+=rowHeight;
  }
- font(8);ctx.fillText(en?'Images are for illustration only.':'画像はイメージです。',34,773);
- ctx.strokeStyle='#bdcdae';ctx.strokeRect(34,785,527,27);font(10,true);ctx.fillText(en?'Open in the studio ↗':'スタジオで開く ↗',43,803);
- return imagePdf(canvas.toDataURL('image/jpeg',.94),canvas.width,canvas.height,data.url,[34,30,561,57]);
+ font(8);ctx.fillText(en?'Images are for illustration only.':'画像はイメージです。',34,linkTop-12);
+ ctx.strokeStyle='#bdcdae';ctx.lineWidth=1;ctx.strokeRect(34,linkTop,527,linkHeight);
+ font(14,true);ctx.fillText(en?'You can open this layout anytime.':'このレイアウトは、いつでも開けます。',46,linkTop+20);
+ ctx.fillStyle=ink;ctx.fillRect(46,linkTop+28,503,22);
+ font(11,true);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(en?'Open in the Layout Studio ↗':'レイアウトスタジオで開く ↗',297.5,linkTop+43);ctx.textAlign='left';
+ font(7);linkLines.forEach((line,i)=>ctx.fillText(line,46,linkTop+61+i*9));
+ return imagePdf(canvas.toDataURL('image/jpeg',.94),canvas.width,canvas.height,data.url,[34,30,561,842-linkTop]);
 }
 export async function downloadSpecification(options){
  const blob=await createSpecification(options),url=URL.createObjectURL(blob),a=document.createElement('a');
