@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Fit actual visible vertices, including open doors and furniture, in camera space.
 // The cloned camera keeps the exact viewing direction and never updates OrbitControls.
-export function photoCamera(source,models,bodyModels,width,height){
+export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248){
  const camera=source.clone(),inverse=source.quaternion.clone().invert();
  const collect=groups=>{
   const points=[];
@@ -28,8 +28,10 @@ export function photoCamera(source,models,bodyModels,width,height){
  const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
  // Reserve the central square for the entire vehicle and its badge.
  const side=Math.min(width,height),padding=side*.04,branding=side*(.03+.05+.016+.032*2+.016);
- const lift=branding/2;
- const limitX=((side-2*padding)/width)*tangent*camera.aspect,limitY=((side-2*padding-branding)/height)*tangent;
+ const vehicleCenter=badgeTop/2;
+ const lift=height/2-vehicleCenter;
+ const limitX=((side-2*padding)/width)*tangent*camera.aspect,oldLimitY=((side-2*padding-branding)/height)*tangent;
+ const limitY=((badgeTop-2*padding)/height)*tangent;
  let front=-Infinity;for(const p of points)front=Math.max(front,p[2]);
  function center(axis,distance){
   let offset=0;
@@ -42,14 +44,20 @@ export function photoCamera(source,models,bodyModels,width,height){
   }
   return offset;
  }
- function fit(distance){
+ function fit(distance,yLimit=limitY){
   const x=center(0,distance),y=center(1,distance);
-  const fits=points.every(p=>Math.abs(p[0]-x)<=(distance-p[2])*limitX&&Math.abs(p[1]-y)<=(distance-p[2])*limitY);
+  const fits=points.every(p=>Math.abs(p[0]-x)<=(distance-p[2])*limitX&&Math.abs(p[1]-y)<=(distance-p[2])*yLimit);
   return {x,y,fits};
  }
- let low=front+Math.max(camera.near,1),high=low+10000;
- while(!fit(high).fits){high=front+(high-front)*2;if(high-front>1e8)throw Error('Photo fit failed')}
- for(let pass=0;pass<32;pass++){const mid=(low+high)/2;if(fit(mid).fits)high=mid;else low=mid}
+ function distanceFor(yLimit){
+  let low=front+Math.max(camera.near,1),high=low+10000;
+  while(!fit(high,yLimit).fits){high=front+(high-front)*2;if(high-front>1e8)throw Error('Photo fit failed')}
+  for(let pass=0;pass<32;pass++){const mid=(low+high)/2;if(fit(mid,yLimit).fits)high=mid;else low=mid}
+  return high;
+ }
+ const oldDistance=distanceFor(oldLimitY);
+ // Cap enlargement at 1.1 for every depth, retaining a safe gap above the badge.
+ const high=Math.max(distanceFor(limitY),front+(oldDistance-front)/1.1);
  const {x,y}=fit(high);
  camera.position.set(x,y,high).applyQuaternion(source.quaternion);
  camera.far=Math.max(source.far,high-front+100000);
@@ -64,9 +72,9 @@ export function photoCamera(source,models,bodyModels,width,height){
  return camera;
 }
 
-export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,createCanvas=()=>document.createElement('canvas')}){
+export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,createCanvas=()=>document.createElement('canvas')}){
  const width=2000,height=2000;
- const photo=photoCamera(camera,models,bodyModels,width,height);
+ const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop);
  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
  const viewport=renderer.getViewport(new THREE.Vector4()),scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
  try{

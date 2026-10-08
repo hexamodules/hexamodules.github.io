@@ -5,10 +5,30 @@ export function selectedFurniture(){
   .map(link=>link.textContent.replace(/\s*↗\s*$/, '').trim()).filter(Boolean);
 }
 
+export function photoBadgeLayout(ctx,width,height,selections=[]){
+ const side=Math.min(width,height);
+ const chipFont=side*.016,chipHeight=side*.032,chipGap=chipHeight/2,pad=chipFont*.75;
+ ctx.font=`300 ${chipFont}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
+ const maxWidth=side*.92;
+ const items=selections.map(text=>({text,width:ctx.measureText(text).width+pad*2}));
+ const total=items.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,items.length-1);
+ let rows=items.length?[items]:[];
+ if(total>maxWidth&&items.length>1){
+  // Choose the most balanced ordered two-row split, without truncating names.
+  const rowWidth=row=>row.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,row.length-1);
+  let split=1;
+  for(let i=2;i<items.length;i++)if(Math.max(rowWidth(items.slice(0,i)),rowWidth(items.slice(i)))<Math.max(rowWidth(items.slice(0,split)),rowWidth(items.slice(split))))split=i;
+  rows=[items.slice(0,split),items.slice(split)];
+ }
+ const chipBlock=rows.length?side*.016+rows.length*chipHeight+(rows.length-1)*chipGap:0;
+ return {y:height-side*.07-side*.05-chipBlock,rows,chipHeight,chipGap,pad,maxWidth};
+}
+
 export function composePhoto(source,logo,selections=[]){
  const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
  if(!canvas.width||!canvas.height)throw Error('Empty canvas');
  const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);
+ const layout=photoBadgeLayout(ctx,canvas.width,canvas.height,selections);
  const h=Math.min(canvas.width,canvas.height)*.05,gap=h*.5;
  const logoWidth=h*670/228;
  // Same family stack as the studio heading (inherited from body).
@@ -21,8 +41,7 @@ export function composePhoto(source,logo,selections=[]){
  const width=logoWidth+gap+textWidth;
  const side=Math.min(canvas.width,canvas.height);
  const x=(canvas.width-width)/2;
- const bottom=source.photoVehicleBottom??(canvas.height/2+side*.38);
- const y=bottom+side*.03;
+ const y=layout.y;
  // Measure only the destination region, before drawing any branding.
  const left=Math.max(0,Math.floor(x)),top=Math.max(0,Math.floor(y));
  const region=ctx.getImageData(left,top,Math.min(canvas.width-left,Math.ceil(x+width)-left),Math.min(canvas.height-top,Math.ceil(y+h)-top));
@@ -56,19 +75,8 @@ export function composePhoto(source,logo,selections=[]){
   ctx.fillText(letters[i],textX,baseline);textX+=advances[i]+tracking;
  }
  // Plain furniture names, with normal tracking, below the centred branding.
- const chipFont=side*.016,chipHeight=side*.032,chipGap=chipHeight/2,pad=chipFont*.75;
- ctx.font=`300 ${chipFont}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
- const maxWidth=side*.92;
- const items=selections.map(text=>({text,width:ctx.measureText(text).width+pad*2}));
- const total=items.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,items.length-1);
- let rows=items.length?[items]:[];
- if(total>maxWidth&&items.length>1){
-  // Choose the most balanced ordered two-row split, without truncating names.
-  const rowWidth=row=>row.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,row.length-1);
-  let split=1;
-  for(let i=2;i<items.length;i++)if(Math.max(rowWidth(items.slice(0,i)),rowWidth(items.slice(i)))<Math.max(rowWidth(items.slice(0,split)),rowWidth(items.slice(split))))split=i;
-  rows=[items.slice(0,split),items.slice(split)];
- }
+ const {rows,chipHeight,chipGap,pad,maxWidth}=layout;
+ ctx.font=`300 ${side*.016}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
  ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1;ctx.textBaseline='middle';
  rows.forEach((row,index)=>{
   const natural=row.reduce((sum,item)=>sum+item.width,0)+chipGap*(row.length-1);
@@ -179,7 +187,9 @@ export function initStudioPhoto(){
    // Keep this to one frame/task; share rejection retains the explicit download fallback.
    await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
    const selections=selectedFurniture();
-   const canvas=composePhoto(studio.capturePhoto(),logo,selections);
+   const measure=document.createElement('canvas').getContext('2d');
+   const {y:badgeTop}=photoBadgeLayout(measure,2000,2000,selections);
+   const canvas=composePhoto(studio.capturePhoto({badgeTop}),logo,selections);
    const encoded=canvas.toDataURL('image/jpeg',.92).split(',')[1];
    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
    const number=String(studio.layoutNumber||'layout').replace(/[^a-zA-Z0-9_-]/g,'-');

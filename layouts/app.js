@@ -1,4 +1,4 @@
-import {capturePhoto} from './photo-camera.js?v=20261008-chips-v6';
+import {capturePhoto} from './photo-camera.js?v=20261008-balance-v7';
 import {createVisualMaterials} from './visual-materials.js?v=2';
 import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
 import {initRetailerSimulation} from './retailer-simulation.js?v=1';
@@ -886,7 +886,7 @@ const outro=createOutro({
  }
 });
 // Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
-window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:()=>capturePhoto({renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
+window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:(options={})=>capturePhoto({...options,renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
 $('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
 initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:()=>{
  renderer.render(scene,camera);
