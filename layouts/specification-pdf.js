@@ -1,4 +1,5 @@
-import {enquirySelections} from './dealer-enquiry.js?v=20261008-complete';
+import {studioEvent} from './analytics.js?v=20261008-ga';
+import {enquirySelections} from './dealer-enquiry.js?v=20261008-ga';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';
@@ -89,5 +90,5 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
 export async function downloadSpecification(options){
  const blob=await createSpecification(options),url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download=`Hexa-${options.lang==='en'?'Specification':'仕様書'}-${options.data.layoutNumber}.pdf`;
- document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+ document.body.append(a);a.click();a.remove();studioEvent('spec_pdf_download');setTimeout(()=>URL.revokeObjectURL(url),60000);
 }

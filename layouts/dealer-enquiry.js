@@ -1,3 +1,4 @@
+import {studioEvent} from './analytics.js?v=20261008-ga';
 import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
 import {dealerContext} from './dealer-context.js?v=20261007-1850';
 import {calculateReferencePrice} from './reference-pricing.js?v=20261007-1850';
@@ -145,10 +146,10 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
   if(snapshot)for(const item of select(catalogue,snapshot.configuration,lang())){const li=document.createElement('li');li.textContent=(item.number==null?'':item.number+' · ')+item.label;list.append(li)}
  }
  function open(){
-  if(pending){refresh();dialog.showModal();return;}
+  if(pending){refresh();dialog.showModal();studioEvent('enquiry_open');return;}
   try{const next=describe({includeImage:false});if(snapshot&&snapshot.url!==next.url&&!pending){sent=false;status='';fieldset.disabled=false;}snapshot=next;select(catalogue,snapshot.configuration,lang());if(status==='selectionError')status='';}
   catch{snapshot=null;status='selectionError';}
-  refresh();dialog.showModal();
+  refresh();dialog.showModal();studioEvent('enquiry_open');
  }
  document.addEventListener('click',e=>{
   if(!dealerId())return;
@@ -185,6 +186,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    const confirmed=await confirmReceipt(ENQUIRY_ENDPOINT,receipt);
    sent=confirmed==='SENT'||confirmed==='REVIEW_REQUIRED'||confirmed==='PROCESSING';
    status=confirmed==='SENT'?'sent':sent?'review':'failed';
+   if(sent)studioEvent('enquiry_sent');
   }catch{status='failed';}
   finally{clearTimeout(timer);pending=false;fieldset.disabled=sent;refresh();if(sent){dialog.scrollTop=0;dialog.querySelector('.enquiry-close').focus({preventScroll:true});}}
  });

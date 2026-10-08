@@ -1,5 +1,6 @@
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261008-complete';
-import {downloadSpecification} from './specification-pdf.js?v=20261008-complete';
+import {studioEvent} from './analytics.js?v=20261008-ga';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261008-ga';
+import {downloadSpecification} from './specification-pdf.js?v=20261008-ga';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
@@ -40,6 +41,7 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
   try{await preparation;paint(11600);await showcase();ready=true;root.classList.add('outro-ready');
    $('#outro-contact').disabled=false;$('#outro-specification').disabled=false;$('#outro-edit').disabled=false;
    mark('ready','完成したレイアウトです。ドラッグで回してご覧ください。');
+   studioEvent('studio_complete_view');
   }catch(e){await fail(e)}finally{finishing=false}
  }
  async function edit(){

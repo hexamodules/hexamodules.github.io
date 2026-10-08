@@ -1,3 +1,4 @@
+import {studioEvent} from './analytics.js?v=20261008-ga';
 // The opening uses the same vehicle and tailgate geometry as the configurator.
 // It never persists the temporary empty scene over a shared configuration.
 export function createOpening({prepare,pose,restore}) {
@@ -60,7 +61,7 @@ export function createOpening({prepare,pose,restore}) {
    paint(0);lastTime=performance.now();frame=requestAnimationFrame(tick);
   }catch(error){fail(error)}
  }
- start.addEventListener('click',finish);
+ start.addEventListener('click',()=>{if(active&&!leaving&&!start.disabled)studioEvent('studio_start');finish();});
  reduced.addEventListener('change',()=>{if(active&&!leaving&&reduced.matches&&root.dataset.introState!=='loading'){cancelAnimationFrame(frame);paint(4200)}});
  document.querySelector('#replay-opening').addEventListener('click',()=>{document.querySelector('#studio-help').close();play()});
  return {play,start:finish,get active(){return active}};

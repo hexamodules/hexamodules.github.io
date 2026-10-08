@@ -1,6 +1,7 @@
 /* Phone-only presentation. Original controls and their listeners remain authoritative. */
 (() => {
   'use strict';
+  const studioEvent=name=>{import('./analytics.js?v=20261008-ga').then(module=>module.studioEvent(name)).catch(()=>{});};
   const root=document.documentElement, $=s=>document.querySelector(s);
   const width=matchMedia('(max-width: 700px)'), touch=matchMedia('(any-pointer: coarse)');
   const panel=$('.configuration'), scroll=$('.panel-scroll'), stage=$('.stage');
@@ -38,7 +39,7 @@
   const number=make('p','mobile-number'), specs=make('div','mobile-specs'), status=make('p','mobile-status');status.setAttribute('role','status');
   const shareUrl=button('mobile-share-url','URLを共有',async()=>{
     const url=new URL(location.href);url.searchParams.set('complete','1');
-    try {if(navigator.share)await navigator.share({title:'Hexa',url:url.href});else {await navigator.clipboard.writeText(url.href);set(shareUrl,en()?'URL copied':'URLをコピーしました');}}
+    try {if(navigator.share)await navigator.share({title:'Hexa',url:url.href});else {await navigator.clipboard.writeText(url.href);set(shareUrl,en()?'URL copied':'URLをコピーしました');}studioEvent('share_url');}
     catch(e){if(e.name!=='AbortError')set(shareUrl,en()?'Copy the address bar URL':'アドレス欄のURLをコピーしてください');}
   });other.append(shareUrl);
   const extraButtons=keys.filter(k=>!flow.includes(k)).map(k=>{const b=button('mobile-extra','',()=>choose(k));other.append(b);return [k,b];});

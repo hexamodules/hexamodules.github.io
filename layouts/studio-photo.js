@@ -1,3 +1,4 @@
+import {studioEvent} from './analytics.js?v=20261008-ga';
 // Only the WebGL canvas is copied; page text, prices and controls never enter the photo.
 export function selectedFurniture(){
  // Only module links belong to the three furniture rows; omit badges and link arrows.
@@ -183,7 +184,7 @@ export function initStudioPhoto(){
  logo.onerror=()=>notice(en()?'Could not load the logo. Please reload.':'ロゴを読み込めませんでした。再読み込みしてください。');
  logo.src=new URL('./assets/hexa-logo.jpg',import.meta.url).href;
  function download(file){
-  const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+  const url=URL.createObjectURL(file),a=document.createElement('a');a.href=url;a.download=file.name;document.body.append(a);a.click();a.remove();studioEvent('photo_save');setTimeout(()=>URL.revokeObjectURL(url),60000);
  }
  button.addEventListener('click',async()=>{
   const studio=window.__hexaStudio;if(!ready()||!logoReady||busy||!studio)return;
@@ -204,7 +205,7 @@ export function initStudioPhoto(){
    showPreview(file,count,selections);
    let shareable=false;try{shareable=touch()&&!!navigator.share&&!!navigator.canShare?.({files:[file]})}catch{/* Download when file sharing is unavailable. */}
    if(shareable){
-    try{await navigator.share({files:[file]})}
+    try{await navigator.share({files:[file]});studioEvent('photo_save')}
     catch(error){
      if(error.name==='AbortError'){notice(en()?'Cancelled.':'キャンセルしました。');return}
      // Keep an explicit tap available if embedding or browser policy rejects sharing.
