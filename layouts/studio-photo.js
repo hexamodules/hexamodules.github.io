@@ -8,13 +8,27 @@ export function selectedFurniture(){
 export function photoBadgeLayout(ctx,width,height){
  const side=Math.min(width,height),h=side*.05;
  const tagline='Your Life, Your Style, Your Space';
- const taglineSize=h*.55*.75,taglineTracking=taglineSize*.18;
- const taglineFont=`300 ${taglineSize}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
+ const family='-apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif';
+ const labelSize=h*.55;
+ ctx.font=`300 ${labelSize}px ${family}`;
+ const labelLetters=Array.from('LAYOUT STUDIO');
+ const labelWidth=labelLetters.reduce((sum,letter)=>sum+ctx.measureText(letter).width,0)+labelSize*.18*(labelLetters.length-1);
+ const lockupWidth=h*670/228+h*.5+Math.max(1,side*.001)+labelWidth;
+ const taglineLetters=Array.from(tagline);
+ let taglineSize=labelSize;
+ // Keep the generous 0.18em tracking; fit by increasing the font size.
+ for(let i=0;i<3;i++){
+  ctx.font=`300 ${taglineSize}px ${family}`;
+  const measured=taglineLetters.reduce((sum,letter)=>sum+ctx.measureText(letter).width,0)+taglineSize*.18*(taglineLetters.length-1);
+  taglineSize*=lockupWidth*1.12/measured;
+ }
+ const taglineTracking=taglineSize*.18;
+ const taglineFont=`300 ${taglineSize}px ${family}`;
  ctx.font=taglineFont;
  const metrics=ctx.measureText(tagline);
  const taglineHeight=metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent;
- const bottom=height-side*.07;
- return {y:bottom-h-h*.6-taglineHeight,tagline,taglineFont,taglineTracking,taglineBaseline:bottom-metrics.actualBoundingBoxDescent};
+ const bottom=height-side*.11;
+ return {y:bottom-h-taglineHeight*.8-taglineHeight,tagline,taglineFont,taglineTracking,taglineBaseline:bottom-metrics.actualBoundingBoxDescent};
 }
 
 export function composePhoto(source,logo,selections=[]){
