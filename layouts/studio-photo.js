@@ -3,16 +3,35 @@ export function composePhoto(source,logo){
  const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
  if(!canvas.width||!canvas.height)throw Error('Empty canvas');
  const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);
- const h=Math.min(canvas.width,canvas.height)*.05,pad=h*.45,gap=h*.5;
- // Crop the whitespace of the supplied 960 × 360 logo, preserving the complete mark.
+ const h=Math.min(canvas.width,canvas.height)*.05,gap=h*.5;
  const logoWidth=h*670/228;
  ctx.font=`500 ${h*.46}px Arial, sans-serif`;
- const label='LAYOUT STUDIO',width=pad*2+logoWidth+gap+ctx.measureText(label).width,height=h+pad*2;
- const x=canvas.width-h-width,y=canvas.height-h-height,r=h*.25;
- ctx.fillStyle='#fff';ctx.shadowColor='#00000020';ctx.shadowBlur=h*.25;
- ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+width,y,x+width,y+height,r);ctx.arcTo(x+width,y+height,x,y+height,r);ctx.arcTo(x,y+height,x,y,r);ctx.arcTo(x,y,x+width,y,r);ctx.closePath();ctx.fill();ctx.shadowBlur=0;
- ctx.drawImage(logo,130,77,670,228,x+pad,y+pad,logoWidth,h);
- ctx.fillStyle='#344238';ctx.textBaseline='middle';ctx.fillText(label,x+pad+logoWidth+gap,y+height/2);
+ const label='LAYOUT STUDIO',width=logoWidth+gap+ctx.measureText(label).width;
+ const x=canvas.width-h-width,y=canvas.height-h-h;
+ // Measure only the destination region, before drawing any branding.
+ const left=Math.max(0,Math.floor(x)),top=Math.max(0,Math.floor(y));
+ const region=ctx.getImageData(left,top,Math.min(canvas.width-left,Math.ceil(x+width)-left),Math.min(canvas.height-top,Math.ceil(y+h)-top));
+ let luminance=0;
+ for(let i=0;i<region.data.length;i+=4){
+  const linear=c=>{c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)};
+  luminance+=.2126*linear(region.data[i])+.7152*linear(region.data[i+1])+.0722*linear(region.data[i+2]);
+ }
+ // Relative luminance .22 is near equal contrast for white and #2f3f33.
+ const dark=luminance/(region.data.length/4)>=.22;
+ const ink=dark?[47,63,51]:[255,255,255];
+ // Crop the supplied JPEG. Remove near-white compression noise, and turn
+ // edge coverage into alpha before recolouring, so no white fringe remains.
+ const mark=document.createElement('canvas');mark.width=670;mark.height=228;
+ const markCtx=mark.getContext('2d');markCtx.drawImage(logo,130,77,670,228,0,0,670,228);
+ const pixels=markCtx.getImageData(0,0,670,228);
+ for(let i=0;i<pixels.data.length;i+=4){
+  const value=.2126*pixels.data[i]+.7152*pixels.data[i+1]+.0722*pixels.data[i+2];
+  pixels.data[i+3]=Math.round(255*Math.max(0,Math.min(1,(245-value)/(245-120))));
+  pixels.data[i]=ink[0];pixels.data[i+1]=ink[1];pixels.data[i+2]=ink[2];
+ }
+ markCtx.putImageData(pixels,0,0);
+ ctx.drawImage(mark,x,y,logoWidth,h);
+ ctx.fillStyle=dark?'#2f3f33':'#fff';ctx.textBaseline='middle';ctx.fillText(label,x+logoWidth+gap,y+h/2);
  return canvas;
 }
 
