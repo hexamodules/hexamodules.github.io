@@ -26,8 +26,10 @@ export function photoCamera(source,models,bodyModels,width,height){
  if(!points.length||!body.length)throw Error('No vehicle to frame');
  camera.aspect=width/height;camera.zoom=1;camera.clearViewOffset();
  const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
- const padding=Math.min(width,height)*.08;
- const limitX=(1-2*padding/width)*tangent*camera.aspect,limitY=(1-2*padding/height)*tangent;
+ // Reserve the central square for the entire vehicle and its badge.
+ const side=Math.min(width,height),padding=side*.04,branding=side*(.03+.05);
+ const lift=branding/2;
+ const limitX=((side-2*padding)/width)*tangent*camera.aspect,limitY=((side-2*padding-branding)/height)*tangent;
  let front=-Infinity;for(const p of points)front=Math.max(front,p[2]);
  function center(axis,distance){
   let offset=0;
@@ -51,7 +53,14 @@ export function photoCamera(source,models,bodyModels,width,height){
  const {x,y}=fit(high);
  camera.position.set(x,y,high).applyQuaternion(source.quaternion);
  camera.far=Math.max(source.far,high-front+100000);
- camera.updateProjectionMatrix();camera.updateMatrixWorld();
+ camera.updateProjectionMatrix();
+ // Lift the vehicle by half the reserved badge space; angle and shape stay intact.
+ camera.projectionMatrix.elements[9]-=2*lift/height;
+ camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+ camera.updateMatrixWorld();
+ let bottom=-Infinity;
+ for(const p of points){const projected=new THREE.Vector3(...p).applyQuaternion(source.quaternion).project(camera);bottom=Math.max(bottom,(1-projected.y)*height/2)}
+ camera.userData.photoVehicleBottom=bottom;
  return camera;
 }
 
@@ -64,7 +73,8 @@ export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=f
   renderer.setPixelRatio(1);renderer.setSize(width,height,false);renderer.setViewport(0,0,width,height);renderer.setScissorTest(false);
   renderer.render(scene,photo);
   const result=createCanvas();result.width=width;result.height=height;
-  result.getContext('2d').drawImage(renderer.domElement,0,0);return result;
+  result.getContext('2d').drawImage(renderer.domElement,0,0);
+  result.photoVehicleBottom=photo.userData.photoVehicleBottom;return result;
  }finally{
   renderer.setPixelRatio(ratio);renderer.setSize(size.x,size.y,false);
   renderer.setViewport(viewport);renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);

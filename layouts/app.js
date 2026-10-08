@@ -1,4 +1,4 @@
-import {capturePhoto} from './photo-camera.js?v=20261008-center';
+import {capturePhoto} from './photo-camera.js?v=20261008-square-v5';
 import {createVisualMaterials} from './visual-materials.js?v=2';
 import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
 import {initRetailerSimulation} from './retailer-simulation.js?v=1';

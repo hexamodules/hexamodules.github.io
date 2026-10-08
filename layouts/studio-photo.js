@@ -13,7 +13,10 @@ export function composePhoto(source,logo){
  const advances=letters.map(letter=>ctx.measureText(letter).width);
  const textWidth=advances.reduce((sum,value)=>sum+value,0)+tracking*(letters.length-1);
  const width=logoWidth+gap+textWidth;
- const x=canvas.width-h-width,y=canvas.height-h-h;
+ const side=Math.min(canvas.width,canvas.height);
+ const x=(canvas.width-width)/2;
+ const bottom=source.photoVehicleBottom??(canvas.height/2+side*.38);
+ const y=bottom+side*.03;
  // Measure only the destination region, before drawing any branding.
  const left=Math.max(0,Math.floor(x)),top=Math.max(0,Math.floor(y));
  const region=ctx.getImageData(left,top,Math.min(canvas.width-left,Math.ceil(x+width)-left),Math.min(canvas.height-top,Math.ceil(y+h)-top));
