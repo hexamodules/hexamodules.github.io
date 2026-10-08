@@ -57,6 +57,58 @@ export function initStudioPhoto(){
  if(!button)return;
  const status=document.querySelector('#outro-photo-status'),hint=document.querySelector('.outro-gesture');
  const logo=new Image();let logoReady=false,busy=false,sequence=0,statusTimer,hintTimer,wasReady=false,drag;
+ // Feedback stays outside the WebGL canvas and never enters the saved JPEG.
+ let audioContext,preview,previewURL,previewTimer,flash;
+ const reduced=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+ function shutter(){
+  try{
+   const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;
+   if(!audioContext||audioContext.state==='closed')audioContext=new Audio();
+   const ctx=audioContext;
+   if(ctx.state==='suspended')ctx.resume().catch(()=>{});
+   const start=ctx.currentTime;
+   for(const [offset,duration,volume] of [[0,.04,.12],[.06,.06,.09]]){
+    const buffer=ctx.createBuffer(1,Math.ceil(ctx.sampleRate*duration),ctx.sampleRate);
+    const data=buffer.getChannelData(0);
+    for(let i=0;i<data.length;i++)data[i]=Math.random()*2-1;
+    const source=ctx.createBufferSource(),filter=ctx.createBiquadFilter(),gain=ctx.createGain();
+    source.buffer=buffer;filter.type='highpass';filter.frequency.value=1400;
+    gain.gain.setValueAtTime(0,start+offset);
+    gain.gain.linearRampToValueAtTime(volume,start+offset+.002);
+    gain.gain.exponentialRampToValueAtTime(.001,start+offset+duration);
+    source.connect(filter);filter.connect(gain);gain.connect(ctx.destination);
+    source.onended=()=>{source.disconnect();filter.disconnect();gain.disconnect()};
+    source.start(start+offset);source.stop(start+offset+duration);
+   }
+  }catch{/* Sound is optional; saving must still work. */}
+ }
+ function pressFeedback(){
+  if(reduced())return;
+  try{
+   button.animate([{transform:'scale(1)'},{transform:'scale(.95)'},{transform:'scale(1)'}],{duration:100});
+   if(!flash){flash=document.createElement('div');flash.className='photo-flash';flash.setAttribute('aria-hidden','true');document.querySelector('#viewport').append(flash)}
+   flash.getAnimations().forEach(animation=>animation.cancel());
+   flash.animate([{opacity:.8},{opacity:0}],{duration:120});
+  }catch{/* Feedback must not block saving on older browsers. */}
+ }
+ function clearPreview(){
+  clearTimeout(previewTimer);preview?.remove();preview=null;
+  if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;
+ }
+ function showPreview(file,count){
+  try{
+   clearPreview();
+   preview=document.createElement('figure');preview.className='photo-preview';
+   const image=document.createElement('img'),caption=document.createElement('figcaption');
+   image.alt='';previewURL=URL.createObjectURL(file);image.src=previewURL;
+   caption.textContent=en()?`Saved (photo ${count}).`:`保存しました（${count}枚目）`;
+   preview.append(image,caption);
+   // Position above the central photo button on phones, including landscape.
+   preview.style.setProperty('--photo-preview-bottom',`${Math.max(12,window.innerHeight-button.getBoundingClientRect().top+12)}px`);
+   document.body.append(preview);
+   previewTimer=setTimeout(clearPreview,2450);
+  }catch{clearPreview()}
+ }
  const touch=()=>navigator.maxTouchPoints>0||matchMedia('(any-pointer: coarse)').matches;
  const en=()=>root.lang==='en';
  const ready=()=>root.classList.contains('outro-ready');
@@ -69,7 +121,7 @@ export function initStudioPhoto(){
  function sync(){
   const visible=ready();button.disabled=!visible||!logoReady||busy;
   if(visible&&!wasReady){hint.classList.add('photo-rotate-large');clearTimeout(hintTimer);hintTimer=setTimeout(()=>hint.classList.remove('photo-rotate-large'),6000)}
-  if(!visible){hint.classList.remove('photo-rotate-large');clearTimeout(hintTimer);drag=null;status.textContent=''}
+  if(!visible){hint.classList.remove('photo-rotate-large');clearTimeout(hintTimer);drag=null;status.textContent='';clearPreview()}
   wasReady=visible;
  }
  logo.onload=()=>{logoReady=true;sync()};
@@ -82,12 +134,16 @@ export function initStudioPhoto(){
   const studio=window.__hexaStudio;if(!ready()||!logoReady||busy||!studio)return;
   busy=true;sync();status.textContent='';clearTimeout(statusTimer);
   try{
-   // No await before navigator.share: preserve the tap's transient activation on Safari.
+   shutter();pressFeedback();
+   // Let the immediate feedback paint before synchronous rendering/JPEG encoding.
+   // Keep this to one frame/task; share rejection retains the explicit download fallback.
+   await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
    const canvas=composePhoto(studio.capturePhoto(),logo);
    const encoded=canvas.toDataURL('image/jpeg',.92).split(',')[1];
    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
    const number=String(studio.layoutNumber||'layout').replace(/[^a-zA-Z0-9_-]/g,'-');
    const count=++sequence,file=new File([bytes],`Hexa-${number}-${count}.jpg`,{type:'image/jpeg'});
+   showPreview(file,count);
    let shareable=false;try{shareable=touch()&&!!navigator.share&&!!navigator.canShare?.({files:[file]})}catch{/* Download when file sharing is unavailable. */}
    if(shareable){
     try{await navigator.share({files:[file]})}

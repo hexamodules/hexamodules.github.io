@@ -25,3 +25,13 @@
 }
 
 @media(min-width:851px) and (max-width:1100px){.outro-action{left:16px;right:16px}.outro-buttons .outro-contact{gap:14px;padding:10px 16px}}
+
+/* Photo feedback is an overlay, never part of the exported canvas. */
+.photo-flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+.photo-preview{position:fixed;left:20px;bottom:20px;width:22vw;margin:0;z-index:1000;pointer-events:none;animation:photo-preview-in 250ms ease-out both,photo-preview-out 200ms ease-in 2250ms forwards}
+.photo-preview img{display:block;width:100%;height:auto;border:1px solid #fff;border-radius:8px;box-shadow:0 4px 18px #0003}
+.photo-preview figcaption{width:max-content;max-width:90vw;margin:6px auto 0;padding:3px 7px;border-radius:4px;background:#fffffff0;color:#344238;text-align:center;font-size:11px;line-height:1.4}
+@keyframes photo-preview-in{from{opacity:0;transform:translateY(12px) scale(1.12)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes photo-preview-out{to{opacity:0}}
+@media(max-width:850px){.photo-preview{left:50%;translate:-50% 0;bottom:var(--photo-preview-bottom,180px)}}
+@media(prefers-reduced-motion:reduce){.photo-flash{display:none}.photo-preview{animation:none}}
