@@ -5,23 +5,16 @@ export function selectedFurniture(){
   .map(link=>link.textContent.replace(/\s*↗\s*$/, '').trim()).filter(Boolean);
 }
 
-export function photoBadgeLayout(ctx,width,height,selections=[]){
- const side=Math.min(width,height);
- const chipFont=side*.016,chipHeight=side*.032,chipGap=chipHeight/2,pad=chipFont*.75;
- ctx.font=`300 ${chipFont}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
- const maxWidth=side*.92;
- const items=selections.map(text=>({text,width:ctx.measureText(text).width+pad*2}));
- const total=items.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,items.length-1);
- let rows=items.length?[items]:[];
- if(total>maxWidth&&items.length>1){
-  // Choose the most balanced ordered two-row split, without truncating names.
-  const rowWidth=row=>row.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,row.length-1);
-  let split=1;
-  for(let i=2;i<items.length;i++)if(Math.max(rowWidth(items.slice(0,i)),rowWidth(items.slice(i)))<Math.max(rowWidth(items.slice(0,split)),rowWidth(items.slice(split))))split=i;
-  rows=[items.slice(0,split),items.slice(split)];
- }
- const chipBlock=rows.length?side*.016+rows.length*chipHeight+(rows.length-1)*chipGap:0;
- return {y:height-side*.07-side*.05-chipBlock,rows,chipHeight,chipGap,pad,maxWidth};
+export function photoBadgeLayout(ctx,width,height){
+ const side=Math.min(width,height),h=side*.05;
+ const tagline='Your Life, Your Style, Your Space';
+ const taglineSize=h*.55*.75,taglineTracking=taglineSize*.18;
+ const taglineFont=`300 ${taglineSize}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
+ ctx.font=taglineFont;
+ const metrics=ctx.measureText(tagline);
+ const taglineHeight=metrics.actualBoundingBoxAscent+metrics.actualBoundingBoxDescent;
+ const bottom=height-side*.07;
+ return {y:bottom-h-h*.6-taglineHeight,tagline,taglineFont,taglineTracking,taglineBaseline:bottom-metrics.actualBoundingBoxDescent};
 }
 
 export function composePhoto(source,logo,selections=[]){
@@ -79,21 +72,16 @@ export function composePhoto(source,logo,selections=[]){
  for(let i=0;i<letters.length;i++){
   ctx.fillText(letters[i],textX,baseline);textX+=advances[i]+tracking;
  }
- // Plain furniture names, with normal tracking, below the centred branding.
- const {rows,chipHeight,chipGap,pad,maxWidth}=layout;
- ctx.font=`300 ${side*.016}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
- ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1;ctx.textBaseline='middle';
- rows.forEach((row,index)=>{
-  const natural=row.reduce((sum,item)=>sum+item.width,0)+chipGap*(row.length-1);
-  const scale=Math.min(1,maxWidth/natural),rowY=y+h+side*.016+index*(chipHeight+chipGap);
-  let left=(canvas.width-natural*scale)/2;
-  for(const item of row){
-   const width=item.width*scale;
-   ctx.beginPath();ctx.roundRect(left,rowY,width,chipHeight,chipHeight*.28);ctx.stroke();
-   ctx.fillText(item.text,left+pad*scale,rowY+chipHeight/2,width-2*pad*scale);
-   left+=width+chipGap*scale;
-  }
- });
+ // One centred tagline; furniture chips remain only in the page preview.
+ ctx.font=layout.taglineFont;
+ const taglineLetters=Array.from(layout.tagline);
+ const taglineAdvances=taglineLetters.map(letter=>ctx.measureText(letter).width);
+ const taglineWidth=taglineAdvances.reduce((sum,value)=>sum+value,0)+layout.taglineTracking*(taglineLetters.length-1);
+ let taglineX=(canvas.width-taglineWidth)/2;
+ for(let i=0;i<taglineLetters.length;i++){
+  ctx.fillText(taglineLetters[i],taglineX,layout.taglineBaseline);
+  taglineX+=taglineAdvances[i]+layout.taglineTracking;
+ }
  return canvas;
 }
 
