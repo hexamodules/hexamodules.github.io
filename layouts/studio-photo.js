@@ -5,8 +5,14 @@ export function composePhoto(source,logo){
  const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);
  const h=Math.min(canvas.width,canvas.height)*.05,gap=h*.5;
  const logoWidth=h*670/228;
- ctx.font=`500 ${h*.46}px Arial, sans-serif`;
- const label='LAYOUT STUDIO',width=logoWidth+gap+ctx.measureText(label).width;
+ // Same family stack as the studio heading (inherited from body).
+ const fontSize=h*.55,tracking=fontSize*.18;
+ ctx.font=`300 ${fontSize}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
+ const label='LAYOUT STUDIO',letters=Array.from(label);
+ // Explicit tracking also works on canvases without letterSpacing support.
+ const advances=letters.map(letter=>ctx.measureText(letter).width);
+ const textWidth=advances.reduce((sum,value)=>sum+value,0)+tracking*(letters.length-1);
+ const width=logoWidth+gap+textWidth;
  const x=canvas.width-h-width,y=canvas.height-h-h;
  // Measure only the destination region, before drawing any branding.
  const left=Math.max(0,Math.floor(x)),top=Math.max(0,Math.floor(y));
@@ -16,9 +22,11 @@ export function composePhoto(source,logo){
   const linear=c=>{c/=255;return c<=.04045?c/12.92:Math.pow((c+.055)/1.055,2.4)};
   luminance+=.2126*linear(region.data[i])+.7152*linear(region.data[i+1])+.0722*linear(region.data[i+2]);
  }
- // Relative luminance .22 is near equal contrast for white and #2f3f33.
+ // Preserve the existing local-background brightness switch.
  const dark=luminance/(region.data.length/4)>=.22;
- const ink=dark?[47,63,51]:[255,255,255];
+ // JPEG line-core RGB mode: (114,112,113), 20,161 pixels with max(R,G,B)<160.
+ // Use its representative colour, excluding pale antialiasing and JPEG outliers.
+ const ink=dark?[114,112,113]:[255,255,255];
  // Crop the supplied JPEG. Remove near-white compression noise, and turn
  // edge coverage into alpha before recolouring, so no white fringe remains.
  const mark=document.createElement('canvas');mark.width=670;mark.height=228;
@@ -31,7 +39,13 @@ export function composePhoto(source,logo){
  }
  markCtx.putImageData(pixels,0,0);
  ctx.drawImage(mark,x,y,logoWidth,h);
- ctx.fillStyle=dark?'#2f3f33':'#fff';ctx.textBaseline='middle';ctx.fillText(label,x+logoWidth+gap,y+h/2);
+ ctx.fillStyle=`rgb(${ink.join(',')})`;ctx.textBaseline='alphabetic';
+ const metrics=ctx.measureText(label);
+ const baseline=y+h/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2;
+ let textX=x+logoWidth+gap;
+ for(let i=0;i<letters.length;i++){
+  ctx.fillText(letters[i],textX,baseline);textX+=advances[i]+tracking;
+ }
  return canvas;
 }
 
