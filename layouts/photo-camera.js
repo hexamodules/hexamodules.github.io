@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Fit actual visible vertices, including open doors and furniture, in camera space.
 // The cloned camera keeps the exact viewing direction and never updates OrbitControls.
-export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248){
+export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248,lowerBy=0){
  const camera=source.clone(),inverse=source.quaternion.clone().invert();
  const collect=groups=>{
   const points=[];
@@ -68,13 +68,17 @@ export function photoCamera(source,models,bodyModels,width,height,badgeTop=heigh
  camera.updateMatrixWorld();
  let bottom=-Infinity;
  for(const p of points){const projected=new THREE.Vector3(...p).applyQuaternion(source.quaternion).project(camera);bottom=Math.max(bottom,(1-projected.y)*height/2)}
- camera.userData.photoVehicleBottom=bottom;
+ // Move only the framing, preserving scale and horizontal centring.
+ const down=Math.min(side*lowerBy,Math.max(0,badgeTop-side*.02-bottom));
+ camera.projectionMatrix.elements[9]+=2*down/height;
+ camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+ camera.userData.photoVehicleBottom=bottom+down;
  return camera;
 }
 
-export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,createCanvas=()=>document.createElement('canvas')}){
+export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,lowerBy=0,createCanvas=()=>document.createElement('canvas')}){
  const width=2000,height=2000;
- const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop);
+ const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop,lowerBy);
  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
  const viewport=renderer.getViewport(new THREE.Vector4()),scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
  try{

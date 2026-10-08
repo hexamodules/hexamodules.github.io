@@ -196,7 +196,7 @@ export function initStudioPhoto(){
    const selections=selectedFurniture();
    const measure=document.createElement('canvas').getContext('2d');
    const {y:badgeTop}=photoBadgeLayout(measure,2000,2000,selections);
-   const canvas=composePhoto(studio.capturePhoto({badgeTop}),logo,selections);
+   const canvas=composePhoto(studio.capturePhoto({badgeTop,lowerBy:.03}),logo,selections);
    const encoded=canvas.toDataURL('image/jpeg',.92).split(',')[1];
    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
    const number=String(studio.layoutNumber||'layout').replace(/[^a-zA-Z0-9_-]/g,'-');
