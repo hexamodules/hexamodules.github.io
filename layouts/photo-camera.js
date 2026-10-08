@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Fit actual visible vertices, including open doors and furniture, in camera space.
 // The cloned camera keeps the exact viewing direction and never updates OrbitControls.
-export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248,lowerBy=0){
+export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248,lowerBy=0,edgeMargin=.015,badgeGap=.02){
  const camera=source.clone(),inverse=source.quaternion.clone().invert();
  const collect=groups=>{
   const points=[];
@@ -26,12 +26,14 @@ export function photoCamera(source,models,bodyModels,width,height,badgeTop=heigh
  if(!points.length||!body.length)throw Error('No vehicle to frame');
  camera.aspect=width/height;camera.zoom=1;camera.clearViewOffset();
  const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
- // Reserve the central square for the entire vehicle and its badge.
- const side=Math.min(width,height),padding=side*.04,branding=side*(.03+.05+.016+.032*2+.016);
- const vehicleCenter=badgeTop/2;
+ // Fit as large as possible at the requested centre, without an enlargement cap.
+ const side=Math.min(width,height),padding=side*edgeMargin;
+ const vehicleCenter=badgeTop/2+side*lowerBy;
  const lift=height/2-vehicleCenter;
- const limitX=((side-2*padding)/width)*tangent*camera.aspect,oldLimitY=((side-2*padding-branding)/height)*tangent;
- const limitY=((badgeTop-2*padding)/height)*tangent;
+ const limitX=((width-2*padding)/width)*tangent*camera.aspect;
+ const limitTop=2*(vehicleCenter-padding)/height*tangent;
+ const limitBottom=2*(badgeTop-side*badgeGap-vehicleCenter)/height*tangent;
+ if(Math.min(limitX,limitTop,limitBottom)<=0)throw Error('No room to frame vehicle');
  let front=-Infinity;for(const p of points)front=Math.max(front,p[2]);
  function center(axis,distance){
   let offset=0;
@@ -44,20 +46,18 @@ export function photoCamera(source,models,bodyModels,width,height,badgeTop=heigh
   }
   return offset;
  }
- function fit(distance,yLimit=limitY){
+ function fit(distance){
   const x=center(0,distance),y=center(1,distance);
-  const fits=points.every(p=>Math.abs(p[0]-x)<=(distance-p[2])*limitX&&Math.abs(p[1]-y)<=(distance-p[2])*yLimit);
+  const fits=points.every(p=>Math.abs(p[0]-x)<=(distance-p[2])*limitX&&p[1]-y<=(distance-p[2])*limitTop&&y-p[1]<=(distance-p[2])*limitBottom);
   return {x,y,fits};
  }
- function distanceFor(yLimit){
+ function distanceFor(){
   let low=front+Math.max(camera.near,1),high=low+10000;
-  while(!fit(high,yLimit).fits){high=front+(high-front)*2;if(high-front>1e8)throw Error('Photo fit failed')}
-  for(let pass=0;pass<32;pass++){const mid=(low+high)/2;if(fit(mid,yLimit).fits)high=mid;else low=mid}
+  while(!fit(high).fits){high=front+(high-front)*2;if(high-front>1e8)throw Error('Photo fit failed')}
+  for(let pass=0;pass<32;pass++){const mid=(low+high)/2;if(fit(mid).fits)high=mid;else low=mid}
   return high;
  }
- const oldDistance=distanceFor(oldLimitY);
- // Cap enlargement at 1.1 for every depth, retaining a safe gap above the badge.
- const high=Math.max(distanceFor(limitY),front+(oldDistance-front)/1.1);
+ const high=distanceFor();
  const {x,y}=fit(high);
  camera.position.set(x,y,high).applyQuaternion(source.quaternion);
  camera.far=Math.max(source.far,high-front+100000);
@@ -68,17 +68,13 @@ export function photoCamera(source,models,bodyModels,width,height,badgeTop=heigh
  camera.updateMatrixWorld();
  let bottom=-Infinity;
  for(const p of points){const projected=new THREE.Vector3(...p).applyQuaternion(source.quaternion).project(camera);bottom=Math.max(bottom,(1-projected.y)*height/2)}
- // Move only the framing, preserving scale and horizontal centring.
- const down=Math.min(side*lowerBy,Math.max(0,badgeTop-side*.02-bottom));
- camera.projectionMatrix.elements[9]+=2*down/height;
- camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
- camera.userData.photoVehicleBottom=bottom+down;
+ camera.userData.photoVehicleBottom=bottom;
  return camera;
 }
 
-export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,lowerBy=0,createCanvas=()=>document.createElement('canvas')}){
+export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,lowerBy=0,edgeMargin=.015,badgeGap=.02,createCanvas=()=>document.createElement('canvas')}){
  const width=2000,height=2000;
- const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop,lowerBy);
+ const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop,lowerBy,edgeMargin,badgeGap);
  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
  const viewport=renderer.getViewport(new THREE.Vector4()),scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
  try{
