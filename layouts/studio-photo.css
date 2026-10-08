@@ -1,0 +1,13 @@
+.outro-photo{margin:0 auto 8px;text-align:center}
+#outro-photo{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;max-width:100%;padding:10px 20px;border:1px solid #aab6a0;border-radius:6px;background:#fffef9ed;color:#344238;font:inherit;font-size:14px;pointer-events:auto}
+#outro-photo svg{flex-shrink:0}#outro-photo:disabled{opacity:.5;pointer-events:none}
+#outro-photo:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.photo-caption{font-size:11px;color:#687462;margin:5px 0 0}
+#outro-photo-status{position:absolute;left:0;right:0;bottom:100%;margin:0;font-size:12px;color:#344238;pointer-events:auto}
+#outro-photo-status:not(:empty){background:#fffffff2;border-radius:6px;padding:6px}
+#outro-photo-status button{min-height:44px}
+.outro-action .outro-gesture{display:block;font-size:11px;line-height:1.5;margin:7px 0 0;letter-spacing:0}
+.outro-action .outro-gesture.photo-rotate-large{font-size:15px;padding:9px 14px;background:#ffffffe0;color:#344238;border-radius:8px;max-width:460px;margin:7px auto 0}
+.outro-night .photo-caption{color:#bac5b4}
+@media(max-width:850px){.outro-active .outro-equipment{bottom:278px}.outro-active:has(.photo-rotate-large) .outro-equipment{bottom:305px}.outro-action .outro-gesture.photo-rotate-large{font-size:14px}#outro-photo{font-size:14px}.outro-photo{margin-bottom:7px}}
+@media(max-height:600px) and (max-width:850px) and (orientation:landscape){.outro-photo{margin:0}.outro-action .outro-gesture{flex-basis:100%;margin:0}.photo-caption{margin:2px 0 0}.outro-active .outro-equipment{bottom:190px}}

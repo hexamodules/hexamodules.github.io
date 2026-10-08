@@ -117,7 +117,7 @@ let lastCeilingColor=ceilingEnabled()?state.ceiling:ceilingPalette.default;
 let lastFloorColor=floorEnabled()?state.floor:floorPalette.default;
 const registrationDestination=createRegistrationDestination({getState:()=>state,isEnabled:()=>shippingForAustralia()&&state.shippingAgent,onChange:changeRegistration,onRefresh:()=>shippingUI()});
 const scene=new THREE.Scene();scene.background=new THREE.Color('#f1f0e9');
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:true});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setClearColor('#f1f0e9');renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('#viewport').append(renderer.domElement);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setClearColor('#f1f0e9');renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('#viewport').append(renderer.domElement);
 const visualMaterials=createVisualMaterials(renderer,scene);
 const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
  needsFrame=true;
@@ -883,6 +883,8 @@ const outro=createOutro({
   return {configuration,layoutNumber:pricing.quote(configuration).number,customerSummary,summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:includeImage?(()=>{try{return contactPreview()}catch{return ''}})():''};
  }
 });
+// Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
+window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),get layoutNumber(){return pricing.quote(outroState||state).number}});
 $('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
 initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:()=>{
  renderer.render(scene,camera);
