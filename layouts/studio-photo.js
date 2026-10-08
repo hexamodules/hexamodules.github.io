@@ -1,5 +1,11 @@
 // Only the WebGL canvas is copied; page text, prices and controls never enter the photo.
-export function composePhoto(source,logo){
+export function selectedFurniture(){
+ // Only module links belong to the three furniture rows; omit badges and link arrows.
+ return [...document.querySelectorAll('#selection-summary > .selection-row > .selection-module > a')]
+  .map(link=>link.textContent.replace(/\s*↗\s*$/, '').trim()).filter(Boolean);
+}
+
+export function composePhoto(source,logo,selections=[]){
  const canvas=document.createElement('canvas');canvas.width=source.width;canvas.height=source.height;
  if(!canvas.width||!canvas.height)throw Error('Empty canvas');
  const ctx=canvas.getContext('2d');ctx.drawImage(source,0,0);
@@ -49,6 +55,32 @@ export function composePhoto(source,logo){
  for(let i=0;i<letters.length;i++){
   ctx.fillText(letters[i],textX,baseline);textX+=advances[i]+tracking;
  }
+ // Plain furniture names, with normal tracking, below the centred branding.
+ const chipFont=side*.016,chipHeight=side*.032,chipGap=chipHeight/2,pad=chipFont*.75;
+ ctx.font=`300 ${chipFont}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif`;
+ const maxWidth=side*.92;
+ const items=selections.map(text=>({text,width:ctx.measureText(text).width+pad*2}));
+ const total=items.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,items.length-1);
+ let rows=items.length?[items]:[];
+ if(total>maxWidth&&items.length>1){
+  // Choose the most balanced ordered two-row split, without truncating names.
+  const rowWidth=row=>row.reduce((sum,item)=>sum+item.width,0)+chipGap*Math.max(0,row.length-1);
+  let split=1;
+  for(let i=2;i<items.length;i++)if(Math.max(rowWidth(items.slice(0,i)),rowWidth(items.slice(i)))<Math.max(rowWidth(items.slice(0,split)),rowWidth(items.slice(split))))split=i;
+  rows=[items.slice(0,split),items.slice(split)];
+ }
+ ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1;ctx.textBaseline='middle';
+ rows.forEach((row,index)=>{
+  const natural=row.reduce((sum,item)=>sum+item.width,0)+chipGap*(row.length-1);
+  const scale=Math.min(1,maxWidth/natural),rowY=y+h+side*.016+index*(chipHeight+chipGap);
+  let left=(canvas.width-natural*scale)/2;
+  for(const item of row){
+   const width=item.width*scale;
+   ctx.beginPath();ctx.roundRect(left,rowY,width,chipHeight,chipHeight*.28);ctx.stroke();
+   ctx.fillText(item.text,left+pad*scale,rowY+chipHeight/2,width-2*pad*scale);
+   left+=width+chipGap*scale;
+  }
+ });
  return canvas;
 }
 
@@ -95,7 +127,7 @@ export function initStudioPhoto(){
   clearTimeout(previewTimer);preview?.remove();preview=null;
   if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;
  }
- function showPreview(file,count){
+ function showPreview(file,count,selections){
   try{
    clearPreview();
    preview=document.createElement('figure');preview.className='photo-preview';
@@ -103,6 +135,14 @@ export function initStudioPhoto(){
    image.alt='';previewURL=URL.createObjectURL(file);image.src=previewURL;
    caption.textContent=en()?`Saved (photo ${count}).`:`保存しました（${count}枚目）`;
    preview.append(image,caption);
+   if(selections.length){
+    const chips=document.createElement('div');chips.className='photo-preview-chips';
+    selections.forEach((text,index)=>{
+     const chip=document.createElement('span');chip.className='photo-preview-chip';chip.textContent=text;
+     chip.style.setProperty('--chip-delay',`${index*60}ms`);chips.append(chip);
+    });
+    preview.append(chips);
+   }
    // Position above the central photo button on phones, including landscape.
    preview.style.setProperty('--photo-preview-bottom',`${Math.max(12,window.innerHeight-button.getBoundingClientRect().top+12)}px`);
    document.body.append(preview);
@@ -138,12 +178,13 @@ export function initStudioPhoto(){
    // Let the immediate feedback paint before synchronous rendering/JPEG encoding.
    // Keep this to one frame/task; share rejection retains the explicit download fallback.
    await new Promise(resolve=>requestAnimationFrame(()=>setTimeout(resolve,0)));
-   const canvas=composePhoto(studio.capturePhoto(),logo);
+   const selections=selectedFurniture();
+   const canvas=composePhoto(studio.capturePhoto(),logo,selections);
    const encoded=canvas.toDataURL('image/jpeg',.92).split(',')[1];
    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
    const number=String(studio.layoutNumber||'layout').replace(/[^a-zA-Z0-9_-]/g,'-');
    const count=++sequence,file=new File([bytes],`Hexa-${number}-${count}.jpg`,{type:'image/jpeg'});
-   showPreview(file,count);
+   showPreview(file,count,selections);
    let shareable=false;try{shareable=touch()&&!!navigator.share&&!!navigator.canShare?.({files:[file]})}catch{/* Download when file sharing is unavailable. */}
    if(shareable){
     try{await navigator.share({files:[file]})}

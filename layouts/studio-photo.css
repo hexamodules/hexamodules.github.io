@@ -35,3 +35,10 @@
 @keyframes photo-preview-out{to{opacity:0}}
 @media(max-width:850px){.photo-preview{left:50%;translate:-50% 0;bottom:var(--photo-preview-bottom,180px)}}
 @media(prefers-reduced-motion:reduce){.photo-flash{display:none}.photo-preview{animation:none}}
+
+.photo-preview-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;width:max-content;max-width:min(440px,calc(100vw - 40px));position:relative;margin-top:8px;color:#727071}
+.photo-preview-chip{border:1px solid currentColor;border-radius:7px;padding:4px 8px;font-size:12px;font-weight:300;line-height:1.4;letter-spacing:normal;background:transparent;animation:photo-chip-in 180ms ease-out var(--chip-delay) both}
+.outro-night .photo-preview-chips{color:#fff}
+@keyframes photo-chip-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.photo-preview-chip{animation:none}}
+@media(max-width:850px){.photo-preview-chips{left:50%;transform:translateX(-50%);max-width:90vw}}

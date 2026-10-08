@@ -27,7 +27,7 @@ export function photoCamera(source,models,bodyModels,width,height){
  camera.aspect=width/height;camera.zoom=1;camera.clearViewOffset();
  const tangent=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
  // Reserve the central square for the entire vehicle and its badge.
- const side=Math.min(width,height),padding=side*.04,branding=side*(.03+.05);
+ const side=Math.min(width,height),padding=side*.04,branding=side*(.03+.05+.016+.032*2+.016);
  const lift=branding/2;
  const limitX=((side-2*padding)/width)*tangent*camera.aspect,limitY=((side-2*padding-branding)/height)*tangent;
  let front=-Infinity;for(const p of points)front=Math.max(front,p[2]);
@@ -65,7 +65,7 @@ export function photoCamera(source,models,bodyModels,width,height){
 }
 
 export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,createCanvas=()=>document.createElement('canvas')}){
- const width=portrait?1600:2400,height=portrait?2000:1600;
+ const width=2000,height=2000;
  const photo=photoCamera(camera,models,bodyModels,width,height);
  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
  const viewport=renderer.getViewport(new THREE.Vector4()),scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
