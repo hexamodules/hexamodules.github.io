@@ -38,8 +38,9 @@ export function composePhoto(source,logo,selections=[]){
  // Explicit tracking also works on canvases without letterSpacing support.
  const advances=letters.map(letter=>ctx.measureText(letter).width);
  const textWidth=advances.reduce((sum,value)=>sum+value,0)+tracking*(letters.length-1);
- const width=logoWidth+gap+textWidth;
  const side=Math.min(canvas.width,canvas.height);
+ const dividerWidth=Math.max(1,side*.001),dividerHeight=h*.7;
+ const width=logoWidth+gap+dividerWidth+textWidth;
  const x=(canvas.width-width)/2;
  const y=layout.y;
  // Measure only the destination region, before drawing any branding.
@@ -70,7 +71,11 @@ export function composePhoto(source,logo,selections=[]){
  ctx.fillStyle=`rgb(${ink.join(',')})`;ctx.textBaseline='alphabetic';
  const metrics=ctx.measureText(label);
  const baseline=y+h/2+(metrics.actualBoundingBoxAscent-metrics.actualBoundingBoxDescent)/2;
- let textX=x+logoWidth+gap;
+ // Split the existing gap equally around the divider; centre the entire group.
+ ctx.save();ctx.globalAlpha=.7;
+ ctx.fillRect(x+logoWidth+gap/2,y+(h-dividerHeight)/2,dividerWidth,dividerHeight);
+ ctx.restore();
+ let textX=x+logoWidth+gap+dividerWidth;
  for(let i=0;i<letters.length;i++){
   ctx.fillText(letters[i],textX,baseline);textX+=advances[i]+tracking;
  }
