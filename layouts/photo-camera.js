@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Fit actual visible vertices, including open doors and furniture, in camera space.
 // The cloned camera keeps the exact viewing direction and never updates OrbitControls.
-export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248,lowerBy=0,edgeMargin=.015,badgeGap=.02){
+export function photoCamera(source,models,bodyModels,width,height,badgeTop=height-Math.min(width,height)*.248,lowerBy=0,edgeMargin=.015,badgeGap=.02,extraLowerBy=0,minBadgeGap=.015){
  const camera=source.clone(),inverse=source.quaternion.clone().invert();
  const collect=groups=>{
   const points=[];
@@ -68,13 +68,17 @@ export function photoCamera(source,models,bodyModels,width,height,badgeTop=heigh
  camera.updateMatrixWorld();
  let bottom=-Infinity;
  for(const p of points){const projected=new THREE.Vector3(...p).applyQuaternion(source.quaternion).project(camera);bottom=Math.max(bottom,(1-projected.y)*height/2)}
- camera.userData.photoVehicleBottom=bottom;
+ // Move only the projection after the v12 fit, preserving the exact vehicle scale.
+ const shift=Math.max(0,Math.min(side*extraLowerBy,badgeTop-side*minBadgeGap-bottom));
+ camera.projectionMatrix.elements[9]+=2*shift/height;
+ camera.projectionMatrixInverse.copy(camera.projectionMatrix).invert();
+ camera.userData.photoVehicleBottom=bottom+shift;
  return camera;
 }
 
-export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,lowerBy=0,edgeMargin=.015,badgeGap=.02,createCanvas=()=>document.createElement('canvas')}){
+export function capturePhoto({renderer,scene,camera,models,bodyModels,portrait=false,badgeTop,lowerBy=0,edgeMargin=.015,badgeGap=.02,extraLowerBy=0,minBadgeGap=.015,createCanvas=()=>document.createElement('canvas')}){
  const width=2000,height=2000;
- const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop,lowerBy,edgeMargin,badgeGap);
+ const photo=photoCamera(camera,models,bodyModels,width,height,badgeTop,lowerBy,edgeMargin,badgeGap,extraLowerBy,minBadgeGap);
  const size=renderer.getSize(new THREE.Vector2()),ratio=renderer.getPixelRatio();
  const viewport=renderer.getViewport(new THREE.Vector4()),scissor=renderer.getScissor(new THREE.Vector4()),scissorTest=renderer.getScissorTest();
  try{
