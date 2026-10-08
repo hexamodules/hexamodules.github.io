@@ -11,3 +11,17 @@
 .outro-night .photo-caption{color:#bac5b4}
 @media(max-width:850px){.outro-active .outro-equipment{bottom:278px}.outro-active:has(.photo-rotate-large) .outro-equipment{bottom:305px}.outro-action .outro-gesture.photo-rotate-large{font-size:14px}#outro-photo{font-size:14px}.outro-photo{margin-bottom:7px}}
 @media(max-height:600px) and (max-width:850px) and (orientation:landscape){.outro-photo{margin:0}.outro-action .outro-gesture{flex-basis:100%;margin:0}.photo-caption{margin:2px 0 0}.outro-active .outro-equipment{bottom:190px}}
+
+/* Keep the photo beside the two actions on desktop, above them on phones. */
+.outro-buttons{align-items:flex-start}
+.outro-photo{position:relative;margin:0;flex:0 0 auto}
+#outro-photo{min-height:48px;font-size:12px;padding:10px 16px;white-space:nowrap}
+@media(min-width:851px){.outro-buttons{flex-wrap:nowrap}.outro-buttons>button,.outro-photo{min-width:0}.outro-action .outro-gesture.photo-rotate-large{font-size:11px;padding:0;background:none}}
+@media(max-width:850px){
+ .outro-buttons{display:grid;grid-template-columns:auto auto;justify-content:center}
+ .outro-photo{grid-column:1 / -1;grid-row:1;justify-self:center;margin:0}
+ #outro-photo{min-height:40px;height:40px;font-size:12px;padding:8px 12px}
+ .photo-caption{display:none}
+}
+
+@media(min-width:851px) and (max-width:1100px){.outro-action{left:16px;right:16px}.outro-buttons .outro-contact{gap:14px;padding:10px 16px}}

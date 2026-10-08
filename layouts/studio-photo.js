@@ -47,7 +47,7 @@ export function initStudioPhoto(){
   busy=true;sync();status.textContent='';clearTimeout(statusTimer);
   try{
    // No await before navigator.share: preserve the tap's transient activation on Safari.
-   studio.renderOnce();const canvas=composePhoto(studio.canvas,logo);
+   const canvas=composePhoto(studio.capturePhoto(),logo);
    const encoded=canvas.toDataURL('image/jpeg',.92).split(',')[1];
    const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
    const number=String(studio.layoutNumber||'layout').replace(/[^a-zA-Z0-9_-]/g,'-');

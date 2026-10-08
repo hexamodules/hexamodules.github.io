@@ -1,3 +1,4 @@
+import {capturePhoto} from './photo-camera.js?v=20261008-center';
 import {createVisualMaterials} from './visual-materials.js?v=2';
 import {initLayoutRecall} from './saved-layouts.js?v=1';
 import {initRetailerSimulation} from './retailer-simulation.js?v=1';
@@ -22,7 +23,7 @@ import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} fr
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=20261007-2000';
+import {createOutro} from './outro.js?v=20261008-center';
 import {createOpening} from './opening.js?v=recall-27a';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
@@ -884,7 +885,7 @@ const outro=createOutro({
  }
 });
 // Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
-window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),get layoutNumber(){return pricing.quote(outroState||state).number}});
+window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:()=>capturePhoto({renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
 $('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
 initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:()=>{
  renderer.render(scene,camera);

@@ -8,7 +8,7 @@ export function specificationRows(data,catalogue,lang){
  const modules=enquirySelections(catalogue,data.configuration,lang).filter(item=>item.key.startsWith('module:')).map(item=>({label:en?'Furniture':'家具',value:item.label}));
  // Exclude budget rows too: overseas vehicle preferences can contain customer-entered amounts.
  const nonFinancial=(row)=>!/予算|価格|金額|卸|取り分|工数|施工日数|budget|price|cost|margin|hours/i.test(row.label)&&!/(?:\b(?:JPY|AUD|USD|EUR|GBP)\b|[¥￥$€£]|\d[\d,.]*\s*円)/.test(row.value);
- return [...modules,...data.customerSummary.filter(nonFinancial)].map(({label,value})=>({label:String(label).replace(/DEALER OPTION/g,'').trim(),value:String(value)}));
+ return [...modules,...data.customerSummary.filter(nonFinancial)].map(({label,value})=>({label:String(label).replace(/DEALER OPTION/g,'').trim(),value:/マットレス|mattress/i.test(label)?String(value).replace(/未選択/g,'なし').replace(/Not selected/gi,'None'):String(value)}));
 }
 function wrap(ctx,text,width){
  const lines=[];let line='';
