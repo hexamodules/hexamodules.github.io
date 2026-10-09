@@ -76,18 +76,20 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
  if(dealerId()==='hexa-direct'){
   Object.assign(copy.ja,{
    title:'取扱店に相談する',
-   intro:'選んだ仕様をHexa Modulesで受け付け、担当の取扱店からご連絡いたします。メールアドレスには仕様書をお届けします。ご連絡まで、しばらくお待ちください。',
+   intro:'お見積もりのご依頼を送れます。受付後、取扱店より折り返しご連絡させていただきます。',
+   send:'ご依頼を送る',
    consent:'入力した連絡先と選んだ仕様を、相談対応のためにHexa Modulesと担当の取扱店へ共有することに同意します（必須）。',
-   sent:'内容を受け付けました。担当の取扱店からご連絡します。（受付番号：',
+   sent:'ご依頼を受け付けました。Hexaの取扱店から折り返しご連絡いたします。（受付番号：',
    failed:'受付を確認できませんでした。同じ内容は同じ受付番号で再試行できます。繰り返し確認できない場合は、受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
    review:'受付記録がありますが、メール送信の完了を確認できません。受付番号を添えてinfo@hexamodules.comへお問い合わせください。',
    unavailable:'送信の準備中です。このレイアウトのURLを添えてinfo@hexamodules.comへお問い合わせください。'
   });
   Object.assign(copy.en,{
    title:'Talk to a dealer',
-   intro:'Hexa Modules receives your selected specification, and your dealer will contact you. A specification sheet will be sent to your email. Please allow a little time for the dealer to get in touch.',
+   intro:'You can send your quote request. A Hexa dealer will get back to you.',
+   send:'Send request',
    consent:'I agree that the contact details and the chosen specification are shared with Hexa Modules and the handling dealer for this enquiry (required).',
-   sent:'Thank you. A Hexa dealer will be in touch with you shortly. (receipt: ',
+   sent:'Your request has been received. A Hexa dealer will get back to you. (receipt: ',
    failed:'We could not confirm receipt. You can retry the same content with the same receipt number. If confirmation keeps failing, contact info@hexamodules.com with your receipt number.',
    review:'Your enquiry was recorded, but email completion could not be confirmed. Please contact info@hexamodules.com with your receipt number.',
    unavailable:'Enquiry submission is being prepared. Please email your layout URL to info@hexamodules.com.'
@@ -99,6 +101,10 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
  }
  Object.assign(copy.ja,{completeTitle:'送信完了しました',completeMessage:'内容を受け付けました。担当の取扱店からご連絡します。',reference:'受付番号: '});
  Object.assign(copy.en,{completeTitle:'Sent',completeMessage:'We have received your enquiry. Your Hexa dealer will contact you.',reference:'Reference: '});
+ if(dealerId()==='hexa-direct'){
+  copy.ja.completeMessage='ご依頼を受け付けました。Hexaの取扱店から折り返しご連絡いたします。';
+  copy.en.completeMessage='Your request has been received. A Hexa dealer will get back to you.';
+ }
  const vehicleOptions={supply:[['new','新車で手配を依頼する','Request a new vehicle'],['own','車体を持ち込む','Supply my own vehicle']],grade:[['super-gl','スーパーGL','Super GL'],['dark-prime-2','スーパーGL DARK PRIME Ⅱ','Super GL DARK PRIME Ⅱ']],drive:[['2wd','2WD','2WD'],['4wd','4WD','4WD']],fuel:[['gasoline','ガソリン','Gasoline'],['diesel','ディーゼル','Diesel']]};
  Object.assign(copy.ja,{compatible:'対応車体: ハイエース スーパーGL(標準ボディ・標準ルーフ)',supply:'車体の手配（必須）',grade:'グレード（必須）',drive:'駆動（必須）',fuel:'燃料（必須）',year:'年式（必須）',model:'型式（車検証の記載）（必須）',reviewTitle:'送信内容をご確認ください',edit:'入力内容を直す',check:'内容を確認する',choose:'選択してください'});
  Object.assign(copy.en,{compatible:'Compatible vehicle: HiAce Super GL (standard body, standard roof)',supply:'Vehicle supply (required)',grade:'Grade (required)',drive:'Drive (required)',fuel:'Fuel (required)',year:'Model year (required)',model:'Model code (as on vehicle registration) (required)',reviewTitle:'Review your enquiry',edit:'Edit details',check:'Review enquiry',choose:'Select one'});

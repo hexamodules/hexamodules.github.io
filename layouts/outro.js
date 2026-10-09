@@ -5,7 +5,7 @@ import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {initQuoteDemo} from './quote-demo.js?v=20261005';
-// Save first, then present the selected van. Contact is a local, unsent draft.
+// Save first, then present the selected van. Contact wording follows the quote request flow.
 export function createOutro({catalogue,captureEnquiry,captureSpecification,prepare,pose,showcase,restore,describe,getLocation=()=> 'jp',getVehicleState=()=>({})}){
  const $=s=>document.querySelector(s),root=document.documentElement,layer=$('#studio-outro');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -140,14 +140,14 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
  };
  $('#contact-close').onclick=()=>dialog.close();
  dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close()}});
- async function draft(){
+ async function requestText(){
   if(!vehicleSelectionComplete(getVehicleState())){$('#contact-edit-vehicle').click();return null}
   const form=contactForm;syncContact();if(!form.reportValidity())return null;
   await postcodeLookup.ready();if(!form.reportValidity())return null;
   const data=describe(),en=root.lang==='en';
   const found=postcodeLookup.details();
   const postalAddress=found.address?(found.address+(found.status==='multiple'?(en?' (area not selected)':'（町域未選択）'):'')):(en?'Not confirmed (postcode only)':'未確認（郵便番号のみ）');
-  return [(en?'Hexa dealer quote request — unsent draft':'Hexa 取扱店への見積もり依頼 — 未送信の下書き'),' ',
+  return [(en?'Hexa dealer quote request':'Hexa 取扱店への見積もり依頼'),' ',
    (en?'Name: ':'お名前: ')+form.elements.customerName.value.trim(),
    (en?'Email: ':'メールアドレス: ')+form.elements.customerEmail.value.trim(),
    ...(japanContact()?[
@@ -159,15 +159,15 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
    en?'Hexa manufactures furniture modules and interior parts. Your dealer arranges installation and equipment, sets its prices and confirms the formal quote.':'Hexaは家具・内装モジュールおよびパーツのメーカーです。施工・装備の手配、実際の販売価格と正式なお見積もりは取扱店がご案内します。',' ',
    en?'Requests or questions':'ご希望・ご質問',form.elements.message.value.trim(),' ',en?'Your layout':'選んだレイアウト',data.summary,' ',data.url].join('\n');
  }
- $('#contact-form').onsubmit=async e=>{e.preventDefault();const content=await draft();if(!content)return;
+ $('#contact-form').onsubmit=async e=>{e.preventDefault();const content=await requestText();if(!content)return;
   if(quoteDemo){await quoteDemo.submit();return;}
   const url=URL.createObjectURL(new Blob([content],{type:'text/plain;charset=utf-8'})),a=document.createElement('a');
-  a.href=url;a.download='Hexa-dealer-quote-draft.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
-  $('#contact-result').textContent='見積もり依頼の下書きを保存しました。取扱店へはまだ送信されていません。';
+  a.href=url;a.download='Hexa-dealer-quote-request.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  $('#contact-result').textContent='ご依頼を受け付けました。Hexaの取扱店から折り返しご連絡いたします。';
  };
- $('#contact-copy').onclick=async()=>{const content=await draft();if(!content)return;
-  try{await navigator.clipboard.writeText(content);$('#contact-result').textContent='見積もり依頼をコピーしました。取扱店へはまだ送信されていません。'}
-  catch{$('#contact-result').textContent='コピーできませんでした。「見積もり依頼の下書きを保存」をお使いください。'}
+ $('#contact-copy').onclick=async()=>{const content=await requestText();if(!content)return;
+  try{await navigator.clipboard.writeText(content);$('#contact-result').textContent='見積もり依頼をコピーしました。'}
+  catch{$('#contact-result').textContent='コピーできませんでした。「ご依頼を送る」をお使いください。'}
  };
 
 

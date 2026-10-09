@@ -46,8 +46,8 @@ export function createJapanPostcodeLookup({input,isEnabled,getLanguage}){
   retry.hidden=status!=='unavailable';
   let message='';
   if(status==='loading')message='郵便番号から住所を確認しています…';
-  else if(status==='unavailable')message='住所を読み込めませんでした。再読み込みするか、郵便番号のみで下書きを保存できます。';
-  else if(status==='not_found')message='該当する住所が見つかりません。郵便番号をご確認ください。郵便番号のみでも下書きを保存できます。';
+  else if(status==='unavailable')message='住所を読み込めませんでした。再読み込みするか、郵便番号のみでご依頼を送れます。';
+  else if(status==='not_found')message='該当する住所が見つかりません。郵便番号をご確認ください。郵便番号のみでもご依頼を送れます。';
   else if(status==='matched'){
    if(rows.length>1&&selected<0)message='複数の町域があります。該当する町域を選べます。';
    else if(selected>=0&&!rows[selected][2])message='この郵便番号では市区町村まで表示します。';
