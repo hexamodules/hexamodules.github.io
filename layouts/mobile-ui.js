@@ -9,8 +9,8 @@
   const chipKeys=['vehicle','front','bed','mattress','cabinet','floor','ceiling','wall','equipment','other','review'];
   const originals=[...panel.querySelectorAll('[data-studio-tab]')];
   const keys=originals.map(b=>b.dataset.studioTab);
-  const flow=['interior','furniture','equipment','review'];
-  const flowLabel=k=>flow.includes(k)?String(flow.indexOf(k)+1).padStart(2,'0')+' '+({interior:en()?'Interior':'内装',furniture:en()?'Furniture':'家具',equipment:en()?'Equipment':'装備',review:en()?'Summary':'まとめ'}[k]):tabLabel(k);
+  const flow=['interior','furniture','equipment','electrical','vehicle','review'];
+  const flowLabel=k=>flow.includes(k)?String(flow.indexOf(k)+1).padStart(2,'0')+' '+({interior:en()?'Interior':'内装',furniture:en()?'Furniture':'家具',equipment:en()?'Equipment':'装備',electrical:en()?'Electrical':'電装',vehicle:en()?'Vehicle':'車体',review:en()?'Summary':'まとめ'}[k]):tabLabel(k);
   const tabLabel=k=>$('#tab-'+k)?.textContent.trim()||'';
   const names={ja:['車種','フロント','ベッド','マットレス','キャビネット','床','天井','壁','装備','その他','まとめ'],en:['Vehicle','Front','Bed','Mattress','Cabinet','Floor','Ceiling','Walls','Equipment','More','Summary']};
   const en=()=>root.lang.startsWith('en'), label=k=>names[en()?'en':'ja'][chipKeys.indexOf(k)];

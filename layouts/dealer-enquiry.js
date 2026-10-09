@@ -1,7 +1,21 @@
+import {normalizeNewVehicle,selectedNewVehicle,VEHICLE_GRADES,VEHICLE_POWERTRAINS} from './new-vehicle.js?v=1';
 import {studioEvent} from './analytics.js?v=20261008-ga';
 import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
 import {dealerContext} from './dealer-context.js?v=20261007-1850';
 import {calculateReferencePrice} from './reference-pricing.js?v=20261007-1850';
+
+// Transport-only vehicle information; never merge into customerSummary or selections.
+export function enquiryVehicle(state){
+ const normalized=normalizeNewVehicle(state);
+ const vehicle={purchase:normalized.vehiclePurchase,show_to_customer:false};
+ if(vehicle.purchase==='owned')return vehicle;
+ const selected=selectedNewVehicle(normalized);
+ if(!selected)throw Error('Vehicle selection incomplete');
+ return {...vehicle,grade:selected.grade,grade_label_ja:VEHICLE_GRADES[selected.grade].ja,grade_label_en:VEHICLE_GRADES[selected.grade].en,
+  powertrain:selected.powertrain,powertrain_label_ja:VEHICLE_POWERTRAINS[selected.powertrain].ja,powertrain_label_en:VEHICLE_POWERTRAINS[selected.powertrain].en,
+  model_code:selected.model_code,msrp_jpy:selected.price_jpy,
+  price_source:'トヨタモビリティ東京 ハイエースバン新車価格表 2026-02'};
+}
 
 export function isTestDealerEnquiry(){
  return new URLSearchParams(location.search).get('dealer')==='test-hexa'&&dealerContext()?.id==='test-hexa';
@@ -176,7 +190,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
    if(!customer.name)return;
    customer.consent=fields.consent.checked;if(!customer.consent)return;
    const layoutUrl=new URL(snapshot.url,location.href);layoutUrl.searchParams.set('complete','1');
-   const body={...(gridVehicle?{vehicle:vehicleData()}:{}),dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:layoutUrl.href,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
+   const body={vehicle:gridVehicle?vehicleData():enquiryVehicle(snapshot.configuration),dealer:dealerId(),lang:lang(),customer,selections:select(catalogue,snapshot.configuration,lang()),layoutUrl:layoutUrl.href,...(snapshot.layoutNumber?{layoutNumber:snapshot.layoutNumber}:{}),...(snapshot.customerSummary?{customerSummary:snapshot.customerSummary}:{})};
    pending=true;status='';fieldset.disabled=true;refresh();
    const current=JSON.stringify(body);
    if(current!==fingerprint){receipt='HX-'+crypto.randomUUID().toUpperCase();createdAt=new Date().toISOString();fingerprint=current;try{const captured=captureImages();pendingImages=(captured&&typeof captured.then==='function'?await captured:captured)||[];}catch{pendingImages=[];}}
