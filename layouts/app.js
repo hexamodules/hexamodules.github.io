@@ -1,4 +1,4 @@
-import {capturePhoto} from './photo-camera.js?v=20261008-lower-v13';
+import {capturePhoto,photoCamera} from './photo-camera.js?v=20261008-lower-v13';
 import {createVisualMaterials} from './visual-materials.js?v=2';
 import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
 import {initRetailerSimulation} from './retailer-simulation.js?v=1';
@@ -754,69 +754,68 @@ function detachOutro(){
  if(outroRig){scene.remove(outroRig);outroRig=null}
  outroGroups=[];outroLightGroups=[];
 }
-function contactPreview(){
- renderer.render(scene,camera);
- if(outroPreset==='inside')return renderer.domElement.toDataURL('image/png');
- const canvas=renderer.domElement,rect=canvas.getBoundingClientRect(),point=new THREE.Vector3();
- let minX=rect.width,maxX=0,minY=rect.height,maxY=0;
- for(const group of outroGroups)for(const node of group.children){
-  if(!node.visible||!node.userData.bounds)continue;node.updateWorldMatrix(true,false);
-  const [a,b]=node.userData.bounds;
-  for(const x of [a[0],b[0]])for(const y of [a[1],b[1]])for(const z of [a[2],b[2]]){
-   point.set(x,y,z).applyMatrix4(node.matrixWorld).project(camera);
-   if(point.z < -1||point.z>1)continue;
-   const px=(point.x+1)*rect.width/2,py=(1-point.y)*rect.height/2;
-   minX=Math.min(minX,px);maxX=Math.max(maxX,px);minY=Math.min(minY,py);maxY=Math.max(maxY,py);
+// Synchronous capture: the display canvas is restored before the browser paints.
+// Pixel ratio 1 makes the backing buffer exactly 1600 x 1000 on every device.
+function withEnquiryFrame(capture){
+ const saved={size:renderer.getSize(new THREE.Vector2()),pixelRatio:renderer.getPixelRatio(),aspect:camera.aspect,
+  eye:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone(),quaternion:camera.quaternion.clone(),
+  fov:camera.fov,frame:frameOpening,fit:viewFitScale,damping:controls.enableDamping,enabled:controls.enabled};
+ try{
+  frameOpening=null;controls.enabled=false;controls.enableDamping=false;
+  renderer.setPixelRatio(1);renderer.setSize(1600,1000,false);
+  camera.aspect=1.6;camera.updateProjectionMatrix();
+  if(outroGroups.length){
+   openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],
+    copySelector:'.outro-copy',actionSelector:'.outro-action',direction:[3465,2563,-6138],
+    fitArea:stage=>({left:stage.width*.04,right:stage.width*.96,top:stage.height*.04,bottom:stage.height*.96})})();
+   // Refine the conservative part bounds using the visible vertices. Include
+   // every open door and selected module; reserve 80 px at the image edges.
+   const fitted=photoCamera(camera,outroGroups,outroGroups,1600,1000,1000,0,.08,0);
+   camera.position.copy(fitted.position);camera.quaternion.copy(fitted.quaternion);camera.updateMatrixWorld();
+  }else{
+   // Editing/retailer preview: remove the viewport-dependent distance scale.
+   camera.position.sub(controls.target).multiplyScalar(responsiveViewScale(activeView)/viewFitScale).add(controls.target);
+   camera.updateMatrixWorld();
   }
+  updateInteriorPresentation();renderer.render(scene,camera);
+  return capture(renderer.domElement);
+ }finally{
+  renderer.setPixelRatio(saved.pixelRatio);renderer.setSize(saved.size.x,saved.size.y,false);
+  camera.aspect=saved.aspect;camera.fov=saved.fov;
+  camera.position.copy(saved.eye);controls.target.copy(saved.target);camera.up.copy(saved.up);
+  controls.update();controls.target.copy(saved.target);camera.position.copy(saved.eye);camera.quaternion.copy(saved.quaternion);camera.updateProjectionMatrix();camera.updateMatrixWorld();
+  frameOpening=saved.frame;viewFitScale=saved.fit;controls.enableDamping=saved.damping;controls.enabled=saved.enabled;
+  updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
  }
- const pad=rect.width*.025,sx=Math.max(0,minX-pad),sy=Math.max(0,minY-pad),sw=Math.min(rect.width,maxX+pad)-sx,sh=Math.min(rect.height,maxY+pad)-sy;
- if(sw<=0||sh<=0)return canvas.toDataURL('image/png');
- const preview=document.createElement('canvas');preview.width=720;preview.height=Math.round(720*sh/sw);
- const ratio=canvas.width/rect.width;
- preview.getContext('2d').drawImage(canvas,sx*ratio,sy*ratio,sw*ratio,sh*ratio,0,0,preview.width,preview.height);
- return preview.toDataURL('image/png');
+}
+function contactPreview(){
+ return withEnquiryFrame(source=>{
+  const canvas=document.createElement('canvas');canvas.width=720;canvas.height=450;
+  canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+  return canvas.toDataURL('image/jpeg',.85);
+ });
 }
 function enquiryPreview(){
  try{
-  updateInteriorPresentation();renderer.render(scene,camera);
-  const source=renderer.domElement,canvas=document.createElement('canvas');
-  // One JPEG, at quality 0.85; reduce dimensions only if above 400 KiB.
-  for(const edge of [1600,1400,1200,1000,800]){
-   const scale=Math.min(1,edge/Math.max(source.width,source.height));
-   canvas.width=Math.max(1,Math.round(source.width*scale));canvas.height=Math.max(1,Math.round(source.height*scale));
-   canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
-   const data=canvas.toDataURL('image/jpeg',.85);
-   if(data.startsWith('data:image/jpeg;base64,')&&data.length<=546159)return data;
-  }
- }catch{/* Images are optional. */}
+  return withEnquiryFrame(source=>{
+   const canvas=document.createElement('canvas');
+   // Keep the existing data-URL limit (400 KiB JPEG plus base64/header).
+   for(const width of [1600,1400,1200,1000,800]){
+    canvas.width=width;canvas.height=Math.round(width/1.6);
+    canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+    const data=canvas.toDataURL('image/jpeg',.85);
+    if(data.startsWith('data:image/jpeg;base64,')&&data.length<=546159)return data;
+   }
+   return '';
+  });
+ }catch{/* Images are optional; withEnquiryFrame always restores the display. */}
  return '';
 }
 function enquiryPreviews(){
- const saved={eye:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone(),
-  quaternion:camera.quaternion.clone(),fov:camera.fov,frame:frameOpening,preset:outroPreset,view:activeView,
-  fit:viewFitScale,polar:controls.maxPolarAngle,damping:controls.enableDamping,enabled:controls.enabled};
- const images=[];
- try{
-  controls.enabled=false;controls.enableDamping=false;
-  // Fit the whole vehicle into the image, without the completion-screen text margins.
-  frameOpening=null;
-  openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],
-   copySelector:'.outro-copy',actionSelector:'.outro-action',direction:[3465,2563,-6138],
-   fitArea:stage=>({left:stage.width*.04,right:stage.width*.96,top:stage.height*.04,bottom:stage.height*.96})})();
-  const data=enquiryPreview();if(data)images.push(data);
- }catch{/* Images are optional; restore the current view even if framing fails. */}finally{
-  frameOpening=saved.frame;outroPreset=saved.preset;activeView=saved.view;viewFitScale=saved.fit;
-  camera.position.copy(saved.eye);controls.target.copy(saved.target);camera.up.copy(saved.up);camera.fov=saved.fov;
-  controls.maxPolarAngle=saved.polar;controls.update();camera.quaternion.copy(saved.quaternion);camera.updateProjectionMatrix();
-  controls.enableDamping=saved.damping;controls.enabled=saved.enabled;
-  $$('[data-outro-view]').forEach(b=>{const on=b.dataset.outroView===saved.preset;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
-  $$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===saved.view));
-  updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
- }
- return images;
+ const image=enquiryPreview();return image?[image]:[];
 }
 const outro=createOutro({
- captureSpecification:()=>[contactPreview()],
+ captureSpecification:enquiryPreviews,
  captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
  getVehicleState:()=>outroState||state,
@@ -888,11 +887,7 @@ const outro=createOutro({
 // Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
 window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:(options={})=>capturePhoto({...options,renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
 $('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
-initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:()=>{
- renderer.render(scene,camera);
- const source=renderer.domElement,canvas=document.createElement('canvas');canvas.width=720;canvas.height=Math.round(720*source.height/source.width);
- canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.85);
-}});
+initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:contactPreview});
 
 $('#outro-night-toggle').onclick=()=>{
  if(!outro.ready)return;
