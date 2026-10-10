@@ -1,3 +1,4 @@
+import {trackStudioStep} from './analytics.js?v=20261010-events';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const allTabs=['interior','furniture','equipment','electrical','vehicle','shipping','review'];
 const labels={interior:'内装',furniture:'家具',equipment:'装備',electrical:'電装',vehicle:'車体',shipping:'Shipping',review:'確認'};
@@ -25,7 +26,7 @@ export function initStudio({getLocation=()=> 'jp',hasRequiredFloor=()=>true,hasE
   allTabs.forEach(key=>$('#pane-'+key).hidden=key!==tabs[active]);
   $('.panel-scroll').scrollTop=0;$('#studio-back').hidden=active===0;$('#studio-next').hidden=active===tabs.length-1;
   $('#studio-next').textContent=(labels[tabs[active+1]]||'確認')+'へ →';$('#step-position').textContent=`${String(active+1).padStart(2,'0')} / ${String(tabs.length).padStart(2,'0')}`;
-  syncRequirements();
+  syncRequirements();trackStudioStep(tabs[active]);
  };
  refreshRequiredFloor=syncRequirements;
  $('#choose-required-floor').onclick=()=>{

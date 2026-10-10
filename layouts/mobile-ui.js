@@ -1,7 +1,7 @@
 /* Phone-only presentation. Original controls and their listeners remain authoritative. */
 (() => {
   'use strict';
-  const studioEvent=name=>{import('./analytics.js?v=20261008-ga').then(module=>module.studioEvent(name)).catch(()=>{});};
+  const studioEvent=name=>{import('./analytics.js?v=20261010-events').then(module=>module.studioEvent(name)).catch(()=>{});};
   const root=document.documentElement, $=s=>document.querySelector(s);
   const width=matchMedia('(max-width: 700px)'), touch=matchMedia('(any-pointer: coarse)');
   const panel=$('.configuration'), scroll=$('.panel-scroll'), stage=$('.stage');

@@ -1,5 +1,5 @@
 import {normalizeNewVehicle,selectedNewVehicle,VEHICLE_GRADES,VEHICLE_POWERTRAINS} from './new-vehicle.js?v=1';
-import {studioEvent} from './analytics.js?v=20261008-ga';
+import {studioEvent} from './analytics.js?v=20261010-events';
 import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
 import {dealerContext} from './dealer-context.js?v=20261007-1850';
 import {calculateReferencePrice} from './reference-pricing.js?v=20261007-1850';

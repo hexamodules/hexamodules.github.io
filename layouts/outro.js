@@ -1,4 +1,4 @@
-import {studioEvent} from './analytics.js?v=20261008-ga';
+import {studioEvent} from './analytics.js?v=20261010-events';
 import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=vehicle-20261009';
 import {downloadSpecification} from './specification-pdf.js?v=vehicle-20261009';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';

@@ -1,3 +1,4 @@
+import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
 import {capturePhoto,photoCamera} from './photo-camera.js?v=20261008-lower-v13';
 import {createVisualMaterials} from './visual-materials.js?v=2';
 import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
@@ -19,7 +20,7 @@ import {createReferencePricing} from './reference-pricing.js?v=20261005-mobile-f
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
 import {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=flow-26';
+import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=20261010-events';
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
@@ -249,7 +250,7 @@ function setLighting(){
 }
 function setTwiLamp(key,enabled){
  if(!twiCeilingEnabled(state)||!['twiBarLights','twiIndirectLights'].includes(key))return;
- state={...state,[key]:enabled};if(outro.active)outroState={...outroState,[key]:enabled};
+ state={...state,[key]:enabled};trackStudioSelection(state);if(outro.active)outroState={...outroState,[key]:enabled};
  setLighting();if(outro.active){scene.fog=null;grid.visible=false}lightingUI();window.history.replaceState(null,'',urlFor());updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
 }
 function lightingUI(){
@@ -373,7 +374,7 @@ const twiLightControls=createTwiLightingControls({getState:()=>state,onChange:se
 $('#quarter-view').onclick=()=>setView(state.quarterPanels==='left'?'quarter-left':'quarter-right');
 const pricing=createReferencePricing({getDealer:selectedDealer,catalogue:priceCatalogue,getState:()=>state,getLocation:()=>getStudioLocation().id,getLanguage,onFloorSlide:enabled=>apply({...state,floorSlide:enabled,storage:false}).catch(console.error)});
 const newVehicleControls=createNewVehicleControls({getState:()=>state,getLanguage,onChange:change=>{
- state=normalizeNewVehicle({...state,...change});newVehicleControls.update();pricing.update();updateFloorRequirement();
+ state=normalizeNewVehicle({...state,...change});newVehicleControls.update();pricing.update();updateFloorRequirement();trackStudioSelection(state);
  window.history.replaceState(null,'',urlFor());
 }});
 function readyForReview(){
@@ -433,7 +434,7 @@ function configureUI(){
 }
 function changeBaseVehicle(vehicle){
  if(!['dx','super-gl'].includes(vehicle)||vehicle===(opening.active?openingState?.vehicle:state.vehicle))return;
- if(opening.active){openingState=normalizeNewVehicle(normalizeBaseVehicle({...openingState,vehicle}));state=normalizeNewVehicle(normalizeBaseVehicle({...state,vehicle}));vehicleControls.update();newVehicleControls.update();const url=new URL(location.href);url.searchParams.set('vehicle',vehicle);addNewVehicleParams(url.searchParams,state);for(const k of ['wall','panel','ceiling','twi_ceiling','quarter','twi_bar','twi_indirect','ceiling_lights','tailgate_lights'])url.searchParams.delete(k);history.replaceState(null,'',url);requestAnimationFrame(()=>frameOpening?.());return}
+ if(opening.active){openingState=normalizeNewVehicle(normalizeBaseVehicle({...openingState,vehicle}));state=normalizeNewVehicle(normalizeBaseVehicle({...state,vehicle}));vehicleControls.update();newVehicleControls.update();studioEvent('studio_select',{step:'vehicle',item:'base-vehicle',option:state.vehicle});const url=new URL(location.href);url.searchParams.set('vehicle',vehicle);addNewVehicleParams(url.searchParams,state);for(const k of ['wall','panel','ceiling','twi_ceiling','quarter','twi_bar','twi_indirect','ceiling_lights','tailgate_lights'])url.searchParams.delete(k);history.replaceState(null,'',url);requestAnimationFrame(()=>frameOpening?.());return}
  apply(normalizeBaseVehicle({...state,vehicle})).catch(console.error);
 }
 function airconUI(){
@@ -526,7 +527,7 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
  }
  if(key==='two-side-bed'&&state.flat&&path.includes('STORED'))n.visible=false;
  }}
-async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(!ceilingEnabled())state.ceilingLights=false;if(!panelEnabled()&&!isSuperGL(state))state.tailgateLights=false;if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{models=await Promise.all(keys.map(loadModel))}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
+async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(!ceilingEnabled())state.ceilingLights=false;if(!panelEnabled()&&!isSuperGL(state))state.tailgateLights=false;if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{models=await Promise.all(keys.map(loadModel))}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
  for(const p of cache.values()){const g=await p;resetNodes(g)}for(const g of models)g.visible=true;iSeatVisuals.update(models.find(g=>g.name==='i-seat'),state);
  activeAirconMount=null;const airconModel=models.find(g=>g.name===AIRCON.key);if(airconModel&&isSuperGL(state)){activeAirconMount=twiVisuals.airconMount(airconModel.userData.data.bounds);airconModel.position.set(...activeAirconMount.translation_mm);airconModel.rotation.set(0,0,0);airconModel.userData.mount=activeAirconMount}else if(airconModel){delete airconModel.userData.mount}
  const floorModel=models.find(g=>g.name===FLOOR.key);if(floorModel){const replaced=new Set(floorModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}
@@ -611,7 +612,7 @@ $('#ceiling-color-options').addEventListener('click',e=>{const b=e.target.closes
 $('#floor-color-options').addEventListener('click',e=>{const b=e.target.closest('[data-floor-color]');if(b&&Object.hasOwn(FLOOR_COLORS,b.dataset.floorColor))apply({...state,floor:b.dataset.floorColor}).catch(console.error)});
 for(const [id,key] of [['shipping-sourcing','vehicleSourcing'],['shipping-agent','shippingAgent']])$('#'+id).addEventListener('change',e=>{
  if(!shippingForAustralia())return;
- state=normalizeShipping({...state,[key]:e.target.checked});shippingUI();
+ state=normalizeShipping({...state,[key]:e.target.checked});shippingUI();trackStudioSelection(state);
  window.history.replaceState(null,'',urlFor());
 });
 $('#vehicle-preferences').addEventListener('click',e=>{
@@ -622,7 +623,7 @@ $('#vehicle-preferences').addEventListener('click',e=>{
  else if(button.hasAttribute('data-sourcing-drive'))change={sourcingDrive:button.dataset.sourcingDrive};
  else if(button.hasAttribute('data-vehicle-budget'))change={sourcingBudget:Number(button.dataset.vehicleBudget)};
  if(!change)return;
- state=normalizeShipping({...state,...change});shippingUI();window.history.replaceState(null,'',urlFor());
+ state=normalizeShipping({...state,...change});shippingUI();trackStudioSelection(state);window.history.replaceState(null,'',urlFor());
 });
 function addRegistrationParams(q,s){
  if(s.registrationState)q.set('registration_state',s.registrationState);

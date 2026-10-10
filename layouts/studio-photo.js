@@ -1,4 +1,4 @@
-import {studioEvent} from './analytics.js?v=20261008-ga';
+import {studioEvent} from './analytics.js?v=20261010-events';
 // Only the WebGL canvas is copied; page text, prices and controls never enter the photo.
 export function selectedFurniture(){
  // Only module links belong to the three furniture rows; omit badges and link arrows.

@@ -1,4 +1,4 @@
-import {studioEvent} from './analytics.js?v=20261008-ga';
+import {studioEvent} from './analytics.js?v=20261010-events';
 // The opening uses the same vehicle and tailgate geometry as the configurator.
 // It never persists the temporary empty scene over a shared configuration.
 export function createOpening({prepare,pose,restore}) {
