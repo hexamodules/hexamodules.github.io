@@ -1,3 +1,4 @@
+import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
 import {capturePhoto,photoCamera} from './photo-camera.js?v=20261008-lower-v13';
@@ -44,6 +45,8 @@ const verification=await fetch('fit-report.json?v=front-fit-6').then(r=>r.json()
 const wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json());
 const WALL={key:'interior-wall-white',value:'white',name:'ホワイト壁面',pitch_mm:100,thickness_mm:6.5,side:'リア運転席側',revision:'driver-wall-floor-pitch100-v1'};
 const wallPalette=await fetch('assets/wall-finishes.json?v=soft-white-2').then(r=>r.json());
+const wallPresentation={white:[254,254,254],teffy:[197,187,181],'volcanic-gray':[116,116,122]};
+for(const c of wallPalette.colors)c.web_rgb=wallPresentation[c.value];
 const WALL_COLORS=Object.fromEntries(wallPalette.colors.map(c=>[c.value,c]));
 const wallEnabled=(s=state)=>Object.hasOwn(WALL_COLORS,s.wall);
 const PANEL={key:'interior-color-panels',name:'カラーパネル',count:3,thickness_mm:6.5,grooves:false,revision:'window-color-panels-v3',tailgate_curved:true,light_openings:{count:2,diameter_mm:60,pitch_mm:680,below_center_mm:50}};
@@ -120,9 +123,11 @@ let lastPanelColor=Object.hasOwn(WALL_COLORS,state.panel)?state.panel:wallEnable
 let lastCeilingColor=ceilingEnabled()?state.ceiling:ceilingPalette.default;
 let lastFloorColor=floorEnabled()?state.floor:floorPalette.default;
 const registrationDestination=createRegistrationDestination({getState:()=>state,isEnabled:()=>shippingForAustralia()&&state.shippingAgent,onChange:changeRegistration,onRefresh:()=>shippingUI()});
-const scene=new THREE.Scene();scene.background=new THREE.Color('#f1f0e9');
-const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setClearColor('#f1f0e9');renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('#viewport').append(renderer.domElement);
+const scene=new THREE.Scene();scene.background=new THREE.Color('#eeeeec');
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawingBuffer:false});renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));renderer.setClearColor('#eeeeec');renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;$('#viewport').append(renderer.domElement);
 const visualMaterials=createVisualMaterials(renderer,scene);
+const studioEnvironment=scheduleStudioEnvironment(renderer,scene,()=>{needsFrame=true});
+const studioShadow=contactShadow(scene);
 const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
  needsFrame=true;
  // Publish only the currently visible camera so a chosen view can be reused accurately.
@@ -131,7 +136,7 @@ const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new Orbit
 const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient);const sun=new THREE.DirectionalLight(0xfff7e6,2.1);sun.position.set(-3200,7000,-3000);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-3300,right:3300,top:3300,bottom:-3300,near:100,far:14000});sun.shadow.bias=-.0003;sun.shadow.normalBias=1;scene.add(sun);const fill=new THREE.DirectionalLight(0xd7e2ec,.6);fill.position.set(3000,2500,5000);scene.add(fill);
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=true;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
-const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=.15;scene.add(grid);
+const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
 const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-light');
 const assetLoader=createAssetLoader();
 const textureJobs=new Map();
@@ -219,7 +224,7 @@ const assetReleaseObserver=new MutationObserver(()=>{
 });
 assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['data-assets']});
 async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const loaded=await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"");const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;
- for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}visualMaterials.mesh(mesh,b.bounds);node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set(Object.values(mats))});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
+ for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);if(/PFS BOX23L/.test(b.path||'')&&/^ボディ/.test(b.name)){mesh.material=mesh.material.clone();mesh.material.color.set('#969594');mesh.material.metalness=0;mesh.material.roughness=.6;mesh.material.envMapIntensity=.35;}mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}visualMaterials.mesh(mesh,b.bounds);node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set(Object.values(mats))});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
 
 // Broad melamine faces keep their established daytime swatch colour. At night
 // the same surface receives the actual lamp lighting, including cast shadows.
@@ -246,7 +251,7 @@ function registerLightRig(key,data){
 function setLighting(){
  twiVisuals.updateState(state);
  const night=Boolean(state.night);visualMaterials.lighting(night);$('.stage').classList.toggle('night-mode',night);
- scene.background.set(night?'#111923':'#f1f0e9');scene.fog=night?new THREE.Fog('#111923',6500,14500):null;renderer.toneMappingExposure=1.05;
+ scene.background.set(night?'#111923':'#eeeeec');scene.fog=night?new THREE.Fog('#111923',6500,14500):null;renderer.toneMappingExposure=.95;
  ambient.intensity=night?.13:.9;ambient.color.set(night?'#b6c4d9':'#ffffff');ambient.groundColor.set(night?'#6a5441':'#9a9687');
  sun.intensity=night?.025:2.1;sun.castShadow=!night;fill.intensity=night?.045:.6;
  floor.material=night?nightGround:dayGround;grid.visible=!night;

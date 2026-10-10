@@ -26,7 +26,7 @@ export function createVisualMaterials(renderer,scene){
  function material(mat,{woodKind,edge:cutEdge,metal,isVehicle,switchable,key}){
   if(isVehicle||/^interior-|lights/.test(key))return;
   mat.envMapIntensity=metal?.85:.18;
-  if(metal){mat.metalness=.82;mat.roughness=/クロム|chrome/i.test(mat.name)?.20:.27;mat.color.multiplyScalar(.85)}
+  if(metal){mat.metalness=.9;mat.roughness=/クロム|chrome/i.test(mat.name)?.20:.35;mat.color.multiplyScalar(.85)}
   mat.userData.visualWood=woodKind;mat.userData.visualBirch={value:woodKind?1:0};
   if(woodKind){mat.roughness=.68;if(cutEdge){mat.map=edge;mat.color.set('#ffffff');mat.userData.plyEdge=true}}
   if(switchable)mat.userData.visualHexa=true;
