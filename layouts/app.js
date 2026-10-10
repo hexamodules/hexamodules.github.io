@@ -25,7 +25,7 @@ import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattre
 import {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
 import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=20261010-events';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-names';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-places';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
 import {createOutro} from './outro.js?v=vehicle-20261009';
@@ -620,8 +620,8 @@ function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hi
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-glow-8';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261010-5');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-places';document.head.append(css);
+ const {createPinStudio}=await import('./studio-pins.js?v=20261010-places');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
   getGroup:key=>loadedModels.get(key)?.group,

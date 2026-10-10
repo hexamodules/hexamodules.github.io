@@ -2,6 +2,7 @@ import {moduleNames} from './module-names.js?v=20261010';
 import {vehicleTranslations} from './vehicle-language.js?v=20261010-names';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 const pairs=[
+['マークを押すか、下のボタンから変更できます','Click a marker or use the buttons below.'],['マークをタップするか、下のボタンから変更できます','Tap a marker or use the buttons below.'],
 ['サイドモジュール','Side module'],['ベッドモジュール','Bed module'],['横画面にしてください','Please rotate your phone to landscape.'],['マットレスの色','Mattress colour'],
 ['URLを共有','Share URL'],['URLをコピーしました','URL copied'],
 
