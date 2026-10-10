@@ -5,10 +5,11 @@ import argparse,json,sys,math
 from pathlib import Path
 from contextlib import contextmanager
 import bpy
+import bmesh
 from mathutils import Vector
 
 @contextmanager
-def stage(name):
+def stage(name, objects=None):
  print('STAGE: '+name+' BEGIN',flush=True)
  try:
   yield
@@ -17,6 +18,97 @@ def stage(name):
   raise
  else:
   print('STAGE: '+name+' END',flush=True)
+  if objects is not None:geometry_stage(name,objects)
+
+# Coordinates are world metres after import normalization; reports use mm.
+STAGE_METRICS=[]
+LAST_METRICS={}
+WELD_METRES=1e-7  # 0.0001 mm; previous 0.001 mm was already below 0.01 mm.
+DEGENERATE_AREA=1e-18  # m^2: remove numerical zero, never merely slender faces.
+
+def geometry_stage(name,objects):
+ for o in objects:
+  points=[o.matrix_world@v.co for v in o.data.vertices]
+  if not points:raise ValueError(o.name+': empty mesh at '+name)
+  if any(not math.isfinite(c) for p in points for c in p):raise ValueError(o.name+': non-finite geometry')
+  bounds=[[min(p[i] for p in points)*1000 for i in range(3)],
+          [max(p[i] for p in points)*1000 for i in range(3)]]
+  longest=max(((points[e.vertices[0]]-points[e.vertices[1]]).length*1000 for e in o.data.edges),default=0)
+  width=bounds[1][0]-bounds[0][0]
+  previous=LAST_METRICS.get(o.name)
+  flags=[]
+  if previous:
+   if width-previous['width_x_mm']>0.1:flags.append('WIDTH_GROWTH')
+   if longest>max(previous['max_edge_mm']*1.5,previous['max_edge_mm']+10):flags.append('EDGE_GROWTH')
+  record={'stage':name,'object':o.name,'width_x_mm':width,'max_edge_mm':longest,
+          'bounds_mm':bounds,'vertices':len(points),'faces':len(o.data.polygons),'flags':flags}
+  STAGE_METRICS.append(record);LAST_METRICS[o.name]=record
+  print('STAGE: GEOMETRY '+json.dumps(record,ensure_ascii=False),flush=True)
+
+def fragile_face(face):
+ longest=max((e.calc_length() for e in face.edges),default=0)
+ area=face.calc_area()
+ # 0.01 mm^2, or approximate longest-edge / altitude > 100.
+ return area<1e-8 or (longest>0 and 2*area/(longest*longest)<.01)
+
+def protected_vertices(bm):
+ protected={v for e in bm.edges if not e.is_manifold for v in e.verts}
+ protected.update(v for f in bm.faces if fragile_face(f) for v in f.verts)
+ return protected
+
+def clean_degenerate(o):
+ o.data.validate(clean_customdata=False);o.data.update()
+ bm=bmesh.new()
+ try:
+  bm.from_mesh(o.data)
+  bad=[f for f in bm.faces if f.calc_area()<=DEGENERATE_AREA]
+  bmesh.ops.delete(bm,geom=bad,context='FACES_ONLY')
+  # Loose remnants of zero-area faces must not enter collapse.
+  loose=[e for e in bm.edges if not e.link_faces]
+  bmesh.ops.delete(bm,geom=loose,context='EDGES')
+  isolated=[v for v in bm.verts if not v.link_edges]
+  bmesh.ops.delete(bm,geom=isolated,context='VERTS')
+  print(f'STAGE: CLEAN {o.name} zero_area_faces={len(bad)} loose_edges={len(loose)}',flush=True)
+  bm.to_mesh(o.data)
+ finally:bm.free()
+ o.data.validate(clean_customdata=False);o.data.update()
+
+def safe_dissolve(o):
+ bm=bmesh.new()
+ try:
+  bm.from_mesh(o.data)
+  protected=protected_vertices(bm)
+  edges=[e for e in bm.edges if e.is_manifold and not any(v in protected for v in e.verts)]
+  verts=[v for v in bm.verts if v not in protected]
+  # Do not dissolve any edge touching a thin face or an open/nonmanifold boundary.
+  bmesh.ops.dissolve_limit(bm,angle_limit=math.radians(.02),use_dissolve_boundaries=False,
+                          verts=verts,edges=edges,delimit={'NORMAL','UV','MATERIAL','SHARP'})
+  bm.to_mesh(o.data)
+ finally:bm.free()
+ o.data.update()
+
+def boundary_group(o):
+ bm=bmesh.new()
+ try:
+  bm.from_mesh(o.data);bm.verts.ensure_lookup_table();bm.verts.index_update()
+  protected={v.index for v in protected_vertices(bm)}
+ finally:bm.free()
+ group=o.vertex_groups.new(name='ReductionInterior')
+ # Blender collapse excludes edges with either endpoint weight == 0.
+ # Explicit zeros also cover closed-mesh sliver faces, not only open boundaries.
+ indices=list(range(len(o.data.vertices)))
+ if indices:group.add(indices,0.0,'REPLACE')
+ interior=[i for i in indices if i not in protected]
+ if interior:group.add(interior,1.0,'REPLACE')
+ frozen={tuple(o.data.vertices[i].co) for i in protected}
+ print(f'STAGE: PROTECT {o.name} fixed_vertices={len(protected)} interior_vertices={len(interior)}',flush=True)
+ return group,frozen
+
+def verify_fixed(o,frozen):
+ # Collapse must retain the protected coordinates, not just the outer bounds.
+ remaining={tuple(v.co) for v in o.data.vertices}
+ missing=frozen-remaining
+ if missing:raise RuntimeError(f'{o.name}: {len(missing)} protected coordinates changed; refusing export')
 
 def load_texture(path):
  with stage('texture load '+str(path)):
@@ -102,6 +194,7 @@ def material(o, texture, ao, resin=False):
 
 
 def run(a,source):
+ STAGE_METRICS.clear();LAST_METRICS.clear()
  with stage('reset'):
   bpy.ops.wm.read_factory_settings(use_empty=True)
  out=Path(a.output)/source.name.replace('.mesh.json','').replace(source.suffix,'');out.mkdir(parents=True,exist_ok=False)
@@ -119,6 +212,7 @@ def run(a,source):
    o.matrix_world=__import__('mathutils').Matrix.Scale(scale,4)@o.matrix_world
    if source.name.endswith('.mesh.json'):
     o.matrix_world=__import__('mathutils').Matrix.Rotation(math.pi/2,4,'X')@o.matrix_world
+ geometry_stage('normalized input',objects)
  bpy.ops.object.select_all(action='DESELECT')
  before=sum(len(o.data.polygons) for o in objects)
  texture=load_texture(a.texture)
@@ -126,17 +220,25 @@ def run(a,source):
  face_texture=load_texture(a.face_texture) if furniture else None
  edge_texture=load_texture(a.edge_texture) if furniture else None
  for o in objects:
-  with stage('apply scale '+o.name):
+  with stage('apply scale '+o.name,[o]):
    bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
-  # Weld only coincident vertices; UV and sharp edges delimit planar dissolve.
-  with stage('weld coincident vertices '+o.name):
-   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.mesh.remove_doubles(threshold=.000001);bpy.ops.object.mode_set(mode='OBJECT')
-  with stage('decimate '+o.name):
-   dissolve=o.modifiers.new('Planar preservation','DECIMATE');dissolve.decimate_type='DISSOLVE';dissolve.angle_limit=math.radians(.2);dissolve.delimit={'NORMAL','UV','MATERIAL','SHARP'}
-   bpy.ops.object.modifier_apply(modifier=dissolve.name)
-   # Trial collapse ratio is a target, not a manufacturing tolerance guarantee.
-   dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio;dec.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=dec.name)
-  with stage('UV0 planar projection '+o.name):
+  with stage('validate and degenerate cleanup before weld '+o.name,[o]):
+   clean_degenerate(o)
+  with stage('weld coincident vertices '+o.name,[o]):
+   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.mesh.remove_doubles(threshold=WELD_METRES);bpy.ops.object.mode_set(mode='OBJECT')
+  with stage('limited dissolve protected '+o.name,[o]):
+   safe_dissolve(o)
+  with stage('validate and degenerate cleanup before decimate '+o.name,[o]):
+   clean_degenerate(o)
+  with stage('boundary vertex group '+o.name,[o]):
+   group,frozen=boundary_group(o)
+  with stage('decimate '+o.name,[o]):
+   dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio
+   dec.use_collapse_triangulate=True;dec.use_symmetry=False
+   dec.vertex_group=group.name;dec.invert_vertex_group=False;dec.vertex_group_factor=1.0
+   bpy.ops.object.modifier_apply(modifier=dec.name)
+   verify_fixed(o,frozen)
+  with stage('UV0 planar projection '+o.name,[o]):
    if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
    o.data.update();o.data.validate()
    grain=o.data.uv_layers[0];grain.name='UVMap0'
@@ -144,7 +246,7 @@ def run(a,source):
    # UV0 is world XY planar projection. UV1 alone receives Smart UV.
    planar_uv(o,a.tile_mm,furniture)
    o.data.uv_layers['UVMap0'].active_render=True
-  with stage('UV1 Smart UV '+o.name):
+  with stage('UV1 Smart UV '+o.name,[o]):
    aoUV=o.data.uv_layers.new(name='AO')
    o.data.update();o.data.validate()
    grain=o.data.uv_layers['UVMap0'];aoUV=o.data.uv_layers['AO']
@@ -160,7 +262,7 @@ def run(a,source):
    o.data.materials.append(material(o,face_texture if furniture else texture,ao,resin))
    if furniture:o.data.materials.append(material(o,edge_texture,ao,resin))
   # Set indices after installing slots: clearing slots may reset polygon indices.
-  with stage('UV0 planar projection after materials '+o.name):
+  with stage('UV0 planar projection after materials '+o.name,[o]):
    planar_uv(o,a.tile_mm,furniture)
   if a.skip_ao:
    print('STAGE: AO bake SKIP '+o.name,flush=True)
@@ -183,9 +285,9 @@ def run(a,source):
  if a.skip_export:
   print('STAGE: GLB export SKIP',flush=True)
  else:
-  with stage('GLB export'):
+  with stage('GLB export',objects):
    bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',export_extras=True,export_yup=True)
- (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':a.skip_ao,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False},indent=2))
+ (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':a.skip_ao,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
 
 if __name__=='__main__':
  a=args();src=Path(a.input).resolve();sources=[src] if src.is_file() else sorted(p for p in src.iterdir() if p.name.endswith('.mesh.json') or p.suffix.lower() in ['.fbx','.glb','.obj'])
