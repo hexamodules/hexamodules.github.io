@@ -1,3 +1,4 @@
+import {loadBlenderFloor} from './blender-floor.js';
 import {moduleNames,moduleName} from './module-names.js?v=20261010';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
@@ -150,7 +151,14 @@ wood.colorSpace=THREE.SRGBColorSpace;wood.wrapS=wood.wrapT=THREE.RepeatWrapping;
 // Fine moulded-resin grain for the original step; units in the asset are mm.
 const resinNoise=new Uint8Array(128*128*4);let noiseSeed=173;for(let i=0;i<resinNoise.length;i+=4){noiseSeed=(Math.imul(noiseSeed,1664525)+1013904223)>>>0;const v=110+(noiseSeed>>>25);resinNoise.set([v,v,v,255],i)}
 const resinBump=new THREE.DataTexture(resinNoise,128,128);resinBump.wrapS=resinBump.wrapT=THREE.RepeatWrapping;resinBump.magFilter=THREE.LinearFilter;resinBump.minFilter=THREE.LinearMipmapLinearFilter;resinBump.generateMipmaps=true;resinBump.needsUpdate=true;
-const ceilingTextures={},floorTextures={};
+const ceilingTextures={},floorTextures={},blenderFloorTextures={};
+async function ensureBlenderFloorTexture(selected){
+ if(blenderFloorTextures[selected])return;
+ const texture=(await loadTexture(`assets/blender/floor-${selected}.webp`)).clone();
+ texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.MirroredRepeatWrapping;
+ const tile=FLOOR_COLORS[selected].mapping.tile_mm;texture.repeat.set(300/tile[0],900/tile[1]);texture.offset.y=-900/tile[1];
+ texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());texture.needsUpdate=true;blenderFloorTextures[selected]=texture;
+}
 for(const c of [...ceilingPalette.colors,...floorPalette.colors])c.image=assetLoader.textureURL(c.image);
 async function ensurePalette(palette,textures,key,ceiling=false){
  if(textures[key])return;
@@ -213,11 +221,20 @@ function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colo
  return mat;}
 // Loader-owned resources are released after a completed placement only.
 const loadedModels=new Map();
+let blenderFloorDisabled=false;
+function releaseFloorModel(){
+ const entry=loadedModels.get(FLOOR.key);if(!entry)return;
+ entry.group.traverse(n=>n.geometry?.dispose());scene.remove(entry.group);
+ for(let i=floorSurfaces.length-1;i>=0;i--)if(entry.materials.has(floorSurfaces[i].material))floorSurfaces.splice(i,1);
+ for(let i=floorMaterials.length-1;i>=0;i--)if(entry.materials.has(floorMaterials[i]))floorMaterials.splice(i,1);
+ for(const m of entry.materials)m.dispose();loadedModels.delete(FLOOR.key);cache.delete(FLOOR.key);
+}
 const assetReleaseObserver=new MutationObserver(()=>{
  if(batchRunning||opening.active||outro.active||$('#loading').style.display!=='none')return;
  const keep=new Set(($('#viewport').dataset.assets||'').split(','));
  for(const [key,{group,materials}] of loadedModels){
-  if(keep.has(key)||assetLoader.isVehicle(key)||(!group.userData.moduleId&&key!=='seat'))continue;
+  if(keep.has(key)||assetLoader.isVehicle(key)||(!group.userData.moduleId&&key!=='seat'&&key!==FLOOR.key))continue;
+  if(key===FLOOR.key){releaseFloorModel();continue;}
   // Shared worktop/upholstery/wood textures and materials belong to their factories.
   group.traverse(node=>node.geometry?.dispose());scene.remove(group);
   for(let i=swappable.length-1;i>=0;i--)if(materials.has(swappable[i]))swappable.splice(i,1);
@@ -226,8 +243,9 @@ const assetReleaseObserver=new MutationObserver(()=>{
  }
 });
 assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['data-assets']});
-async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const loaded=await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"");const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;
- for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);if(/PFS BOX23L/.test(b.path||'')&&/^ボディ/.test(b.name)){mesh.material=mesh.material.clone();mesh.material.color.set('#969594');mesh.material.metalness=0;mesh.material.roughness=.6;mesh.material.envMapIntensity=.35;}mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}visualMaterials.mesh(mesh,b.bounds);node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set([...Object.values(mats),...group.children.flatMap(n=>n.children.map(m=>m.material))])});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
+async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const loaded=(key===FLOOR.key&&!blenderFloorDisabled?await loadBlenderFloor(assetLoader,key):null)||await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"");const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;group.userData.blenderFloor=!!loaded.geometries;
+ if(loaded.geometries)for(const mat of Object.values(mats))if(mat.userData.floorFinish){mat.userData.blenderFloor=true;mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=>'blender-floor-tile-v1'}
+ for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=loaded.geometries?.get(b.name)?.clone()||new THREE.BufferGeometry();if(!loaded.geometries){g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));}g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);if(/PFS BOX23L/.test(b.path||'')&&/^ボディ/.test(b.name)){mesh.material=mesh.material.clone();mesh.material.color.set('#969594');mesh.material.metalness=0;mesh.material.roughness=.6;mesh.material.envMapIntensity=.35;}mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}if(!loaded.geometries)visualMaterials.mesh(mesh,b.bounds);mesh.userData.blenderFloor=!!loaded.geometries;node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set([...Object.values(mats),...group.children.flatMap(n=>n.children.map(m=>m.material))])});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
 
 // Broad melamine faces keep their established daytime swatch colour. At night
 // the same surface receives the actual lamp lighting, including cast shadows.
@@ -374,13 +392,13 @@ function setFloorFinish(){
  const selected=floorEnabled()?state.floor:lastFloorColor;
  const finish=FLOOR_COLORS[selected],mapping=finish.mapping,texture=floorTextures[selected];
  for(const mat of floorMaterials){
-  mat.map=texture;mat.emissiveMap=texture;mat.color.set(0xffffff);
+  mat.map=mat.userData.blenderFloor?blenderFloorTextures[selected]:texture;mat.emissiveMap=mat.map;mat.color.set(0xffffff);
   const u=mat.userData.floorUniforms;
   u.floorPhotoCenter.value.set(...mapping.center);u.floorPhotoAcross.value.set(...mapping.across);u.floorPhotoAlong.value.set(...mapping.along);
   mat.needsUpdate=true;
  }
  for(const mesh of floorSurfaces){
-  if(mesh.userData.floorFinish===selected)continue;
+  if(mesh.userData.blenderFloor||mesh.userData.floorFinish===selected)continue;
   const pos=mesh.geometry.attributes.position,uv=mesh.geometry.attributes.uv;
   for(let i=0;i<pos.count;i++)uv.setXY(i,pos.getX(i)/mapping.tile_mm[0],pos.getZ(i)/mapping.tile_mm[1]);
   uv.needsUpdate=true;mesh.userData.floorFinish=selected;
@@ -548,6 +566,7 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
  if(key==='two-side-bed'&&state.flat&&path.includes('STORED'))n.visible=false;
  }}
 async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(!ceilingEnabled())state.ceilingLights=false;if(!panelEnabled()&&!isSuperGL(state))state.tailgateLights=false;if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{[models]=await Promise.all([Promise.all(keys.map(loadModel)),ensureMaterials({...state})])}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
+ if(models.some(g=>g.userData.blenderFloor)){try{await ensureBlenderFloorTexture(state.floor)}catch(error){if(ticket!==renderVersion)return;console.warn('Floor tile unavailable; using original filled floor.',error);blenderFloorDisabled=true;releaseFloorModel();return apply(state,{history,ui})}if(ticket!==renderVersion)return}
  for(const p of cache.values()){const g=await p;resetNodes(g)}for(const g of models)g.visible=true;iSeatVisuals.update(models.find(g=>g.name==='i-seat'),state);
  activeAirconMount=null;const airconModel=models.find(g=>g.name===AIRCON.key);if(airconModel&&isSuperGL(state)){activeAirconMount=twiVisuals.airconMount(airconModel.userData.data.bounds);airconModel.position.set(...activeAirconMount.translation_mm);airconModel.rotation.set(0,0,0);airconModel.userData.mount=activeAirconMount}else if(airconModel){delete airconModel.userData.mount}
  const floorModel=models.find(g=>g.name===FLOOR.key);if(floorModel){const replaced=new Set(floorModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}

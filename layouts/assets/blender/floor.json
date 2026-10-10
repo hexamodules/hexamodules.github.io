@@ -1,0 +1,9 @@
+{
+  "sourceKey": "interior-floor-oak",
+  "geometry": "floor-oak.glb",
+  "tile_mm": [
+    300,
+    900
+  ],
+  "note": "Unfilled reference only. Set sourceKey to interior-floor-oak-filled only after replacing geometry with the validated filled export."
+}

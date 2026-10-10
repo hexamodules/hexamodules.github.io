@@ -48,5 +48,5 @@ export function createAssetLoader(){
   if(name==='index')return new Uint32Array(raw.buffer);
   return Float32Array.from(new Int32Array(raw.buffer),v=>v*s.scale);
  }
- return {load,attribute,tier,isVehicle:key=>vehicleKeys.has(key),textureURL:url=>{const target=mobile?url.replace(/^assets\/(?!mobile\/)/,'assets/mobile/'):url;return optimizedTextures[target]||target}};
+ return {load,attribute,tier,begin,read,isVehicle:key=>vehicleKeys.has(key),textureURL:url=>{const target=mobile?url.replace(/^assets\/(?!mobile\/)/,'assets/mobile/'):url;return optimizedTextures[target]||target}};
 }
