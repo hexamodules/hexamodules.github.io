@@ -43,7 +43,7 @@ class AlberoTests(unittest.TestCase):
  def test_eight_dry_jobs_tetsuya_and_samples(self):
   r=subprocess.run([sys.executable,'-B',str(HERE/'rebuild_bounds.py'),'--tag','albero-20261010-1','--face-source','tetsuya'],text=True,capture_output=True)
   self.assertEqual(r.returncode,0,r.stderr)
-  lines=r.stdout.splitlines();self.assertEqual(len(lines),24)
+  lines=r.stdout.splitlines();self.assertEqual(len(lines),32)
   self.assertEqual(sum('--samples 128' in l for l in lines),8)
   self.assertEqual(sum('--face-source tetsuya' in l for l in lines),8)
 

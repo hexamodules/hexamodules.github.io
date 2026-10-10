@@ -17,6 +17,11 @@ def classify(name, material_key='', materials=None, rules=None, path='', role=''
             if re.search(rule['pattern'], text, re.IGNORECASE):
                 return dict(kind=rule['kind'], matched_by=source, fallback=False)
 
+    named = match(name, 'name_priority_rules', 'body_priority')
+    # Eurobox rail backing / floor are furniture supports, not the box itself.
+    support = re.search(r'backing|floor|rail|support|底板|支持|補強', name, re.I)
+    if named and not support:
+        return named
     guarded = match(material_name, 'source_guards', 'material_guard')
     body = match(name, 'body_rules', 'body')
     contextual = match(path, 'path_rules', 'path')
@@ -124,7 +129,7 @@ def face_policy(material_key, materials, finish, model_key='', body=None, kind='
                 variant='raw' if finish == 'hexa' else 'toned' if toned else 'natural')
 
 
-def studio_spec(kind, material_key, materials, rules, role=''):
+def studio_spec(kind, material_key, materials, rules, role='', model_key=''):
     spec, source = resolved_spec(kind, material_key, materials, rules)
     name = materials.get(str(material_key), {}).get('name', str(material_key))
     if re.search('graphite satin metallic', name, re.I):
@@ -133,7 +138,7 @@ def studio_spec(kind, material_key, materials, rules, role=''):
         encoded = [12.92*v*.85 if v*.85 <= .0031308 else 1.055*(v*.85)**(1/2.4)-.055 for v in rgb]
         spec.update(color='#'+''.join(f'{round(v*255):02x}' for v in encoded), metalness=.9, roughness=.35)
         source = 'studio graphite rgb(61,65,69) * .85 linear'
-    if kind == 'seat_fabric':
+    if kind == 'seat_fabric' and model_key != 'seat':
         # Texture supplies the default olive colour; seams have no colour map.
         spec.update(color='#ffffff' if role != 'seam' else '#797b65', metalness=0,
                     roughness=.96 if role != 'seam' else 1)

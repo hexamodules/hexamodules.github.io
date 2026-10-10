@@ -491,7 +491,7 @@ def run(a,source):
    decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''))
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
-   spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''))
+   spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''),model_key=meta.get('key',''))
    source_body=meta.get('bodies',[])[o['source_body_index']] if 'source_body_index' in o and 'bodies' in meta else {}
    policy=face_policy(label,meta.get('materials',{}),a.finish,
                       model_key=meta.get('key',''),body=source_body,kind=decision['kind'])
@@ -575,7 +575,7 @@ def run(a,source):
      image=None
      if key=='plywood-face':image=hexa_texture if policy['finish']=='hexa' else face_textures[policy['variant']]
      elif key=='plywood-edge':image=edge_texture
-     elif kind=='seat_fabric' and o.get('source_role','')!='seam':
+     elif kind=='seat_fabric' and meta.get('key','')!='seat' and o.get('source_role','')!='seam':
       image=fabric_texture;slot_spec['repeat']=True
      # Do not merge distinct source colors just because their kinds match.
      cache_key=key+':'+json.dumps(slot_spec,sort_keys=True)+':'+(image.name if image is not None else 'solid')

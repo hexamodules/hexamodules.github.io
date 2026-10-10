@@ -209,5 +209,11 @@
     "color": "#ffffff",
     "metalness": 0,
     "roughness": 0.6
-  }
+  },
+  "name_priority_rules": [
+    {
+      "kind": "container",
+      "pattern": "h235|lid\\s*300x400|pfs|eurobox|box\\s*23|euro"
+    }
+  ]
 }

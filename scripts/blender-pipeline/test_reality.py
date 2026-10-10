@@ -29,14 +29,15 @@ class RealityTests(unittest.TestCase):
     elif row['kind']=='container':
      container_count+=1
      self.assertEqual(spec,dict(color='#969594',metalness=0,roughness=.6))
-     self.assertIn('PFS',row['path']);self.assertTrue(row['body'].startswith('ボディ1'))
+     if part=='aluminum-bed':self.assertRegex(row['body'],r'h235|lid 300x400')
+     else:self.assertIn('PFS',row['path']);self.assertTrue(row['body'].startswith('ボディ1'))
     elif row['kind']!='plywood':
      self.assertEqual(spec['color'],source_color(data['materials'][row['material']])[0])
     if 'マット(青)' in row['material']:
      blue_count+=1;self.assertEqual(spec['color'],'#038ffa');self.assertEqual(spec['metalness'],0)
     if 'アルミニウム' in row['material']:self.assertEqual(row['kind'],'aluminum')
     if 'plywood' in row['material']:self.assertEqual(row['kind'],'plywood')
-  self.assertEqual(container_count,4);self.assertGreater(blue_count,0)
+  self.assertEqual(container_count,8);self.assertGreater(blue_count,0)
   with self.assertRaises(ValueError):resolved_spec('plastic','missing',{},rules)
 
  def test_ao_range_and_white_padding(self):

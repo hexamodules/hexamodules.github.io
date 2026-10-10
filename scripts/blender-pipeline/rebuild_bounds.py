@@ -1,4 +1,4 @@
-"""Jobs' eight-output rebuild. Defaults to dry-run; --execute starts Blender."""
+"""Furniture rebuild (13 modules plus bed accessories). Defaults to dry-run; --execute starts Blender."""
 import argparse
 import subprocess
 import sys
@@ -8,7 +8,21 @@ import shlex
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
 if ROOT.name=='hexa-public':ROOT=ROOT.parent.parent
-PARTS=['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-seat']
+DEFAULT_PARTS=['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-seat']
+PARTS=['front-module','aluminum-front-kitchen','i-seat','seat','side-cabinet',
+       'simple-side-cabinet','aluminum-side-cabinet','active-side-cabinet',
+       'slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed']
+ACCESSORIES={'two-side-bed':['centre-mattresses'], 'lounge-bed':['lounge-fillers']}
+
+def selected_parts(value):
+    parts=PARTS.copy() if value.strip()=='all' else list(dict.fromkeys(p.strip() for p in value.split(',')))
+    allowed=PARTS+[p for items in ACCESSORIES.values() for p in items]
+    if any(p not in allowed for p in parts):
+        raise ValueError('--parts must be all or comma-separated: '+','.join(allowed))
+    for part in parts.copy():
+        for accessory in ACCESSORIES.get(part,[]):
+            if accessory not in parts:parts.append(accessory)
+    return parts
 
 
 def main():
@@ -17,15 +31,14 @@ def main():
     p.add_argument('--tag',default='match-20261010-1')
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target forwarded to compress.py')
-    p.add_argument('--parts',default=','.join(PARTS),help='Comma-separated parts: '+','.join(PARTS))
+    p.add_argument('--parts',default=','.join(DEFAULT_PARTS),help='all or comma-separated parts: '+','.join(PARTS))
     p.add_argument('--finishes', default='birch,hexa', help='Comma-separated finishes: birch,hexa')
     a=p.parse_args()
     finishes=list(dict.fromkeys(f.strip() for f in a.finishes.split(',')))
     if any(f not in ('birch','hexa') for f in finishes):p.error('--finishes must contain only birch,hexa')
     if a.max_bytes<=0:p.error('--max-bytes must be positive')
-    parts=[part.strip() for part in a.parts.split(',')]
-    if any(part not in PARTS for part in parts):p.error('--parts must contain only: '+','.join(PARTS))
-    parts=list(dict.fromkeys(parts))
+    try:parts=selected_parts(a.parts)
+    except ValueError as error:p.error(str(error))
     if not a.tag or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.tag):
         p.error('tag must contain only letters, digits, dash, underscore')
     base=ROOT/'exports/hexa-studio-blender-20261010'
@@ -33,11 +46,13 @@ def main():
     for part in parts:
         for finish in finishes:
             source=ROOT/f'exports/hexa-public/layouts/assets/{part}.mesh.json'
+            if not source.is_file():p.error('Source missing: '+str(source))
             output=base/f'out-furn-{part}-{a.tag}-{finish}'
             if output.exists():p.error('Output already exists: '+str(output))
             folder=output/part
             jobs.append((f'{part}/{finish}',[
                 [sys.executable,'-B',str(HERE/'run.py'),str(source),str(output),'--mode','furniture-draft','--finish',finish,'--face-source',a.face_source,'--ratio','0.6','--samples','128','--ao-mode','plain','--ao-atlas-size','2048'],
+                [sys.executable,'-B',str(HERE/'check_material_report.py'),str(source),str(folder/'material-report.json')],
                 [sys.executable,'-B',str(HERE/'compress.py'),str(folder/'trial.glb'),str(folder/'trial-meshopt.glb'),'--mode','furniture-draft','--max-bytes',str(a.max_bytes)],
                 [sys.executable,'-B',str(HERE/'compare_bounds.py'),str(source),str(folder/'trial-meshopt.glb'),'--json',str(folder/'bounds-compressed.json'),'--require-pass']]))
     failures=[]

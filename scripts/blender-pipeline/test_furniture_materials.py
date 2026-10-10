@@ -31,7 +31,7 @@ class FurnitureTests(unittest.TestCase):
          ('rail','クロム','hardware'),('天板1','SKY Birch plywood - aluminum reference grain','plywood'),
          ('ボディ105','SKY Birch plywood - aluminum reference grain','plywood'),
          ('ボディ82','アルミニウム - サテン','aluminum'),('corner','プラスチック - 光沢(黒)','plastic'),
-         ('mattress top','birch','mattress'),('eurobox side','birch','plywood')]
+         ('mattress top','birch','mattress'),('eurobox side','birch','container')]
   for body,material,kind in cases:self.assertEqual(classify(body,material)['kind'],kind)
   self.assertEqual(classify('unknown','Opaque(165,158,150)'),dict(kind='plastic',matched_by='fallback',fallback=True))
   self.assertEqual(classify('unknown','m1',{'m1':{'name':'アルミニウム'}})['kind'],'aluminum')
