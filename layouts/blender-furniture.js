@@ -1,4 +1,4 @@
-// Optional furniture assets. Original CAD metadata controls placement and motion.
+// All 13 furniture modules and their two linked accessories. Original CAD metadata controls placement and motion.
 // Replace <key>-birch.glb / <key>-hexa.glb in assets/blender; no size/hash manifest.
 // 2026-10-10: both finishes approved by the owner; validate each loaded asset.
 const unavailable=new Set();
@@ -54,7 +54,7 @@ export async function loadBlenderFurniture(transport,key,finish){
    const delta=Math.max(...bounds.flatMap((p,e)=>p.map((v,a)=>Math.abs(v-data.bounds[e][a]))));
    if(!Number.isFinite(delta)||delta>2)throw Error(`Outline differs by ${delta.toFixed(4)} mm (limit 2 mm)`);
    const group=new THREE.Group();group.name=key;group.visible=false;
-   group.userData={data,moduleId:key,blenderFurniture:true,blenderVariant:variant,blenderBounds:bounds,blenderBoundsDelta:delta};
+   group.userData={data,moduleId:key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':key,blenderFurniture:true,blenderVariant:variant,blenderBounds:bounds,blenderBoundsDelta:delta};
    // Preserve body identity if present. A merged I-Seat cannot select poses or
    // separate fixed rails from sliding upholstery; keep the original in that case.
    const identified=new Map();let complete=true;
@@ -65,7 +65,7 @@ export async function loadBlenderFurniture(transport,key,finish){
     if(!identified.has(index))identified.set(index,[]);identified.get(index).push(mesh);
    }
    complete=complete&&identified.size===data.bodies.length;
-   if(key==='i-seat'&&!complete)throw Error('I-Seat requires source_body_index for all poses/sliding parts');
+   if(key!=='aluminum-bed'&&!complete)throw Error('Furniture requires source_body_index for all cushions, poses and sliding parts');
    group.userData.blenderMerged=!complete;
    const add=(body,sources)=>{const node=new THREE.Group();node.name=body.name;node.userData={...body,initialBounds:body.bounds};
     for(const source of sources){const geometry=source.userData.mmGeometry;const mesh=new THREE.Mesh(geometry,source.material);mesh.castShadow=true;mesh.receiveShadow=true;
