@@ -61,6 +61,7 @@ def main():
             cmd.extend([flag,str((a.tiles/name).resolve())])
         for name in ['wood-grain.jpg','mattress-colors/light-green.jpg']:
             if not (a.assets/name).is_file(): p.error('Studio texture missing: '+name)
+        cmd.extend(['--countertop-definition',str((a.assets/'countertop-material.json').resolve())])
         cmd.extend(['--face-source',a.face_source,'--face-texture',str((a.output/'face-toned.png').resolve()),
                     '--natural-face-texture',str((a.output/'face-natural.png').resolve()),
                     '--raw-face-texture',str((a.output/'face-raw.png').resolve()),

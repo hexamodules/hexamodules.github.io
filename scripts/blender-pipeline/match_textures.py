@@ -50,14 +50,30 @@ def prepare(assets, tiles, output, face_source='studio'):
     raw = reference
     if face_source == 'tetsuya':
         with Image.open(tiles/'birch-face.png') as im: raw = histogram_match(im, reference)
+    brightness=[]
     for variant, birch, toned in [('toned',True,True),('natural',True,False),('raw',False,False)]:
-        save_new(studio_face(raw,birch,toned), output/f'face-{variant}.png')
+        face=studio_face(raw,birch,toned)
+        if face_source == 'tetsuya':
+            face,adjustment=brighten_face(face, reference)
+            brightness.append(dict(variant=variant,**adjustment))
+        save_new(face, output/f'face-{variant}.png')
     # Actual I-Seat default texture: retain the source image's weave and tint.
     with Image.open(assets/'mattress-colors/light-green.jpg') as im:
         save_new(im.convert('RGB'), output/'seat-fabric.png')
     report = dict(face_source=face_source, studio_image=str(assets/'wood-grain.jpg'),
-                  reference=stats(reference), matched=stats(raw),
+                  reference=stats(reference), matched=stats(raw), brightness=brightness,
                   fabric_image=str(assets/'mattress-colors/light-green.jpg'),
                   tone='linear mix .19, power 1.08, saturation .92, gain .40/.40/.46; sRGB once')
     with (output/'texture-match.json').open('x') as f: json.dump(report,f,indent=2)
     return report
+
+
+def brighten_face(image, reference):
+    """Raise displayed photograph gently, capped at the studio image mean."""
+    weights=np.array([.2126,.7152,.0722])
+    rgb=np.asarray(image.convert('RGB'),dtype=float)
+    before=float((rgb@weights).mean())
+    target=float((np.asarray(reference.convert('RGB'),dtype=float)@weights).mean())
+    gain=max(1.0,min(1.06,target/before)) if before else 1.0
+    out=Image.fromarray(np.rint(np.clip(rgb*gain,0,255)).astype('uint8'))
+    return out,dict(gain=gain,before=before,after=float((np.asarray(out)@weights).mean()),reference_mean=target)

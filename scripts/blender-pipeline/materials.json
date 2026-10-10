@@ -113,7 +113,7 @@
     "plywood": {
       "color": "#ffffff",
       "metalness": 0,
-      "roughness": 0.68
+      "roughness": 0.6
     },
     "appliance": {
       "color": "#3a3a3a",
@@ -208,6 +208,6 @@
   "hexa_face": {
     "color": "#ffffff",
     "metalness": 0,
-    "roughness": 0.7
+    "roughness": 0.6
   }
 }

@@ -50,7 +50,7 @@ class RealityTests(unittest.TestCase):
    def foreach_get(self,out):out[:]=self.values
    def foreach_set(self,value):self.values[:]=value
   pixels=Pixels();ns['finish_ao_pixels'](NS(pixels=pixels,update=lambda:None))
-  np.testing.assert_allclose(pixels.values,[.85,.925,1,1,1,1,1,1])
+  np.testing.assert_allclose(pixels.values,[.92,.96,1,1,1,1,1,1])
 
  def test_body_origin_shared_by_split_materials(self):
   tree=ast.parse((HERE/'pipeline.py').read_text());ns={'board_axes':board_axes}

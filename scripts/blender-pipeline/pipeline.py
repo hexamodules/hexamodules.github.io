@@ -7,7 +7,7 @@ from contextlib import contextmanager
 import bpy
 import bmesh
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec, face_policy, studio_spec
+from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec, face_policy, studio_spec, countertop_candidate, countertop_uv
 from mathutils import Vector, Matrix
 from bounds_policy import transform_rows, bounds_changed, keep_geometry
 
@@ -133,6 +133,7 @@ def args():
  p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.6);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=64);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
  p.add_argument('--finish',choices=['birch','hexa'],default='birch')
  p.add_argument('--hexa-source')
+ p.add_argument('--countertop-definition')
  p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
  p.add_argument('--natural-face-texture');p.add_argument('--raw-face-texture');p.add_argument('--fabric-texture')
  p.add_argument('--ao-atlas-size',type=int,choices=[2048,4096],default=2048)
@@ -237,11 +238,29 @@ def furniture_uv(o, axes, rules, finish, plywood, origin=(0,0,0), preserve_face=
  mesh.update()
 
 
+def apply_countertop(o, slot, bounds, tile_mm):
+ # Exact studio upper-surface rule in source Y-up coordinates; keep cut edges.
+ mesh=o.data;mesh.update()
+ normal_matrix=o.matrix_world.to_3x3().inverted().transposed()
+ uv=[0.0]*(2*len(mesh.loops));mesh.uv_layers['UVMap0'].data.foreach_get('uv',uv)
+ normals=[(normal_matrix@n.vector).normalized().z for n in mesh.corner_normals]
+ count=0
+ for face in mesh.polygons:
+  if not all(normals[i] > .8 for i in face.loop_indices):continue
+  face.material_index=slot;count+=1
+  for i in face.loop_indices:
+   p=o.matrix_world@mesh.vertices[mesh.loops[i].vertex_index].co
+   uv[2*i:2*i+2]=countertop_uv((p.x*1000,p.z*1000,-p.y*1000),bounds,tile_mm)
+ mesh.uv_layers['UVMap0'].data.foreach_set('uv',uv)
+ mesh.update()
+ return count
+
+
 def ao_settings(a):
  mode='none' if a.skip_ao else a.ao_mode
  size=getattr(a,'ao_atlas_size',2048) if getattr(a,'mode','floor')=='furniture-draft' else (512 if mode=='lowres' else 1024)
  return {'mode':mode,'size':size,
-         'samples':max(64,a.samples) if getattr(a,'mode','floor')=='furniture-draft' else (4 if mode=='lowres' else a.samples),
+         'samples':max(128,a.samples) if getattr(a,'mode','floor')=='furniture-draft' else (4 if mode=='lowres' else a.samples),
          'margin':32 if getattr(a,'mode','floor')=='furniture-draft' else (2 if mode=='lowres' else 8)}
 
 def plain_material(ao=None):
@@ -334,7 +353,7 @@ def finish_ao_pixels(ao):
  pixels=np.empty(len(ao.pixels),dtype=np.float32)
  ao.pixels.foreach_get(pixels)
  rgba=pixels.reshape((-1,4))
- rgba[:,:3]=.85+.15*np.clip(rgba[:,:3],0,1)
+ rgba[:,:3]=.92+.08*np.clip(rgba[:,:3],0,1)
  rgba[:,3]=1
  ao.pixels.foreach_set(pixels);ao.update()
 
@@ -440,9 +459,13 @@ def run(a,source):
  face_texture=load_texture(a.face_texture) if furniture else None
  face_textures={}
  fabric_texture=None
+ countertop_definition=None;countertop_texture=None
  if furniture:
   face_textures={'toned':face_texture,'natural':load_texture(a.natural_face_texture),'raw':load_texture(a.raw_face_texture)}
   fabric_texture=load_texture(a.fabric_texture)
+  countertop_definition=json.loads(Path(a.countertop_definition).read_text())
+  countertop_texture=load_texture(Path(a.countertop_definition).parent.parent/countertop_definition['web_surface']['image'])
+  countertop_texture.colorspace_settings.name='sRGB'
   for image in [*face_textures.values(),fabric_texture]:image.colorspace_settings.name='sRGB'
  edge_texture=load_texture(a.edge_texture) if furniture else None
  rules=load_rules();shared={};decisions=[]
@@ -472,6 +495,8 @@ def run(a,source):
    source_body=meta.get('bodies',[])[o['source_body_index']] if 'source_body_index' in o and 'bodies' in meta else {}
    policy=face_policy(label,meta.get('materials',{}),a.finish,
                       model_key=meta.get('key',''),body=source_body,kind=decision['kind'])
+   albero=countertop_candidate(meta.get('base_module') or meta.get('key',''),label,meta.get('materials',{}),countertop_definition)
+   decisions[-1]['albero_candidate']=albero
    preserve_face=a.face_source=='studio' and policy['finish']!='hexa'
    decisions[-1].update(face_policy=policy,face_source=a.face_source)
    decisions[-1].update(source_body_index=o.get('source_body_index'),source_part_index=o.get('source_part_index'),source_path=o.get('source_path',''),spec=spec,color_source=color_source,projection_origin_m=origin,projection_axes=axes)
@@ -561,6 +586,12 @@ def run(a,source):
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name,[o]):
    furniture_uv(o,axes,rules,policy['finish'],decision['kind']=='plywood',origin,preserve_face) if furniture else planar_uv(o,a.tile_mm)
+  if furniture and albero:
+   albero_key='ALBERO melamine surface'
+   if albero_key not in shared:
+    shared[albero_key]=material(type('Name',(),{'name':albero_key})(),countertop_texture,atlas,spec=dict(color='#ffffff',roughness=.86,metalness=0,repeat=False))
+   o.data.materials.append(shared[albero_key])
+   decisions[-1]['albero_faces']=apply_countertop(o,len(o.data.materials)-1,source_body['bounds'],countertop_definition['web_surface']['tile_mm'])
   if furniture:
    o.select_set(False)
    continue

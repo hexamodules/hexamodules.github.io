@@ -161,3 +161,28 @@ Blenderを起動せず、色値・切替規則・木目統計・UV保持・コ�
 `--parts active-side-cabinet,aluminum-front-kitchen,i-seat` で対象を絞れる（各birch/hexa）。省略時は全4家具。
 1本の生成・圧縮・寸法検査が失敗したら、その1本の後続処理を省き、次の仕上げ／部品へ進む。最後に部品・仕上げ・失敗段階をまとめ、失敗ありは終了コード1、すべて成功は0。容量超過の警告だけでは失敗扱いにしない。
 既存の出力フォルダがあるtagは、開始前に拒否する。新しいtagを使い、元ファイルは上書きしない。
+
+
+## 2026-10-10 ALBERO天板・明るい合板（上記旧設定より優先）
+
+天板判定の実体は `layouts/countertops.js`。JSONの対象モジュール内で
+元材質名が `oak|オーク材`、`koguchi` を除き、頂点法線がすべて上向き >0.8 の面だけに適用する。
+`countertop-material.json` の `web_surface.image` と `tile_mm` を読み、
+既存ボディの長手／短手と原点で440×1200mm・MIRROR投影する。
+ALBERO面はsRGB・roughness .86・metalness 0。小口・裏面・ベッドは従来材質のまま。
+仕上げbirch/hexaに共通、輪郭や穴の形状は変更しない。
+
+家具AOは128samples以上、レンジ0.92〜1.0。合板面・小口・Hexa面はroughness .6、metalness 0。
+テツヤ写真は既存の元木目画像への色合わせと表示補正後、sRGB平均明度を最大6%上げる。
+参照のwood-grain.jpg平均明度を上限とし、既に明るいvariantは増幅しない。
+元写真自体は参照より明るいため、一律の増幅はしない。実測はtexture-match.jsonに保存。
+
+全8本の再生成（ジョブズが実行、CodexはBlenderを起動しない）：
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --tag albero-20261010-1 --face-source tetsuya
+```
+
+`--execute`を外すとdry-run。既存出力拒否、layoutsへの書込なし。
+シンク付きaluminum-side-cabinetも共通変換で対応するが、既存8本セットは
+aluminum-bed / active-side-cabinet / aluminum-front-kitchen / i-seat ×2仕上げを維持。

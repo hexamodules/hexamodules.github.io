@@ -37,7 +37,7 @@ def main():
             if output.exists():p.error('Output already exists: '+str(output))
             folder=output/part
             jobs.append((f'{part}/{finish}',[
-                [sys.executable,'-B',str(HERE/'run.py'),str(source),str(output),'--mode','furniture-draft','--finish',finish,'--face-source',a.face_source,'--ratio','0.6','--samples','64','--ao-mode','plain','--ao-atlas-size','2048'],
+                [sys.executable,'-B',str(HERE/'run.py'),str(source),str(output),'--mode','furniture-draft','--finish',finish,'--face-source',a.face_source,'--ratio','0.6','--samples','128','--ao-mode','plain','--ao-atlas-size','2048'],
                 [sys.executable,'-B',str(HERE/'compress.py'),str(folder/'trial.glb'),str(folder/'trial-meshopt.glb'),'--mode','furniture-draft','--max-bytes',str(a.max_bytes)],
                 [sys.executable,'-B',str(HERE/'compare_bounds.py'),str(source),str(folder/'trial-meshopt.glb'),'--json',str(folder/'bounds-compressed.json'),'--require-pass']]))
     failures=[]

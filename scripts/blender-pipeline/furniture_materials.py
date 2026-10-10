@@ -139,3 +139,19 @@ def studio_spec(kind, material_key, materials, rules, role=''):
                     roughness=.96 if role != 'seam' else 1)
         source = 'studio light-green fabric image' if role != 'seam' else 'studio light-green seam * .64 linear'
     return spec, source
+
+
+def countertop_candidate(model_key, material_key, materials, definition):
+    """countertops.js uses oak material tags, not generic body-name matches."""
+    name = materials.get(str(material_key), {}).get('name', str(material_key))
+    return (model_key in definition['module_ids'] and
+            bool(re.search(r'oak|オーク材', name, re.I)) and
+            not bool(re.search('koguchi', name, re.I)))
+
+
+def countertop_uv(point_mm, bounds_mm, tile_mm):
+    lo, hi = bounds_mm
+    long_axis = 0 if hi[0]-lo[0] > hi[2]-lo[2] else 2
+    cross_axis = 2 if long_axis == 0 else 0
+    return ((point_mm[cross_axis]-lo[cross_axis])/tile_mm[0],
+            (point_mm[long_axis]-lo[long_axis])/tile_mm[1])

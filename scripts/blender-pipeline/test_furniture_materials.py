@@ -24,7 +24,7 @@ class FurnitureTests(unittest.TestCase):
   # Studio brown-black palette has no green tint (R >= G >= B).
   self.assertTrue(all(r>=g>=b for r,g,b in image.getdata()))
   self.assertIn((41,35,33),set(image.getdata()))
-  self.assertEqual(rules['hexa_face'],dict(color='#ffffff',metalness=0,roughness=.7))
+  self.assertEqual(rules['hexa_face'],dict(color='#ffffff',metalness=0,roughness=.6))
 
  def test_collisions_and_source_materials(self):
   cases=[('rail outer','aluminum','aluminum'),('slide','アルミニウム - サテン','aluminum'),
