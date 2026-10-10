@@ -1,6 +1,5 @@
 import {moduleNames,moduleName} from './module-names.js?v=20261010';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js';
-import {createStudioScale} from './studio-scale.js';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
@@ -131,7 +130,7 @@ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawi
 const visualMaterials=createVisualMaterials(renderer,scene);
 const studioEnvironment=scheduleStudioEnvironment(renderer,scene,()=>{needsFrame=true});
 const studioShadow=contactShadow(scene);
-const studioScale=createStudioScale({scene,stage:$('.stage'),onChange:()=>{needsFrame=true}});
+const studioScale={dimensions(){}}; // Scale UI remains in studio-scale.js, unused by the pin layout.
 const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
  needsFrame=true;
  // Publish only the currently visible camera so a chosen view can be reused accurately.
@@ -990,7 +989,7 @@ if(completeEntry){
  }finally{document.documentElement.classList.remove('complete-loading');}
 }else{
  if(document.documentElement.classList.contains('intro-active')&&!reviewMode)await opening.play();
- else {await apply();requestAnimationFrame(()=>studioEnvironment.load());}
+ else {await apply();await ensurePins();requestAnimationFrame(()=>studioEnvironment.load());}
  initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout});
 }
 
