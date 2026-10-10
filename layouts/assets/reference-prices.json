@@ -132,144 +132,144 @@
     {
       "key": "module:front-module",
       "category": "家具",
-      "name": "フロントモジュール",
+      "name": "フロントキッチン(合板)",
       "module_id": "front-module",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Front module · Plywood",
+      "name_en": "Front kitchen (Plywood)",
       "number": 15
     },
     {
       "key": "module:aluminum-front-kitchen",
       "category": "家具",
-      "name": "フロントモジュール",
+      "name": "フロントキッチン(アルミ)",
       "module_id": "aluminum-front-kitchen",
       "construction": "aluminum",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Front module · Aluminium",
+      "name_en": "Front kitchen (Aluminium)",
       "number": 16
     },
     {
       "key": "module:slide-bed",
       "category": "家具",
-      "name": "シンプルスライドアウトベッド",
+      "name": "シンプルスライドベッド(合板)",
       "module_id": "slide-bed",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Simple slide-out bed · Plywood",
+      "name_en": "Simple slide bed (Plywood)",
       "number": 17
     },
     {
       "key": "module:lounge-slide-bed",
       "category": "家具",
-      "name": "収納付きスライドアウトベッド",
+      "name": "収納付きスライドベッド(合板)",
       "module_id": "lounge-slide-bed",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Storage slide-out bed · Plywood",
+      "name_en": "Slide bed with storage (Plywood)",
       "number": 18
     },
     {
       "key": "module:aluminum-bed",
       "category": "家具",
-      "name": "スライドアウトベッド",
+      "name": "Hexaオリジナルベッド(アルミ)",
       "module_id": "aluminum-bed",
       "construction": "aluminum",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Slide-out bed · Aluminium",
+      "name_en": "Hexa original bed (Aluminium)",
       "number": 19
     },
     {
       "key": "module:lounge-bed",
       "category": "家具",
-      "name": "ラウンジベッド",
+      "name": "ラウンジベッド(合板)",
       "module_id": "lounge-bed",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Lounge bed · Plywood",
+      "name_en": "Lounge bed (Plywood)",
       "number": 20
     },
     {
       "key": "module:two-side-bed",
       "category": "家具",
-      "name": "床スライド付きラウンジベッド",
+      "name": "両サイドベッド(合板)",
       "module_id": "two-side-bed",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Lounge bed with optional floor slide · Plywood",
+      "name_en": "Twin side beds (Plywood)",
       "number": 21
     },
     {
       "key": "module:side-cabinet",
       "category": "家具",
-      "name": "フリップアップテーブル付きサイドキャビネット",
+      "name": "細身のサイドキャビネット(合板)",
       "module_id": "side-cabinet",
       "construction": "plywood",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with flip-up table · Plywood",
+      "name_en": "Slim side cabinet (Plywood)",
       "number": 22
     },
     {
       "key": "module:aluminum-side-cabinet",
       "category": "家具",
-      "name": "シンク付きサイドキャビネット",
+      "name": "シンク付きキッチンキャビネット(アルミ)",
       "module_id": "aluminum-side-cabinet",
       "construction": "aluminum",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with sink · Aluminium",
+      "name_en": "Kitchen cabinet with sink (Aluminium)",
       "number": 23
     },
     {
       "key": "module:simple-side-cabinet",
       "category": "家具",
-      "name": "サイドキャビネット",
+      "name": "シンプルサイドキャビネット(アルミ)",
       "module_id": "simple-side-cabinet",
       "construction": "aluminum",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet · Aluminium",
+      "name_en": "Simple side cabinet (Aluminium)",
       "number": 24
     },
     {
       "key": "module:active-side-cabinet",
       "category": "家具",
-      "name": "冷蔵庫付きサイドキャビネット",
+      "name": "冷蔵庫・シャワー付きサイドキャビネット(アルミ)",
       "module_id": "active-side-cabinet",
       "construction": "aluminum",
       "same_price_for_finishes": [
         "birch",
         "black"
       ],
-      "name_en": "Side cabinet with fridge · Aluminium",
+      "name_en": "Side cabinet with fridge and shower (Aluminium)",
       "number": 25
     },
     {

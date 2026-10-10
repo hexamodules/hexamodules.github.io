@@ -1,13 +1,14 @@
+import {moduleName} from './module-names.js?v=20261010';
 import {bedMattressEnabled,frontMattressEnabled,mattressIncluded} from './mattress-state.js?v=2';
 import {vehicleSelectionComplete,newVehicleSpecification} from './new-vehicle.js?v=1';
-import {retailerPriceLines} from './retailer-prices.js?v=20261005';
+import {retailerPriceLines} from './retailer-prices.js?v=20261010-names';
 export function calculateReferencePrice(catalogue,state,region='jp') {
  const choices=new Map((catalogue?.items||[]).map(item=>[item.key,item])),items=[];
  const add=(key,quantity=1)=>{
   const item=choices.get(key);if(!item)return;
   const prefix=['床（必須）','天井','カラーパネル','壁面板張り仕上げ（カラーパネル込み）'].includes(item.category)?item.category.replace('（必須）','')+' · ':'';
   const structure=item.construction?' · '+(item.construction==='plywood'?'プライウッド':'アルミ'):'';
-  items.push({key,quantity,name:prefix+item.name+structure+(quantity>1?' × '+quantity:''),name_en:(item.name_en||item.name)+(quantity>1?' × '+quantity:''),...(item.includes?{includes:item.includes}:{})});
+  items.push({key,quantity,name:prefix+(moduleName(item.module_id)||item.name+structure)+(quantity>1?' × '+quantity:''),name_en:(moduleName(item.module_id,'en')||item.name_en||item.name)+(quantity>1?' × '+quantity:''),...(item.includes?{includes:item.includes}:{})});
  };
  const selected = value => value && value !== 'none';
  if (selected(state.floor)) add('floor:' + state.floor);

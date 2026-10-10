@@ -1,5 +1,5 @@
 import {DEALERS} from './dealer-config.js?v=20261005-enquiry';
-import {normalizeRetailerPrices} from './retailer-prices.js?v=20261005';
+import {normalizeRetailerPrices} from './retailer-prices.js?v=20261010-names';
 import {setupDealerOptions,setupCanArrange,dealerCanArrange} from './dealer-option-policy.js?v=20261005';
 import {NETWORK_FIELDS,normalizeNetworkValues} from './dealer-network.js?v=2';
 

@@ -1,3 +1,4 @@
+import {moduleNames,moduleName} from './module-names.js?v=20261010';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js';
 import {createStudioScale} from './studio-scale.js';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
@@ -10,7 +11,7 @@ import {initRetailerSimulation} from './retailer-simulation.js?v=1';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {createNewVehicleControls} from './new-vehicle-controls.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
-import {createISeatControls,createISeatVisuals} from './i-seat.js?v=6';
+import {createISeatControls,createISeatVisuals} from './i-seat.js?v=20261010-names';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
 import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261005';
 import {selectedDealer} from './dealer-preview.js?v=20261005-procurement';
@@ -20,12 +21,12 @@ import {createCountertopVisuals} from './countertops.js?v=20261010-light';
 import {createTwiLightingControls} from './twi-lighting-controls.js?v=1';
 import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261010-light';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
-import {createReferencePricing} from './reference-pricing.js?v=20261005-mobile-fix';
+import {createReferencePricing} from './reference-pricing.js?v=20261010-names';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
 import {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
 import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=20261010-events';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261005';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-names';
 import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
 import {createOutro} from './outro.js?v=vehicle-20261009';
@@ -40,10 +41,10 @@ const completeEntry=new URLSearchParams(location.search).get('complete')==='1';
 const reviewMode=false; // Production capture tools are unavailable on this static site.
 if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false){document.documentElement.classList.remove('complete-loading');return;}
 const dealerOptions=dealerOptionAvailability(selectedDealer());
-const priceCatalogue=await fetch('assets/reference-prices.json?v=20261005-enquiry').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
-const M=await fetch('../modules.json?v=cabinet-names-1').then(r=>r.json());
+const priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
+const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
 const modules=Object.fromEntries(M.map(m=>[m.id,m]));
-modules['i-seat']={id:'i-seat',name:'i seat',en:'i seat',selection_description:'1,400mm'};
+modules['i-seat']={id:'i-seat',name:moduleName('i-seat'),en:moduleName('i-seat','en'),selection_description:moduleNames['i-seat'].noteJa};
 const verification=await fetch('fit-report.json?v=front-fit-6').then(r=>r.json());
 const wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json());
 const WALL={key:'interior-wall-white',value:'white',name:'ホワイト壁面',pitch_mm:100,thickness_mm:6.5,side:'リア運転席側',revision:'driver-wall-floor-pitch100-v1'};
@@ -56,7 +57,7 @@ const PANEL={key:'interior-color-panels',name:'カラーパネル',count:3,thick
 const TAILGATE='vehicle-tailgate';
 const SLIDING_DOOR='vehicle-sliding-door';
 const FRONT_DOOR='vehicle-front-passenger-door',BODY_COMPLETION='vehicle-body-completion';
-const AIRCON={key:'aircon-cube-air460b',value:'cube-air460b',label:'CUBE AIR460B',with_cover_size_mm:[600,160,320],revision:'air460b-illustrative-position-v1'};
+const AIRCON={key:'aircon-cube-air460b',value:'cube-air460b',label:moduleName('aircon-cube-air460b'),with_cover_size_mm:[600,160,320],revision:'air460b-illustrative-position-v1'};
 const airconEnabled=(s=state)=>s.ac===AIRCON.value;
 const HEATER={value:'webasto',label:'ベバスト FFヒーター',brand:'Webasto',display:'selection-indicator'};
 const heaterEnabled=(s=state)=>s.heater===HEATER.value;
@@ -97,8 +98,7 @@ const FRONT=['seat','i-seat','front-module','aluminum-front-kitchen'];
 const FULL=['lounge-bed','two-side-bed'];
 const SINGLE=['slide-bed','lounge-slide-bed','aluminum-bed'];
 const CAB=['side-cabinet','aluminum-side-cabinet','simple-side-cabinet','active-side-cabinet'];
-const shortNames={'seat':'セカンドシート'};
-const name=k=>k==='i-seat'?'i seat':shortNames[k]||modules[k]?.name||'なし';
+const name=k=>moduleName(k)||modules[k]?.name||'なし';
 const rearVariants=[...FULL.map(b=>({bed:b,cab:'none'})),...SINGLE.flatMap(b=>['none',...CAB].map(c=>({bed:b,cab:c})))];
 const patterns=FRONT.flatMap((front,f)=>rearVariants.map((p,i)=>({...p,front,id:`${f+1}-${String(i+1).padStart(2,'0')}`})));
 const shippingForAustralia=()=>getStudioLocation().id==='au';
@@ -274,8 +274,8 @@ function setTwiLamp(key,enabled){
  setLighting();if(outro.active){scene.fog=null;grid.visible=false}lightingUI();window.history.replaceState(null,'',urlFor());updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
 }
 function lightingUI(){
- $('[data-light=ceilingLights] strong').textContent='天井ライト用開口';
- $('[data-light=tailgateLights] strong').textContent=isSuperGL(state)?'バックドアライト（取付希望）':'バックドアライト用開口';
+ $('[data-light=ceilingLights] strong').textContent=moduleName('ceiling-lights');
+ $('[data-light=tailgateLights] strong').textContent=moduleName('tailgate-lights');
  twiLightControls.update();
  for(const [flag] of Object.entries(LIGHTS)){$(`[data-light="${flag}"]`).setAttribute('aria-pressed',Boolean(state[flag]));$(`[data-light="${flag}"] .light-state`).textContent=state[flag]?'選択中':'追加する'}
  $$('[data-night-toggle]').forEach(b=>{b.setAttribute('aria-pressed',Boolean(state.night));b.textContent=state.night?'☀ 昼の表示に戻す':'☾ ナイトモード'});
@@ -406,6 +406,7 @@ const mattressControls=createMattressControls({getState:()=>state,getLanguage,on
 const iSeatControls=createISeatControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error),onSlidePreview:slide=>{state=normalizeISeat({...state,iSeatSlide:slide});iSeatVisuals.update(scene.getObjectByName('i-seat'),state);needsFrame=true}});
 function imageFor(k,finish=state.finish){if(k==='i-seat')return 'assets/iseat/forward.webp';if(k==='seat')return 'patterns/seat-base.webp?v=front-fit-6';let m=modules[k];return `../assets/${k}-${finish}-${m.scenes[0].key}.webp`}
 function option(k,chosen,note=''){
+ if(moduleNames[k])note=moduleNames[k].noteJa;
  const img='';
  const button=`<button class="option ${chosen===k?'active':''}" data-key="${k}" aria-pressed="${chosen===k}">${img}<span><span class="name">${name(k)}</span>${constructionBadge(modules[k])}${note?`<small>${note}</small>`:''}</span><span class="check">✓</span></button>`;
  if(chosen!==k)return button;
@@ -448,7 +449,7 @@ function configureUI(){
  $('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>内装</span><b>${interiorLabel()}</b></div><div class="selection-row"><span>照明</span><b>${lightingLabel()}</b></div>`);lightingUI();airconUI();heaterUI();insulationUI();electricalUI();shippingUI();pricing.update();dealerOptionsUI.update();
  if(state.bed==='two-side-bed')$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>床スライド</span><b>${state.floorSlide?'脱着式・追加あり':'追加なし'}</b></div>`);
  $('#layout-name').textContent='あなたの過ごし方を、この一台に。';
- updateStudio({front:name(state.front),bed:name(state.bed),cab:name(state.cab),finish:state.finish==='black'?'ヘキサ合板':'バーチ合板',ceiling:twiCeilingEnabled(state)?twiCeilingLabel(state):ceilingEnabled()?CEILING_COLORS[state.ceiling].label:'なし',wall:isSuperGL(state)?quarterLabel(state):panelEnabled()?(wallEnabled()?'壁面板張り仕上げ':'カラーパネル')+' · '+WALL_COLORS[panelColor()].label:'なし',floor:floorEnabled()?FLOOR_COLORS[state.floor].label:'未選択',lights:lightingLabel(),ac:airconEnabled()?'CUBE AIR460B':'なし',heater:heaterEnabled()?'Webasto':'なし',insulation:insulationEnabled()?'選択中':'なし'});
+ updateStudio({front:name(state.front),bed:name(state.bed),cab:name(state.cab),finish:state.finish==='black'?'ヘキサ合板':'バーチ合板',ceiling:twiCeilingEnabled(state)?twiCeilingLabel(state):ceilingEnabled()?CEILING_COLORS[state.ceiling].label:'なし',wall:isSuperGL(state)?quarterLabel(state):panelEnabled()?(wallEnabled()?'壁面板張り仕上げ':'カラーパネル')+' · '+WALL_COLORS[panelColor()].label:'なし',floor:floorEnabled()?FLOOR_COLORS[state.floor].label:'未選択',lights:lightingLabel(),ac:airconEnabled()?moduleName('aircon-cube-air460b'):'なし',heater:heaterEnabled()?'Webasto':'なし',insulation:insulationEnabled()?'選択中':'なし'});
  vehicleControls.update();newVehicleControls.update();
  for(const [slot,key] of [['front',state.front],['bed',state.bed],['cab',state.cab]]){const el=$(`[data-choice="${slot}"]`);el.classList.toggle('has-construction',!!modules[key]);if(modules[key])el.innerHTML=`<span class="choice-name">${name(key)}</span> ${constructionBadge(modules[key])}`;}
 }
@@ -560,7 +561,7 @@ async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVer
  if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');studioScale.dimensions(models[0]?.userData.data?.bounds);renderer.render(scene,camera);return {keys,fit,bedLength:bedLength()}}
 const checkMarkers=new THREE.Group();scene.add(checkMarkers);
 function updateFitDisplay(){
- if(state.front==='i-seat'){$('#geometry-check').hidden=false;$('#geometry-check').classList.remove('has-issues');$('#check-title').textContent=getLanguage()==='en'?'i seat · installation':'i seat の取り付けについて';$('#check-details').textContent=iSeatInstallationNote(getLanguage());$('#toggle-checks').hidden=true;checkMarkers.clear();updateReviewIndicator(false);return}
+ if(state.front==='i-seat'){$('#geometry-check').hidden=false;$('#geometry-check').classList.remove('has-issues');$('#check-title').textContent=moduleName('i-seat',getLanguage())+(getLanguage()==='en'?' · installation':' の取り付けについて');$('#check-details').textContent=iSeatInstallationNote(getLanguage());$('#toggle-checks').hidden=true;checkMarkers.clear();updateReviewIndicator(false);return}
 
  if(isSuperGL(state)){$('#geometry-check').hidden=false;$('#check-title').textContent='スーパーGLの配置イメージ';$('#check-details').textContent='TWI製品の形状は表示用の参考形状です。製作時には実車との取り合いを確認します。';$('#toggle-checks').hidden=true;checkMarkers.clear();updateReviewIndicator(false);return}
  const r=reportFor();while(checkMarkers.children.length){const m=checkMarkers.children.pop();m.geometry.dispose();m.material.dispose()}
@@ -616,7 +617,7 @@ function renderReplacement(){
  const heading=document.createElement('p');heading.className='replace-heading';heading.textContent='これと入れ替える';replacement.append(heading);
  const buttons=document.createElement('div');buttons.className='replacement-options';replacement.append(buttons);
  for(const key of [...choices,'none']){
-  const button=document.createElement('button');button.type='button';button.dataset.replaceKey=key;button.textContent=key==='none'?'外す':name(key);button.setAttribute('aria-pressed',String(state[slot]===key));
+  const button=document.createElement('button');button.type='button';button.dataset.replaceKey=key;button.textContent=key==='none'?'外す':name(key);if(moduleNames[key]?.noteJa){const note=document.createElement('small');note.textContent=moduleNames[key].noteJa;note.style.cssText='display:block;font-weight:400;color:#738078';button.append(note);}button.setAttribute('aria-pressed',String(state[slot]===key));
   button.onclick=()=>{let patch;
    if(FULL.includes(key)){rearType='full';patch={bed:key,cab:'none'};}
    else if(slot==='cab'&&FULL.includes(state.bed)){patch={bed:'none',cab:key};rearType='single';}
@@ -877,7 +878,7 @@ const outro=createOutro({
   outroState={...state};outroView=activeView;controls.enabled=false;controls.maxDistance=28000;
   $('#outro-equipment-content').append($('.equipment-indicators'),$('#electrical-preview'));
   const details=$('#outro-equipment-details');details.replaceChildren();
-  for(const [label,value] of [['照明',lightsAvailable()?lightingLabel():null],['エアコン',airconEnabled()?'CUBE AIR460B':null]]){
+  for(const [label,value] of [['照明',lightsAvailable()?lightingLabel():null],['エアコン',airconEnabled()?moduleName('aircon-cube-air460b'):null]]){
    if(!value)continue;
    const row=document.createElement('p'),title=document.createElement('span'),description=document.createElement('span');
    title.textContent=label;description.textContent=value;row.append(title,document.createTextNode(' · '),description);details.append(row);
@@ -933,7 +934,7 @@ const outro=createOutro({
  },
  describe:({includeImage=true}={})=>{
   if(includeImage){try{renderer.render(scene,camera)}catch{/* Optional preview only. */}}
-  const configuration={...(outroState||state)},customerSummary=$$('#selection-summary .selection-row').filter(row=>!row.querySelector('.selection-module')||configuration.front==='i-seat'&&/i[\s-]?seat/i.test(row.textContent)).map(row=>({label:row.children[0].textContent.trim(),value:[...row.children].slice(1).map(c=>c.textContent.trim()).join(' ')})).filter(r=>r.label&&r.value);
+  const configuration={...(outroState||state)},customerSummary=$$('#selection-summary .selection-row').filter(row=>!row.querySelector('.selection-module')||configuration.front==='i-seat'&&row.querySelector('a[href*="i-seat.html"]')).map(row=>({label:row.children[0].textContent.trim(),value:[...row.children].slice(1).map(c=>c.textContent.trim()).join(' ')})).filter(r=>r.label&&r.value);
   return {configuration,layoutNumber:pricing.quote(configuration).number,customerSummary,summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:includeImage?(()=>{try{return contactPreview()}catch{return ''}})():''};
  }
 });

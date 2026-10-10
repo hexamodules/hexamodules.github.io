@@ -1,3 +1,4 @@
+import {moduleName} from './module-names.js?v=20261010';
 import * as THREE from 'three';
 import {MATTRESS_COLORS} from './mattress-state.js?v=2';
 import {I_SEAT_POSES,iSeatColor,iSeatSlide,iSeatDefaultSlide,iSeatSlideRange,iSeatInstallationNote} from './i-seat-state.js?v=6';
@@ -8,7 +9,7 @@ export function createISeatControls({getState,getLanguage,onChange,onSlidePrevie
   const s=getState();if(key!=='i-seat'||s.front!==key)return '';
   const color=iSeatColor(s),[slideMin,slideMax]=iSeatSlideRange(s);
   return `<section class="iseat-options" data-iseat-options data-module-i18n>
-   <p class="iseat-spec">i seat · ${text('幅1,400mm','1,400 mm wide')}</p>
+   <p class="iseat-spec">${moduleName('i-seat',getLanguage())} · ${text('幅1,400mm','1,400 mm wide')}</p>
    <fieldset><legend>${text('シートの形態','Seat position')}</legend><div class="iseat-poses">${I_SEAT_POSES.map(p=>`<button type="button" data-iseat-pose="${p.id}" aria-pressed="${s.iSeatPose===p.id}"><img src="assets/iseat/${p.id}.webp" alt="" width="280" height="190"><span>${text(p.ja,p.en)}</span></button>`).join('')}</div></fieldset>
    <p class="iseat-dimensions">${text('フラット時：長さ950mm／床から上面390mm','Flat: 950 mm long / top 390 mm above floor')}</p>
    <fieldset class="iseat-slide"><legend>${text('前後スライド','Fore–aft slide')} <output data-iseat-slide-output>${slideText(iSeatSlide(s))}</output></legend>
@@ -23,18 +24,18 @@ export function createISeatControls({getState,getLanguage,onChange,onSlidePrevie
  }
  function stage(){
   const s=getState();if(s.front!=='i-seat')return '';
-  return `<section class="iseat-stage-controls" data-iseat-stage data-module-i18n><div class="iseat-stage-heading"><b>i seat</b><small>${slideText(iSeatSlide(s))}</small></div><div class="iseat-stage-poses">${I_SEAT_POSES.map(p=>`<button type="button" data-iseat-stage-pose="${p.id}" aria-pressed="${s.iSeatPose===p.id}">${text(p.ja,p.en)}</button>`).join('')}</div></section>`;
+  return `<section class="iseat-stage-controls" data-iseat-stage data-module-i18n><div class="iseat-stage-heading"><b>${moduleName('i-seat',getLanguage())}</b><small>${slideText(iSeatSlide(s))}</small></div><div class="iseat-stage-poses">${I_SEAT_POSES.map(p=>`<button type="button" data-iseat-stage-pose="${p.id}" aria-pressed="${s.iSeatPose===p.id}">${text(p.ja,p.en)}</button>`).join('')}</div></section>`;
  }
  function stageHeading(){
   const summary=document.querySelector('#motion-section > summary');
   if(!summary)return;
   summary.setAttribute('data-module-i18n','');
-  summary.innerHTML=(getState().front==='i-seat'?text('i seat・展開操作','i seat & motion'):text('展開・収納','Open / stow'))+' <span aria-hidden="true">＋</span>';
+  summary.innerHTML=(getState().front==='i-seat'?moduleName('i-seat',getLanguage())+text('・展開操作',' & motion'):text('展開・収納','Open / stow'))+' <span aria-hidden="true">＋</span>';
  }
  function summary(){
   const s=getState();if(s.front!=='i-seat')return '';
   const color=iSeatColor(s),pose=I_SEAT_POSES.find(p=>p.id===s.iSeatPose)||I_SEAT_POSES[0];
-  return `<div id="iseat-summary" class="selection-row" data-module-i18n><span>${text('i seat 仕様','i seat specification')}</span><b>${text('幅1,400mm','1,400 mm wide')}<br>${text(pose.ja,pose.en)} · ${text(color.ja,color.en)}<br>${slideText(iSeatSlide(s))}<br><small>${text('シート・取付費：別途お見積もり','Seat and fitting: quoted separately')}</small></b></div>`;
+  return `<div id="iseat-summary" class="selection-row" data-module-i18n><span>${moduleName('i-seat',getLanguage())+text(' 仕様',' specification')}</span><b>${text('幅1,400mm','1,400 mm wide')}<br>${text(pose.ja,pose.en)} · ${text(color.ja,color.en)}<br>${slideText(iSeatSlide(s))}<br><small>${text('シート・取付費：別途お見積もり','Seat and fitting: quoted separately')}</small></b></div>`;
  }
  document.addEventListener('click',async e=>{
   const pose=e.target.closest('[data-iseat-pose],[data-iseat-stage-pose]');

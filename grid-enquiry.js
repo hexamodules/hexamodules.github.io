@@ -1,4 +1,4 @@
-import {initDealerEnquiry} from './layouts/dealer-enquiry.js?v=20261007-2000';
+import {initDealerEnquiry} from './layouts/dealer-enquiry.js?v=20261010-names';
 let imagePromise;
 function captureImage(){
  if(!imagePromise)imagePromise=Promise.all(['hinoki-interior.jpg','kitchen.jpg','seat.jpg'].map(file=>new Promise((resolve,reject)=>{

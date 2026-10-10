@@ -1,4 +1,5 @@
-import {vehicleTranslations} from './vehicle-language.js?v=2';
+import {moduleNames} from './module-names.js?v=20261010';
+import {vehicleTranslations} from './vehicle-language.js?v=20261010-names';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 // UI-only localization: the same model, configuration and camera stay in place.
 const pairs=[
@@ -73,6 +74,7 @@ pairs.push(...[["モジュール・パーツメーカー Hexa", "Hexa · modules
 pairs.push(['天井ライト用開口','Ceiling light cutouts'],['バックドアライト用開口','Tailgate light cutouts'],['バックドアライト（取付希望）','Tailgate lights (fitting request)']);
 pairs.push(['車体へ →','Vehicle →'],['車体','Vehicle']);
 pairs.push(['架装パーツ参考価格は、家具モジュール（組み立て済み）と内装パーツの価格です。新車込みの場合は、合計に新車参考価格も含みます。取付・施工費は別途です。正式なお見積もりは取扱店よりご案内します。', 'The fit-out reference price covers assembled furniture modules and interior parts. When a new vehicle is selected, the total includes its reference price. Fitting and installation are extra. Your dealer will provide a formal quote.']);
+pairs.push(...Object.values(moduleNames).flatMap(m=>[[m.ja,m.en],...(m.noteJa?[[m.noteJa,m.noteEn]]:[])]));
 const dict=new Map(pairs),ordered=[...dict].sort((a,b)=>b[0].length-a[0].length);
 const LOCATIONS={jp:{id:'jp',country:'Japan',base:'Kanagawa',label:'神奈川県 / 日本',language:'ja'},au:{id:'au',country:'Australia',base:'Brisbane',label:'ブリスベン / オーストラリア',language:'en'}};
 const preferenceKey='hexa-studio-locale';

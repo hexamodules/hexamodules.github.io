@@ -1,3 +1,4 @@
+import {moduleName} from './module-names.js?v=20261010';
 import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261005';
 // Public selection labels only. Pricing is unavailable.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;
@@ -21,7 +22,7 @@ export const RETAILER_PRICES=[
   ['aluminum-side-cabinet','シンク付きサイドキャビネット（アルミ）','Sink side cabinet · Aluminium'],
   ['simple-side-cabinet','サイドキャビネット（アルミ）','Side cabinet · Aluminium'],
   ['active-side-cabinet','冷蔵庫付きサイドキャビネット（アルミ）','Fridge side cabinet · Aluminium'],
- ].map(([key,ja,en])=>install('fit-'+key,ja,en,['module:'+key])),
+ ].map(([key,ja,en])=>install('fit-'+key,moduleName(key)||ja,moduleName(key,'en')||en,['module:'+key])),
  install('fit-floor-slide','脱着式の床スライド（追加分）','Removable centre floor slide',['two-side-bed:floor-slide']),
  ...[
   ['ceiling-lights','天井ダウンライト（6灯）','Ceiling downlights · six',null,null],
@@ -36,7 +37,7 @@ export const RETAILER_PRICES=[
   ['ac','エアコン CUBE AIR460B（配管カバー付き）','CUBE AIR460B air conditioning with pipe cover',null,'ac'],
   ['i-seat','i seat（幅1400mm）','i seat · 1400 mm',null,null],
   ['heater','FFヒーター（ベバスト）','Webasto FF heater',null,'heater'],
- ].map(([id,ja,en,price_jpy,availability])=>({id,ja,en,kind:'equipment',availability})),
+ ].map(([id,ja,en,price_jpy,availability])=>({id,ja:moduleName(id==='ac'?'aircon-cube-air460b':id.startsWith('tailgate-lights-')?'tailgate-lights':id)||ja,en:moduleName(id==='ac'?'aircon-cube-air460b':id.startsWith('tailgate-lights-')?'tailgate-lights':id,'en')||en,kind:'equipment',availability})),
 ];
 export function normalizeRetailerPrices(){return {};}
 export function resolveRetailerPrice(){return {price_jpy:null,source:'unavailable'};}

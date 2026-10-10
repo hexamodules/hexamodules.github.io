@@ -2,11 +2,11 @@
   {
     "id": "front-module",
     "no": "01",
-    "name": "フロントモジュール",
+    "name": "フロントキッチン(合板)",
     "name_parts": [
-      "フロントモジュール"
+      "フロントキッチン(合板)"
     ],
-    "en": "Front module",
+    "en": "Front kitchen (Plywood)",
     "tag": "水まわりも、冷蔵庫も、このひとつに。",
     "intro": "35L冷蔵庫・シンク・シャワーに、スツールと上開き収納をまとめたフロント設備。8ナンバー仕様や電装設備の組み込みにも対応するモジュールです。",
     "prefix": "front-module-{finish}",
@@ -85,11 +85,11 @@
   {
     "id": "aluminum-front-kitchen",
     "no": "02",
-    "name": "フロントモジュール",
+    "name": "フロントキッチン(アルミ)",
     "name_parts": [
-      "フロントモジュール"
+      "フロントキッチン(アルミ)"
     ],
-    "en": "Front module",
+    "en": "Front kitchen (Aluminium)",
     "tag": "収納、水まわり、電源をひとつに。",
     "intro": "35L冷蔵庫・シンク・シャワーをまとめた、アルミフレームのフロントモジュールです。引き出せるユーロコンテナとシンク下のウォータータンク収納、100V・12Vの電源を備え、最大300Ahのサブバッテリーシステムの設置にも対応します。",
     "prefix": "aluminum-front-kitchen-{finish}",
@@ -308,8 +308,8 @@
   {
     "id": "side-cabinet",
     "no": "03",
-    "name": "フリップアップテーブル付きサイドキャビネット",
-    "en": "Side cabinet with flip-up table",
+    "name": "細身のサイドキャビネット(合板)",
+    "en": "Slim side cabinet (Plywood)",
     "tag": "起こすと、テーブルになる。",
     "intro": "正面中央の板をフリップアップして、必要なときにテーブルへ。左の扉付き収納と、右の3段の小物収納を組み合わせたサイドキャビネットです。",
     "prefix": "side-cabinet-{finish}",
@@ -473,8 +473,7 @@
       }
     ],
     "name_parts": [
-      "フリップアップテーブル付き",
-      "サイドキャビネット"
+      "細身のサイドキャビネット(合板)"
     ],
     "construction": "plywood",
     "default_finish": "black",
@@ -490,11 +489,11 @@
   {
     "id": "aluminum-side-cabinet",
     "no": "04",
-    "name": "シンク付きサイドキャビネット",
+    "name": "シンク付きキッチンキャビネット(アルミ)",
     "name_parts": [
-      "シンク付きサイドキャビネット"
+      "シンク付きキッチンキャビネット(アルミ)"
     ],
-    "en": "Side cabinet with sink",
+    "en": "Kitchen cabinet with sink (Aluminium)",
     "tag": "フロントを空けて、水まわりをサイドへ。",
     "intro": "ヘキサモジュールの中で唯一、フロントモジュールを設置せずに8ナンバー対応のレイアウトを組めるサイドキャビネット。シンク・蛇口、給水と排水各12L、シャワーをサイドにまとめ、プッシュオープン式のユーロコンテナを2列設置できます。",
     "intro_note": "8ナンバーへの適合は、就寝・炊事設備などを含めた車両全体の構成で確認します。",
@@ -714,11 +713,11 @@
   {
     "id": "simple-side-cabinet",
     "no": "05",
-    "name": "サイドキャビネット",
+    "name": "シンプルサイドキャビネット(アルミ)",
     "name_parts": [
-      "サイドキャビネット"
+      "シンプルサイドキャビネット(アルミ)"
     ],
-    "en": "Side cabinet",
+    "en": "Simple side cabinet (Aluminium)",
     "tag": "収納と電源を、すっきりひとつに。",
     "intro": "アルミフレームと合板パネルでまとめた、シンプルなサイドキャビネット。取り出しやすいオープン収納に、天板上の100Vコンセントと12V出力を備えています。",
     "prefix": "simple-side-cabinet-{finish}",
@@ -833,11 +832,11 @@
   {
     "id": "active-side-cabinet",
     "no": "06",
-    "name": "冷蔵庫付きサイドキャビネット",
+    "name": "冷蔵庫・シャワー付きサイドキャビネット(アルミ)",
     "name_parts": [
-      "冷蔵庫付きサイドキャビネット"
+      "冷蔵庫・シャワー付きサイドキャビネット(アルミ)"
     ],
-    "en": "Side cabinet with fridge",
+    "en": "Side cabinet with fridge and shower (Aluminium)",
     "tag": "冷蔵庫をサイドへ。遊びの道具も、ひとまとめに。",
     "intro": "フロントモジュールを設置せずに、冷蔵庫を備えられるサイドキャビネット。ENGELの上開き冷蔵庫を中心に、プッシュオープン式のユーロコンテナと後部のシャワーをひとつに。冷やす、しまう、水を使う。アクティブに過ごすための装備をサイドにまとめています。",
     "prefix": "active-side-cabinet-{finish}",
@@ -1033,8 +1032,8 @@
   {
     "id": "lounge-slide-bed",
     "no": "07",
-    "name": "収納付きスライドアウトベッド",
-    "en": "Slide-out bed with storage",
+    "name": "収納付きスライドベッド(合板)",
+    "en": "Slide bed with storage (Plywood)",
     "tag": "後ろからも、室内からも、使える収納。",
     "intro": "工具などを収納できる後部の引き出しと、室内側から使える収納を備えたスライドアウト式のベッド。横へ広げて使えるほか、ベッドを収めたままでも室内側の収納にアクセスできます。",
     "prefix": "lounge-slide-bed-{finish}",
@@ -1198,7 +1197,7 @@
       }
     ],
     "name_parts": [
-      "収納付きスライドアウトベッド"
+      "収納付きスライドベッド(合板)"
     ],
     "selection_description": "工具を収納できる後部引き出し・室内側の収納",
     "construction": "plywood",
@@ -1208,8 +1207,8 @@
   {
     "id": "slide-bed",
     "no": "08",
-    "name": "シンプルスライドアウトベッド",
-    "en": "Simple slide-out bed",
+    "name": "シンプルスライドベッド(合板)",
+    "en": "Simple slide bed (Plywood)",
     "tag": "シンプルに収めて、必要なときに広げる。",
     "intro": "シンプルなスライドアウト式のベッド。普段はコンパクトに収め、使うときに横へ引き出してベッド面を広げます。",
     "prefix": "slide-bed-{finish}",
@@ -1270,7 +1269,7 @@
       ]
     ],
     "name_parts": [
-      "シンプルスライドアウトベッド"
+      "シンプルスライドベッド(合板)"
     ],
     "selection_description": "シンプルなスライドアウト式ベッド",
     "construction": "plywood",
@@ -1280,11 +1279,11 @@
   {
     "id": "aluminum-bed",
     "no": "09",
-    "name": "スライドアウトベッド",
+    "name": "Hexaオリジナルベッド(アルミ)",
     "name_parts": [
-      "スライドアウトベッド"
+      "Hexaオリジナルベッド(アルミ)"
     ],
-    "en": "Slide-out bed",
+    "en": "Hexa original bed (Aluminium)",
     "tag": "前後に分けて広げる。後ろから引き出す。",
     "intro": "前後2分割のベッドを、それぞれ独立してスライドアウト。前側だけでも、後側だけでも、両方でも広げられます。後部には、引き出し式のユーロコンテナ収納を備えています。",
     "prefix": "aluminum-bed-{finish}",
@@ -1486,8 +1485,8 @@
   {
     "id": "lounge-bed",
     "no": "10",
-    "name": "ラウンジベッド",
-    "en": "Lounge bed",
+    "name": "ラウンジベッド(合板)",
+    "en": "Lounge bed (Plywood)",
     "tag": "くつろぎと、後部の大きな収納。",
     "intro": "後部に大きな収納を持つ、コの字のラウンジ型ベッド。2段の引き出しや長物収納を備え、室内・室外の両方から荷物にアクセスできます。",
     "prefix": "lounge-bed-{finish}",
@@ -1548,7 +1547,7 @@
       ]
     ],
     "name_parts": [
-      "ラウンジベッド"
+      "ラウンジベッド(合板)"
     ],
     "selection_description": "後部に大きな収納を持つラウンジ型ベッド",
     "construction": "plywood",
@@ -1558,8 +1557,8 @@
   {
     "id": "two-side-bed",
     "no": "11",
-    "name": "床スライド付きラウンジベッド",
-    "en": "Lounge bed with floor slide",
+    "name": "両サイドベッド(合板)",
+    "en": "Twin side beds (Plywood)",
     "tag": "通路から、後ろへ広がる使い方。",
     "intro": "両サイドにマットレスを備えたラウンジ型ベッド。中央の5枚を並べるとフラットな寝床になり、収納すると通路が生まれます。通路には、後方へスライドアウトできる引き出しをオプションで設置できます。",
     "prefix": "two-side-bed-{finish}",
@@ -1642,7 +1641,7 @@
       ]
     ],
     "name_parts": [
-      "床スライド付きラウンジベッド"
+      "両サイドベッド(合板)"
     ],
     "selection_description": "通路にスライドアウト式の引き出しを設置可能（オプション）",
     "construction": "plywood",

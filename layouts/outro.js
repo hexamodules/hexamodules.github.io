@@ -1,5 +1,5 @@
 import {studioEvent} from './analytics.js?v=20261010-events';
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=vehicle-20261009';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261010-names';
 import {downloadSpecification} from './specification-pdf.js?v=vehicle-20261009';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261005';
