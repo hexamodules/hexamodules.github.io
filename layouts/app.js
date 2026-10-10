@@ -122,6 +122,8 @@ const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new Orbit
  $('#viewport').dataset.cameraView=JSON.stringify({eye:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),fov:camera.fov,viewport:[renderer.domElement.clientWidth,renderer.domElement.clientHeight]});
 });
 const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient);const sun=new THREE.DirectionalLight(0xfff7e6,2.1);sun.position.set(-3200,7000,-3000);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-3300,right:3300,top:3300,bottom:-3300,near:100,far:14000});sun.shadow.bias=-.0003;sun.shadow.normalBias=1;scene.add(sun);const fill=new THREE.DirectionalLight(0xd7e2ec,.6);fill.position.set(3000,2500,5000);scene.add(fill);
+// Broad side fill lifts vertical plywood faces; it adds no shadow pass.
+const sideFill=new THREE.DirectionalLight(0xffffff,.35);sideFill.position.set(3800,1800,1600);sideFill.target.position.set(0,550,1600);sideFill.castShadow=false;scene.add(sideFill,sideFill.target);
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=false;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
@@ -280,7 +282,7 @@ assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['d
 async function loadModel(key){const version=furnitureVersion(key);if(cache.has(key)){const pending=cache.get(key),existing=await pending;if(cache.get(key)!==pending)return loadModel(key);if(!version||existing.userData.furnitureVersion===version)return existing;releaseFurniture(key);}if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{
  let furnitureData;
  if(version&&!version.endsWith(':motion')){
-  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-owner-approved');
+  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-plywood-light');
   const result=await loadBlenderFurniture(assetLoader,key,version.split(':')[0]);
   furnitureData=result?.data;
   if(result?.group){result.group.userData.furnitureVersion=version;scene.add(result.group);result.finish();loadedModels.set(key,result);return result.group}
@@ -316,7 +318,7 @@ function setLighting(){
  const night=Boolean(state.night);visualMaterials.lighting(night);$('.stage').classList.toggle('night-mode',night);
  scene.background.set(night?'#111923':'#eeeeec');scene.fog=night?new THREE.Fog('#111923',6500,14500):null;renderer.toneMappingExposure=.95;
  ambient.intensity=night?.13:.9;ambient.color.set(night?'#b6c4d9':'#ffffff');ambient.groundColor.set(night?'#6a5441':'#9a9687');
- sun.intensity=night?.025:2.1;sun.castShadow=!night;fill.intensity=night?.045:.6;
+ sun.intensity=night?.025:2.1;sun.castShadow=!night;fill.intensity=night?.045:.6;sideFill.intensity=night?0:.35;
  floor.material=night?nightGround:dayGround;grid.visible=false;
  for(const [flag,info] of Object.entries(LIGHTS)){const rig=lightRigs.get(info.key);if(rig)rig.rig.visible=night&&state[flag]}
  for(const {mat,key} of lightDiffusers){const flag=Object.keys(LIGHTS).find(k=>LIGHTS[k].key===key);mat.emissiveIntensity=night&&state[flag]?3.2:0}

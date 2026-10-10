@@ -35,7 +35,19 @@ export async function loadBlenderFurniture(transport,key,finish){
     if(!geometry.attributes.uv||!geometry.attributes.uv1)throw Error('Missing UV0/UV1');
     for(const mat of [].concat(mesh.material)){
      if(!mat.aoMap)throw Error('Missing occlusion map');
-     mat.aoMap.channel=1;mat.aoMapIntensity=.55;mat.side=THREE.DoubleSide;
+     mat.aoMap.channel=1;mat.aoMapIntensity=.35;mat.side=THREE.DoubleSide;
+     // Lift plywood indirect light without changing the metal, fabric or global exposure.
+     if(/^plywood-(?:face|edge)(?::|$)/.test(mat.name)){
+      mat.envMapIntensity=1.3;
+      // r180 substitutes scene.environmentIntensity when no explicit envMap is set.
+      // Multiply that shared day/night intensity only in the plywood IBL shader.
+      mat.onBeforeCompile=shader=>{
+       shader.uniforms.plywoodEnvironmentBoost={value:mat.envMapIntensity};
+       shader.fragmentShader='uniform float plywoodEnvironmentBoost;\n'+shader.fragmentShader;
+       shader.fragmentShader=shader.fragmentShader.replace('#include <envmap_physical_pars_fragment>',THREE.ShaderChunk.envmap_physical_pars_fragment.replace(/\benvMapIntensity\b/g,'(envMapIntensity * plywoodEnvironmentBoost)'));
+      };
+      mat.customProgramCacheKey=()=>'plywood-environment-boost-v1';
+     }
     }
    }
    const bounds=[box.min.toArray(),box.max.toArray()];
