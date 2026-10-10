@@ -41,14 +41,30 @@ class MappingTests(unittest.TestCase):
             def transposed(self):return self
         class Normal(NS):
             def normalized(self):return self
-        grain=NS(data=[NS(uv=None)])
+            def __iter__(self):return iter((self.x,self.y,self.z))
+        class Collection(list):
+            def foreach_set(self,key,values):
+                if key=='uv':
+                    for i,item in enumerate(self):item.uv=tuple(values[2*i:2*i+2])
+                else:
+                    for item,value in zip(self,values):setattr(item,key,value)
+        grain=NS(data=Collection([NS(uv=None)]))
         face=NS(normal=Normal(x=0,y=0,z=1),loop_indices=[0],material_index=0)
-        obj=NS(matrix_world=Matrix(),data=NS(polygons=[face],loops=[NS(vertex_index=0)],vertices=[NS(co=NS(x=.3,y=-.9,z=.015))]))
-        ns['planar_uv'](obj,grain,[300,900]);self.assertEqual(grain.data[0].uv,(1,-1))
-        ns['planar_uv'](obj,grain,[150,150]);self.assertEqual(grain.data[0].uv,(2,-6))
-        ns['planar_uv'](obj,grain,[300,900],True);self.assertEqual(face.material_index,0)
+        calls=[]
+        mesh=NS(polygons=Collection([face]),loops=[NS(vertex_index=0)],vertices=[NS(co=(.3,-.9,.015))],uv_layers={'UVMap0':grain},validate=lambda **kw:calls.append('validate'),update=lambda:calls.append('update'))
+        obj=NS(name='filled floor',matrix_world=Matrix(),data=mesh)
+        ns['planar_uv'](obj,[300,900]);self.assertEqual(grain.data[0].uv,(1,-1))
+        self.assertEqual(calls[:2],['validate','update'])
+        ns['planar_uv'](obj,[150,150]);self.assertEqual(grain.data[0].uv,(2,-6))
+        ns['planar_uv'](obj,[300,900],True);self.assertEqual(face.material_index,0)
         face.normal=Normal(x=1,y=0,z=0)
-        ns['planar_uv'](obj,grain,[300,900],True);self.assertEqual(face.material_index,1);self.assertEqual(grain.data[0].uv,(-3,1))
+        ns['planar_uv'](obj,[300,900],True);self.assertEqual(face.material_index,1);self.assertEqual(grain.data[0].uv,(-3,1))
+        # Simulate edit mode replacing UV custom data: only the new layer is written.
+        replacement=NS(data=Collection([NS(uv=None)]));mesh.uv_layers['UVMap0']=replacement
+        ns['planar_uv'](obj,[300,900]);self.assertEqual(replacement.data[0].uv,(1,-1));self.assertEqual(grain.data[0].uv,(-3,1))
+        # Corrupt input fails before UV access with a useful message.
+        mesh.loops[0].vertex_index=-1068599206
+        with self.assertRaisesRegex(ValueError,'invalid vertex'):ns['planar_uv'](obj,[300,900])
         # +90-degree source conversion: source forward Z -> Blender -Y.
         # MIRROR(-v) == MIRROR(v), including negative positions and seams.
         mirror=lambda x:1-abs(x%2-1)

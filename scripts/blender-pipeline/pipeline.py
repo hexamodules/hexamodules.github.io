@@ -50,22 +50,36 @@ def custom(source):
    normals=read(part,'normal',3);mesh.normals_split_custom_set_from_vertices(normals)
  return data
 
-def planar_uv(o, grain, tile_mm, furniture=False):
- # Work in Blender world metres after the source Y-up -> Blender Z-up conversion.
+def planar_uv(o, tile_mm, furniture=False):
+ # Reacquire all data after topology changes / edit-mode round trips.
+ # Never retain RNA layer/loop references while writing mesh custom data.
+ mesh=o.data
+ mesh.validate(clean_customdata=False)
+ mesh.update()
+ if mesh.uv_layers.get('UVMap0') is None:mesh.uv_layers.new(name='UVMap0')
  normal_matrix=o.matrix_world.to_3x3().inverted().transposed()
- for face in o.data.polygons:
-  normal=(normal_matrix@face.normal).normalized()
-  edge=furniture and abs(normal.z)<.7
-  face.material_index=1 if edge else 0
-  for index in face.loop_indices:
-   point=o.matrix_world@o.data.vertices[o.data.loops[index].vertex_index].co
+ points=[tuple(o.matrix_world@v.co) for v in mesh.vertices]
+ vertex_indices=[int(loop.vertex_index) for loop in mesh.loops]
+ faces=[(tuple((normal_matrix@face.normal).normalized()),tuple(face.loop_indices)) for face in mesh.polygons]
+ uv=[0.0]*(2*len(vertex_indices));materials=[]
+ for normal,indices in faces:
+  edge=furniture and abs(normal[2])<.7
+  materials.append(1 if edge else 0)
+  for index in indices:
+   if not 0<=index<len(vertex_indices):raise ValueError(f'{o.name}: invalid loop {index}')
+   vertex=vertex_indices[index]
+   if not 0<=vertex<len(points):raise ValueError(f'{o.name}: invalid vertex {vertex} at loop {index}')
+   x,y,z=points[vertex]
    if edge:
-    across=point.y if abs(normal.x)>abs(normal.y) else point.x
-    grain.data[index].uv=(across/.3,point.z/.015)
-   elif furniture:
-    grain.data[index].uv=(point.x/1.22,point.y/2.44)
-   else:
-    grain.data[index].uv=(point.x*1000/tile_mm[0],point.y*1000/tile_mm[1])
+    across=y if abs(normal[0])>abs(normal[1]) else x
+    value=(across/.3,z/.015)
+   elif furniture:value=(x/1.22,y/2.44)
+   else:value=(x*1000/tile_mm[0],y*1000/tile_mm[1])
+   uv[2*index:2*index+2]=value
+ # Bulk writes occur only after the snapshot, so writes cannot stale read handles.
+ mesh.polygons.foreach_set('material_index',materials)
+ mesh.uv_layers['UVMap0'].data.foreach_set('uv',uv)
+ mesh.update()
 
 
 def material(o, texture, ao, resin=False):
@@ -126,10 +140,10 @@ def run(a,source):
    if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
    o.data.update();o.data.validate()
    grain=o.data.uv_layers[0];grain.name='UVMap0'
-   for extra in list(o.data.uv_layers)[1:]:o.data.uv_layers.remove(extra)
+   for name in [layer.name for layer in o.data.uv_layers][1:]:o.data.uv_layers.remove(o.data.uv_layers[name])
    # UV0 is world XY planar projection. UV1 alone receives Smart UV.
-   planar_uv(o,grain,a.tile_mm,furniture)
-   grain.active_render=True
+   planar_uv(o,a.tile_mm,furniture)
+   o.data.uv_layers['UVMap0'].active_render=True
   with stage('UV1 Smart UV '+o.name):
    aoUV=o.data.uv_layers.new(name='AO')
    o.data.update();o.data.validate()
@@ -147,7 +161,7 @@ def run(a,source):
    if furniture:o.data.materials.append(material(o,edge_texture,ao,resin))
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name):
-   planar_uv(o,grain,a.tile_mm,furniture)
+   planar_uv(o,a.tile_mm,furniture)
   if a.skip_ao:
    print('STAGE: AO bake SKIP '+o.name,flush=True)
    print('STAGE: AO save SKIP '+o.name,flush=True)
@@ -160,7 +174,7 @@ def run(a,source):
     with stage('AO pack '+o.name):
      ao.pack()
     ao.save()
-  o.data.uv_layers.active=grain;grain.active_render=True;o.select_set(False)
+  grain=o.data.uv_layers['UVMap0'];o.data.uv_layers.active=grain;grain.active_render=True;o.select_set(False)
  points=[o.matrix_world@Vector(c) for o in objects for c in o.bound_box]
  bounds=[[min(p[i] for p in points) for i in range(3)],[max(p[i] for p in points) for i in range(3)]]
  after=0
