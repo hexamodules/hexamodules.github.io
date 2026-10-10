@@ -647,7 +647,7 @@ let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
  const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-furniture';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261010-load-fix');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261010-standard-lighting');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
   getGroup:key=>loadedModels.get(key)?.group,
