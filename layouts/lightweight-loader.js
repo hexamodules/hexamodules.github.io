@@ -26,11 +26,11 @@ export function createAssetLoader(){
  async function load(key,revision='',metadata=null,vehicleTier=tier){
   const compressed=vehicleKeys.has(key),id=compressed?`${key}.${vehicleTier}`:key,job=begin(key);
   try{
-   manifestPromise??=fetch('assets/lightweight/manifest.json').then(r=>{if(!r.ok)throw Error('Asset manifest unavailable');return r.json()}).catch(e=>{manifestPromise=null;throw e});
+   manifestPromise??=fetch('assets/lightweight/q14/manifest.json').then(r=>{if(!r.ok)throw Error('Asset manifest unavailable');return r.json()}).catch(e=>{manifestPromise=null;throw e});
    const manifest=await manifestPromise,info=manifest[id];
    if(!info)throw Error(`Missing asset manifest: ${id}`);
    job.total=info.json+(compressed&&gzip?info.gzip:info.binary);
-   const base=compressed?'assets/lightweight/':'assets/';
+   const base=compressed?'assets/lightweight/q14/':'assets/';
    const data=metadata||JSON.parse(new TextDecoder().decode(await read(`${base}${id}.mesh.json${revision}`,job)));
    let buffer=await read(base+data.binary+(compressed&&gzip?'.gz':''),job);
    if(compressed){
@@ -46,7 +46,7 @@ export function createAssetLoader(){
   const s=part.meshopt[name],raw=new Uint8Array(s.count*s.stride);
   MeshoptDecoder.decodeGltfBuffer(raw,s.count,s.stride,new Uint8Array(buffer,s.offset,s.length),s.mode);
   if(name==='index')return new Uint32Array(raw.buffer);
-  return Float32Array.from(new Int32Array(raw.buffer),v=>v*s.scale);
+  return Float32Array.from(new Int32Array(raw.buffer),(v,i)=>v*s.scale+(s.origin?.[i%3]||0));
  }
  return {load,attribute,tier,begin,read,isVehicle:key=>vehicleKeys.has(key),textureURL:url=>{const target=mobile?url.replace(/^assets\/(?!mobile\/)/,'assets/mobile/'):url;return optimizedTextures[target]||target}};
 }
