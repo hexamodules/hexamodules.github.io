@@ -2,6 +2,8 @@ import {vehicleTranslations} from './vehicle-language.js?v=2';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 // UI-only localization: the same model, configuration and camera stay in place.
 const pairs=[
+['URLを共有','Share URL'],['URLをコピーしました','URL copied'],
+
 ['人の目安 170cm','Human scale 170cm'],['横にするとワイドで見られます','Rotate your phone for a wider view'],['幅 × 奥行 × 高さ:','Width × depth × height:'],['選択肢','Options'],['これと入れ替える','Replace this with'],['外す','Remove'],['色を変える','Change colour'],['パネルのみに変更','Use panels only'],
 
 ['参考構成','Reference configuration'],
