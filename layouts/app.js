@@ -250,7 +250,7 @@ function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colo
  visualMaterials.material(mat,{woodKind,edge,metal,isVehicle,switchable,key});
  return mat;}
 // Loader-owned resources are released after a completed placement only.
-const blenderFurnitureKeys=new Set(['front-module','aluminum-front-kitchen','i-seat','seat','side-cabinet','simple-side-cabinet','aluminum-side-cabinet','active-side-cabinet','slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed','centre-mattresses','lounge-fillers']);
+const blenderFurnitureKeys=new Set(['front-module','front-module-rear-20','front-module-rear-114','front-module-rear-130','front-module-rear-140','aluminum-front-kitchen','i-seat','seat','side-cabinet','simple-side-cabinet','aluminum-side-cabinet','active-side-cabinet','slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed','centre-mattresses','lounge-fillers']);
 function furnitureVersion(key){return blenderFurnitureKeys.has(key)?state.finish+':'+((key==='aluminum-bed'&&(state.frontExpanded||state.rearExpanded||state.storage)||key==='aluminum-front-kitchen'&&state.frontStorage||['active-side-cabinet','aluminum-side-cabinet'].includes(key)&&state.cabStorage||['slide-bed','lounge-slide-bed'].includes(key)&&(state.expanded||state.storage)||key==='lounge-bed'&&state.storage||key==='two-side-bed'&&state.storage)?'motion':'rest'):null}
 function releaseFurniture(key){
  const entry=loadedModels.get(key);if(!entry)return;
@@ -282,7 +282,7 @@ assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['d
 async function loadModel(key){const version=furnitureVersion(key);if(cache.has(key)){const pending=cache.get(key),existing=await pending;if(cache.get(key)!==pending)return loadModel(key);if(!version||existing.userData.furnitureVersion===version)return existing;releaseFurniture(key);}if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{
  let furnitureData;
  if(version&&!version.endsWith(':motion')){
-  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-all-modules');
+  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-rear-seat');
   const result=await loadBlenderFurniture(assetLoader,key,version.split(':')[0]);
   furnitureData=result?.data;
   if(result?.group){result.group.userData.furnitureVersion=version;scene.add(result.group);result.finish();loadedModels.set(key,result);return result.group}

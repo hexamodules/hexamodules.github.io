@@ -1,4 +1,4 @@
-// All 13 furniture modules and their two linked accessories. Original CAD metadata controls placement and motion.
+// All 13 furniture modules, two linked accessories and four complete front/rear variants. Original CAD metadata controls placement and motion.
 // Replace <key>-birch.glb / <key>-hexa.glb in assets/blender; no size/hash manifest.
 // 2026-10-10: both finishes approved by the owner; validate each loaded asset.
 const unavailable=new Set();
@@ -53,8 +53,11 @@ export async function loadBlenderFurniture(transport,key,finish){
    const bounds=[box.min.toArray(),box.max.toArray()];
    const delta=Math.max(...bounds.flatMap((p,e)=>p.map((v,a)=>Math.abs(v-data.bounds[e][a]))));
    if(!Number.isFinite(delta)||delta>2)throw Error(`Outline differs by ${delta.toFixed(4)} mm (limit 2 mm)`);
-   const group=new THREE.Group();group.name=key;group.visible=false;
-   group.userData={data,moduleId:key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':key,blenderFurniture:true,blenderVariant:variant,blenderBounds:bounds,blenderBoundsDelta:delta};
+   // Rear variants contain the complete front module plus its extension. Load and
+   // validate them as one asset, so a fallback also replaces both together.
+   const moduleId=data.base_module||key;
+   const group=new THREE.Group();group.name=moduleId;group.visible=false;
+   group.userData={data,moduleId:key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':moduleId,blenderFurniture:true,blenderVariant:variant,blenderBounds:bounds,blenderBoundsDelta:delta};
    // Preserve body identity if present. A merged I-Seat cannot select poses or
    // separate fixed rails from sliding upholstery; keep the original in that case.
    const identified=new Map();let complete=true;
