@@ -3,48 +3,34 @@ import {startingConfiguration,hasSavedConfiguration} from './base-configuration.
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
-import {capturePhoto,photoCamera} from './photo-camera.js?v=20261008-lower-v13';
 import {createVisualMaterials} from './visual-materials.js?v=2';
-import {initLayoutRecall} from './saved-layouts.js?v=20261008-complete';
-import {initRetailerSimulation} from './retailer-simulation.js?v=1';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
-import {createNewVehicleControls} from './new-vehicle-controls.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
-import {createISeatControls,createISeatVisuals} from './i-seat.js?v=20261010-furniture-glb';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
 import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261005';
 import {selectedDealer} from './dealer-preview.js?v=20261005-procurement';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
-import {createDealerOptionsUI} from './dealer-options-ui.js?v=4';
-import {createCountertopVisuals} from './countertops.js?v=20261010-light';
 import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261010-light';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
-import {createReferencePricing} from './reference-pricing.js?v=20261010-names';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=20261010-five-colors';
-import {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=20261010-events';
 import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-places';
-import {createModuleDetails} from './module-details.js?v=5';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {createOutro} from './outro.js?v=vehicle-20261009';
 import {createOpening} from './opening.js?v=20261008-ga';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import * as THREE from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 (async()=>{
+let createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro;
+let featuresReady;
+
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 let basePending=!hasSavedConfiguration(location.search);
 const completeEntry=new URLSearchParams(location.search).get('complete')==='1';
 const reviewMode=false; // Production capture tools are unavailable on this static site.
 if(initDealerBranding({getLanguage,getLocation:getStudioLocation})===false){document.documentElement.classList.remove('complete-loading');return;}
 const dealerOptions=dealerOptionAvailability(selectedDealer());
-const priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
-const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
-const modules=Object.fromEntries(M.map(m=>[m.id,m]));
-modules['i-seat']={id:'i-seat',name:moduleName('i-seat'),en:moduleName('i-seat','en'),selection_description:moduleNames['i-seat'].noteJa};
-const verification=await fetch('fit-report.json?v=front-fit-6').then(r=>r.json());
-const wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json());
+let priceCatalogue,modules={},verification={patterns:[],offsets_mm:{}},wallVerification;
 const WALL={key:'interior-wall-white',value:'white',name:'ホワイト壁面',pitch_mm:100,thickness_mm:6.5,side:'リア運転席側',revision:'driver-wall-floor-pitch100-v1'};
 const wallPalette=await fetch('assets/wall-finishes.json?v=soft-white-2').then(r=>r.json());
 const wallPresentation={white:[254,254,254],teffy:[197,187,181],'volcanic-gray':[116,116,122]};
@@ -86,7 +72,7 @@ const floorEnabled=(s=state)=>Object.hasOwn(FLOOR_COLORS,s.floor);
 const hasInterior=(s=state)=>twiCeilingEnabled(s)||quarterCount(s)>0||wallEnabled(s)||panelEnabled(s)||ceilingEnabled(s)||floorEnabled(s)||airconEnabled(s);
 const wallChoice=(s=state)=>wallEnabled(s)?'wall':panelEnabled(s)?'panel':'none';
 const interiorLabel=(s=state)=>[twiCeilingEnabled(s)?twiCeilingLabel(s):null,quarterCount(s)?quarterLabel(s):null,wallEnabled(s)?WALL_COLORS[s.wall].name:null,panelEnabled(s)?WALL_COLORS[panelColor(s)].label+' カラーパネル':null,ceilingEnabled(s)?CEILING_COLORS[s.ceiling].name:null,floorEnabled(s)?FLOOR_COLORS[s.floor].name:null].filter(Boolean).join('＋')||'なし';
-const offsets={...verification.offsets_mm,'i-seat':[...I_SEAT_MOUNT.position_mm]};
+let offsets={...verification.offsets_mm,'i-seat':[...I_SEAT_MOUNT.position_mm]};
 const reportFor=(s=state)=>verification.patterns.find(p=>p.front===s.front&&p.bed===s.bed&&p.cab===s.cab);
 // Rear placements are independent of an absent front module. Reuse the seat-base
 // rear geometry; do not claim that the empty-front configuration has a fit report.
@@ -118,7 +104,7 @@ let needsFrame=true;
 const DEFAULT_VIEW='home';
 const HOME_VIEW=[[5623.4738,3949.366,-1146.7141],[0,350,2100]];
 let state=parseState(),rearType=FULL.includes(state.bed)?'full':'single',activeView=DEFAULT_VIEW,renderVersion=0,batchRunning=false;
-const dealerOptionsUI=createDealerOptionsUI({available:dealerOptions,getState:()=>state,getLanguage});
+let dealerOptionsUI={update(){},refresh(){}};
 let lastWallColor=wallEnabled()?state.wall:'white';
 let lastPanelColor=Object.hasOwn(WALL_COLORS,state.panel)?state.panel:wallEnabled()?state.wall:'teffy';
 let lastCeilingColor=ceilingEnabled()?state.ceiling:ceilingPalette.default;
@@ -139,7 +125,7 @@ const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient)
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=false;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
-const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-furniture');
+const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-q14-entry');
 const assetLoader=createAssetLoader();
 const entranceTier=document.documentElement.classList.contains('intro-active')?'mobile':assetLoader.tier;
 let vehicleUpgrade,entranceShell=document.documentElement.classList.contains('intro-active');
@@ -226,9 +212,9 @@ const ceilingPanels=[],colorPanels=[],panelSurfaces=[];
 const cache=new Map();const swappable=[];const ceilingMaterials=[];const wallPanels=[];const wallSurfaces=[];
 const twiWindow=await fetch('assets/twi-quarter-window.json?v=1').then(r=>r.json());
 const twiVisuals=createTwiVisuals({ceilingTextures,ceilingFinishes:CEILING_COLORS,windowSurface:twiWindow,scene});
-const mattressVisuals=createMattressVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
-const iSeatVisuals=createISeatVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
-const countertopVisuals=await createCountertopVisuals({renderer});
+let mattressVisuals={update(){},refresh(){}};
+let iSeatVisuals={update(){},refresh(){}};
+let countertopVisuals={apply(){}};
 let activeAirconMount=null;
 function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colors||{};let rgb=col.opaque_albedo||col.metal_f0||col.transparent_color||[148,151,146];let woodKind=/birch|oak|オーク材|wood grain|birch edge/.test(l),switchable=/SKY Hexa plywood|Hexa lightweight - charcoal/.test(n);let edge=/cut edge|birch edge/.test(l);let metal=Boolean(col.metal_f0),isVehicle=key==='vehicle'||key===TAILGATE||key===SLIDING_DOOR||key===FRONT_DOOR||key===BODY_COMPLETION;if(/graphite satin metallic/.test(l))rgb=[61,65,69];
  const color=new THREE.Color(`rgb(${rgb.join(',')})`);
@@ -458,18 +444,15 @@ const vehicleControls=installBaseVehicleControls({getState:()=>state,getLanguage
 $('#light-options + .helper').id='dx-lighting-help';
 const includedNotice=document.createElement('p');includedNotice.id='twi-lighting-included';includedNotice.className='helper';$('#light-options').after(includedNotice);
 $('#quarter-view').onclick=()=>setView(state.quarterPanels==='left'?'quarter-left':'quarter-right');
-const pricing=createReferencePricing({getDealer:selectedDealer,catalogue:priceCatalogue,getState:()=>state,getLocation:()=>getStudioLocation().id,getLanguage,onFloorSlide:enabled=>apply({...state,floorSlide:enabled,storage:false}).catch(console.error)});
-const newVehicleControls=createNewVehicleControls({getState:()=>state,getLanguage,onChange:change=>{
- state=normalizeNewVehicle({...state,...change});newVehicleControls.update();pricing.update();updateFloorRequirement();trackStudioSelection(state);
- window.history.replaceState(null,'',urlFor());
-}});
+let pricing={update(){},refresh(){}};
+let newVehicleControls={update(){},refresh(){}};
 function readyForReview(){
  if(!vehicleSelectionComplete(state)){$('#tab-vehicle').click();$('#vehicle-selection-help').scrollIntoView({block:'nearest'});return false}
  return true;
 }
-const moduleDetails=createModuleDetails({modules,getState:()=>state,getLanguage});
-const mattressControls=createMattressControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error)});
-const iSeatControls=createISeatControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error),onSlidePreview:slide=>{state=normalizeISeat({...state,iSeatSlide:slide});iSeatVisuals.update(scene.getObjectByName('i-seat'),state);needsFrame=true}});
+let moduleDetails={close(){}};
+let mattressControls={update(){},refresh(){}};
+let iSeatControls={update(){},refresh(){}};
 function imageFor(k,finish=state.finish){if(k==='i-seat')return 'assets/iseat/forward.webp';if(k==='seat')return 'patterns/seat-base.webp?v=front-fit-6';let m=modules[k];return `../assets/${k}-${finish}-${m.scenes[0].key}.webp`}
 function option(k,chosen,note=''){
  if(moduleNames[k])note=moduleNames[k].noteJa;
@@ -512,7 +495,7 @@ function configureUI(){
  $('#floor-view').hidden=!floorEnabled();$('#remove-floor').setAttribute('aria-pressed',String(!floorEnabled()));updateFloorRequirement();
  const rows=[['前側',state.front],['ベッド',state.bed],['サイド',state.cab]];$('#selection-summary').innerHTML=`<div class="selection-row" id="vehicle-compatibility-summary"><span>対応車種</span><b><span>${vehicleName(state)}</span><br> <span>標準ボディ（ナロー）・標準ルーフ・5ドア専用</span></b></div>${getStudioLocation().id==='au'?`<div class="selection-row"><span>ロケーション</span><b id="selection-location">未選択</b></div>`: ''}`+rows.map(([label,k])=>`<div class="selection-row"><span>${label}</span>${modules[k]?`<div class="selection-module"><a href="${modules[k].external_url||`../${k}.html`}" ${modules[k].external_url?'target="_blank" rel="noopener noreferrer"':''}>${name(k)} ↗</a> ${constructionBadge(modules[k])}</div>`:`<b>${name(k)}</b>`}</div>`).join('')+`<div class="selection-row"><span>仕上げ</span><b>${state.finish==='black'?'ヘキサ合板':'バーチ合板'}</b></div>`;
  $('#selection-summary').insertAdjacentHTML('beforeend',mattressControls.summary()+iSeatControls.summary());
- $('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>内装</span><b>${interiorLabel()}</b></div><div class="selection-row"><span>照明</span><b>${lightingLabel()}</b></div>`);lightingUI();airconUI();heaterUI();insulationUI();electricalUI();shippingUI();pricing.update();dealerOptionsUI.update();
+ $('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>内装</span><b>${interiorLabel()}</b></div><div class="selection-row"><span>照明</span><b>${lightingLabel()}</b></div>`);lightingUI();airconUI();heaterUI();insulationUI();electricalUI();shippingUI();pricing.update?.();dealerOptionsUI.update();
  if(state.bed==='two-side-bed')$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>床スライド</span><b>${state.floorSlide?'脱着式・追加あり':'追加なし'}</b></div>`);
  $('#layout-name').textContent='あなたの過ごし方を、この一台に。';
  updateStudio({front:name(state.front),bed:name(state.bed),cab:name(state.cab),finish:state.finish==='black'?'ヘキサ合板':'バーチ合板',ceiling:twiCeilingEnabled(state)?twiCeilingLabel(state):ceilingEnabled()?CEILING_COLORS[state.ceiling].label:'なし',wall:isSuperGL(state)?quarterLabel(state):panelEnabled()?(wallEnabled()?'壁面板張り仕上げ':'カラーパネル')+' · '+WALL_COLORS[panelColor()].label:'なし',floor:floorEnabled()?FLOOR_COLORS[state.floor].label:'未選択',lights:lightingLabel(),ac:airconEnabled()?moduleName('aircon-cube-air460b'):'なし',heater:heaterEnabled()?'Webasto':'なし',insulation:insulationEnabled()?'選択中':'なし'});
@@ -524,42 +507,7 @@ function changeBaseVehicle(vehicle){
  if(opening.active){openingState=normalizeNewVehicle(normalizeBaseVehicle({...openingState,vehicle}));state=normalizeNewVehicle(normalizeBaseVehicle({...state,vehicle}));vehicleControls.update();newVehicleControls.update();studioEvent('studio_select',{step:'vehicle',item:'base-vehicle',option:state.vehicle});const url=new URL(location.href);url.searchParams.set('vehicle',vehicle);addNewVehicleParams(url.searchParams,state);for(const k of ['wall','panel','ceiling','twi_ceiling','quarter','twi_bar','twi_indirect','ceiling_lights','tailgate_lights'])url.searchParams.delete(k);history.replaceState(null,'',url);requestAnimationFrame(()=>frameOpening?.());return}
  apply(normalizeBaseVehicle({...state,vehicle})).catch(console.error);
 }
-function airconUI(){
- $('#aircon-status + .helper').hidden=isSuperGL(state);
- const on=airconEnabled();
- $$('[data-aircon]').forEach(b=>{const selected=b.dataset.aircon===(on?AIRCON.value:'none');b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
- $('#aircon-view').hidden=!on;
- $('#aircon-status').textContent=isSuperGL(state)?(on?'スーパーGLへのエアコン取付イメージです。':'スーパーGLでは、DX用の壁面板張り仕上げは追加されません。'):on?`${WALL_COLORS[state.wall].label}の壁に設置しています。`:wallEnabled()?'選択中の壁仕上げにエアコンを追加できます。':'エアコンを選ぶと、壁仕上げも自動で追加されます。';
- if(dealerOptions.ac)$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row" data-dealer-option-row="ac"><span>エアコン</span><b>${on?AIRCON.label+'（配管カバー付き）':'なし'}</b></div>`);
-}
-function heaterUI(){
- const on=heaterEnabled();
- $$('[data-heater]').forEach(b=>{const selected=b.dataset.heater===(on?HEATER.value:'none');b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
- $('#heater-indicator').hidden=!on;
- if(dealerOptions.heater)$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row" data-dealer-option-row="heater"><span>FFヒーター</span><b>${on?HEATER.label:'なし'}</b></div>`);
-}
-function insulationUI(){
- const on=insulationEnabled();
- $$('[data-insulation]').forEach(b=>{const selected=b.dataset.insulation===(on?INSULATION.value:'none');b.classList.toggle('active',selected);b.setAttribute('aria-pressed',selected)});
- $('#insulation-indicator').hidden=!on;
- if(dealerOptions.insulation)$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row" data-dealer-option-row="insulation"><span>断熱施工</span><b>${on?'選択中':'なし'}</b></div>`);
-}
-function electricalUI(){
- const on=electricalEnabled();
- $('#electrical-standard').checked=on;
- $('#standard-package-card').classList.toggle('is-selected',on);
- $('#standard-battery-value').textContent=`${on?state.batteryAh:100}Ah`;
- $('#electrical-upgrades').hidden=!on;
- $$('[data-battery]').forEach(b=>{const selected=Number(b.dataset.battery)===state.batteryAh;b.setAttribute('aria-pressed',selected);b.disabled=!on});
- $$('[data-inverter]').forEach(b=>{const selected=Number(b.dataset.inverter)===state.inverterW;b.setAttribute('aria-pressed',selected);b.disabled=!on});
- $('#battery-ac-recommendation').classList.toggle('is-recommended',airconEnabled()&&state.batteryAh<300);
- $('#electrical-preview').hidden=!on;
- $('.stage').classList.toggle('has-electrical',on);
- $('#electrical-preview-battery').textContent=`バッテリー${state.batteryAh}Ah`;
- $('#electrical-preview-inverter').hidden=!state.inverterW;
- $('#electrical-preview-inverter').textContent=`インバーター${state.inverterW}W`;
- if(dealerOptions.electrical)$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row" data-dealer-option-row="electrical"><span>電装</span><b>${electricalLabel()}</b></div>`);
-}
+let airconUI,heaterUI,insulationUI,electricalUI;
 const shippingText=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function shippingUI(){
  registrationDestination.refresh();
@@ -710,20 +658,12 @@ async function ensurePins(){
  });
 }
 function openReplacement(id){if(document.documentElement.dataset.studioStep==='interior')pinStudio?.openForModel(id);}
-const shareLayout=document.createElement('button');shareLayout.id='share-layout';shareLayout.type='button';shareLayout.className='text-button';shareLayout.textContent='URLを共有';$('#pane-review').append(shareLayout);
-const shareStatus=document.createElement('p');shareStatus.setAttribute('role','status');$('#pane-review').append(shareStatus);
-shareLayout.onclick=async()=>{const url=new URL(urlFor(),location.href);url.searchParams.set('complete','1');try{await navigator.clipboard.writeText(url.href);shareStatus.textContent='URLをコピーしました';studioEvent('share_url');}catch{shareStatus.textContent=url.href;}};
+
 
 function updated(next){if(next.bed!==undefined&&next.bed!==state.bed)next.bedMattress=next.bed!=='none';if(next.front!==undefined&&next.front!==state.front)next.frontMattress=next.front==='front-module';state={...state,...next,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false};apply().catch(console.error)}
 $('#front-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({front:b.dataset.key})}});$('#bed-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({bed:b.dataset.key,cab:FULL.includes(b.dataset.key)?'none':state.cab})}});$('#cabinet-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({cab:b.dataset.key})}});$('#rear-types').addEventListener('click',e=>{let b=e.target.closest('[data-type]');if(b){rearType=b.dataset.type;configureUI()}});$('#clear-rear').onclick=()=>updated({bed:'none',cab:'none'});$$('[data-finish]').forEach(b=>b.onclick=()=>{apply({...state,finish:b.dataset.finish}).catch(console.error)});$('#motion-controls').addEventListener('click',e=>{let b=e.target.closest('[data-motion]');if(b)apply({...state,[b.dataset.motion]:!state[b.dataset.motion]}).catch(console.error)});$$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('#reset-view').onclick=()=>setView(DEFAULT_VIEW);
 
 $('#remove-floor').onclick=()=>apply({...state,floor:'none'}).catch(console.error);
-$('#aircon-options').addEventListener('click',e=>{const b=e.target.closest('[data-aircon]');if(!b||!['none',AIRCON.value].includes(b.dataset.aircon))return;const next={...state,ac:b.dataset.aircon};if(airconEnabled(next)&&!wallEnabled(next)&&!isSuperGL(next)){next.wall=lastWallColor;next.panel='auto'}apply(next).catch(console.error)});
-$('#heater-options').addEventListener('click',e=>{const b=e.target.closest('[data-heater]');if(!b||!['none',HEATER.value].includes(b.dataset.heater))return;apply({...state,heater:b.dataset.heater}).catch(console.error)});
-$('#insulation-options').addEventListener('click',e=>{const b=e.target.closest('[data-insulation]');if(!b||!['none',INSULATION.value].includes(b.dataset.insulation))return;apply({...state,insulation:b.dataset.insulation}).catch(console.error)});
-$('#electrical-standard').addEventListener('change',e=>apply({...state,electrical:e.target.checked?'standard':'none',batteryAh:100,inverterW:0}).catch(console.error));
-$('#battery-options').addEventListener('click',e=>{const b=e.target.closest('[data-battery]');if(!b||!electricalEnabled())return;const value=Number(b.dataset.battery);if([100,200,300].includes(value))apply({...state,batteryAh:value}).catch(console.error)});
-$('#inverter-options').addEventListener('click',e=>{const b=e.target.closest('[data-inverter]');if(!b||!electricalEnabled())return;const value=Number(b.dataset.inverter);if([0,1000,2000].includes(value))apply({...state,inverterW:value}).catch(console.error)});
 $$('[data-night-toggle]').forEach(b=>b.onclick=()=>apply({...state,night:!state.night}).catch(console.error));
 $('#ceiling-options').addEventListener('click',e=>{const b=e.target.closest('[data-ceiling-choice]');if(!b)return;apply({...state,ceiling:b.dataset.ceilingChoice==='finish'?lastCeilingColor:'none'}).catch(console.error)});
 $('#wall-options').addEventListener('click',e=>{
@@ -764,7 +704,7 @@ function changeRegistration(patch){
  const detail=normalizeRegistration(state,true);
  if(document.documentElement.classList.contains('intro-active')&&openingState)Object.assign(openingState,detail);
  if(document.documentElement.classList.contains('outro-active')&&outroState)Object.assign(outroState,detail);
- shippingUI();pricing.update();vehicleControls.update();newVehicleControls.update();
+ shippingUI();pricing.update?.();vehicleControls.update();newVehicleControls.update();
  // Only update destination keys: a late lookup during the intro must not save
  // the temporary empty model over the customer's existing configuration.
  const url=new URL(location.href);for(const key of ['registration_state','postcode','locality'])url.searchParams.delete(key);
@@ -773,13 +713,13 @@ function changeRegistration(patch){
 function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 let savingImage=false;
 
-initStudio({getLocation:()=>getStudioLocation().id,hasRequiredFloor:()=>true,hasElectrical:()=>dealerOptions.electrical,hasVehicleSelection:()=>vehicleSelectionComplete(state)});initLanguage();
+initLanguage();
 window.addEventListener('studio-locale-change',()=>{
  if(!shippingForAustralia()){
   for(const snapshot of [state,openingState,outroState])if(snapshot){snapshot.vehicleSourcing=false;snapshot.shippingAgent=false;snapshot.sourcingFuel=null;snapshot.sourcingDrive=null;snapshot.sourcingBudget=null;snapshot.registrationState=null;snapshot.registrationPostcode='';snapshot.registrationLocality=null}
   const url=new URL(location.href);for(const key of ['sourcing','shipping','sourcing_fuel','sourcing_drive','vehicle_budget','registration_state','postcode','locality'])url.searchParams.delete(key);window.history.replaceState(null,'',url);
  }
- shippingUI();mattressControls.refresh();iSeatControls.refresh();pricing.update();vehicleControls.update();newVehicleControls.update();dealerOptionsUI.update();
+ shippingUI();mattressControls.refresh();iSeatControls.refresh();pricing.update?.();vehicleControls.update();newVehicleControls.update();dealerOptionsUI.update();
  // Refit after translated opening text reflows, without moving furniture.
  requestAnimationFrame(()=>{if(frameOpening)frameOpening()});
 });
@@ -826,7 +766,8 @@ const opening=createOpening({
   renderer.render(scene,camera);
  },
  restore:async()=>{
-  await hydrateVehicleInterior();
+  const prepareTimer=setTimeout(()=>{$('#loading p').textContent='選んだ家具・内装を配置しています';$('#loading').style.display='flex'},250);
+  try{await ensureStudioFeatures();await hydrateVehicleInterior();}finally{clearTimeout(prepareTimer)}
   frameOpening=null;
   for(const {mat,opacity} of openingMaterials)mat.opacity=opacity;
   for(const group of openingGroups)scene.attach(group);
@@ -951,7 +892,86 @@ function enquiryPreview(){
 function enquiryPreviews(){
  const image=enquiryPreview();return image?[image]:[];
 }
-const outro=createOutro({
+let outro={active:false,ready:false};
+// Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
+window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:(options={})=>capturePhoto({...options,renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
+$('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
+
+
+$('#outro-night-toggle').onclick=()=>{
+ if(!outro.ready)return;
+ state={...state,night:!state.night};outroState={...outroState,night:state.night};
+ // Change only the lighting: retain the full shell, open doors and current orbit.
+ setLighting();scene.fog=null;grid.visible=false;lightingUI();updateOutroLighting();
+ window.history.replaceState(null,'',urlFor(outroState));
+ updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
+};
+$$('[data-outro-view]').forEach(b=>b.onclick=()=>{if(outro.ready)frameOutro(b.dataset.outroView)});
+
+// Pick visible furniture through the transparent shell. Raycasting runs only
+// on a short click/tap, never on orbit drags, pinches or the intro/outro scenes.
+const furnitureRay=new THREE.Raycaster(),furniturePointer=new THREE.Vector2();
+const furnitureTouches=new Set();let furnitureTap=null;
+const pickCanvas=renderer.domElement;
+pickCanvas.addEventListener('pointerdown',e=>{
+ furnitureTouches.add(e.pointerId);
+ if(furnitureTouches.size>1){furnitureTap=null;return;}
+ furnitureTap=e.button===0?{id:e.pointerId,x:e.clientX,y:e.clientY,time:performance.now(),moved:false}:null;
+ moduleDetails.close();
+});
+pickCanvas.addEventListener('pointermove',e=>{
+ if(furnitureTap?.id===e.pointerId&&Math.hypot(e.clientX-furnitureTap.x,e.clientY-furnitureTap.y)>7)furnitureTap.moved=true;
+});
+pickCanvas.addEventListener('pointercancel',e=>{furnitureTouches.delete(e.pointerId);furnitureTap=null});
+pickCanvas.addEventListener('lostpointercapture',e=>{furnitureTouches.delete(e.pointerId)});
+pickCanvas.addEventListener('pointerup',e=>{
+ const tap=furnitureTap;furnitureTap=null;furnitureTouches.delete(e.pointerId);
+ if(!tap||tap.id!==e.pointerId||tap.moved||performance.now()-tap.time>650||opening.active||outro.active||batchRunning||!controls.enabled||$('#loading').style.display!=='none')return;
+ const rect=pickCanvas.getBoundingClientRect();
+ furniturePointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);
+ furnitureRay.setFromCamera(furniturePointer,camera);
+ const selected=new Set([state.front,state.bed,state.cab,WALL.key,PANEL.key,CEILING.key,FLOOR.key,TWI_KEYS.ceiling]);
+ const groups=scene.children.filter(g=>g.visible&&selected.has(g.userData.moduleId));
+ for(const hit of furnitureRay.intersectObjects(groups,true)){
+  let visible=true,id=null;
+  for(let node=hit.object;node;node=node.parent){if(!node.visible)visible=false;if(node.userData.moduleId)id=node.userData.moduleId;}
+  if(visible&&id){openReplacement(id);break;}
+ }
+});
+
+async function restoreLayout(saved,{complete=false}={}){
+ await ensurePins();
+ if(outro.active)await outro.edit();
+ if(opening.active)await opening.start?.();
+ await apply({...state,...saved,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,night:false},{history:true});
+ $('#tab-review').click();setView('rear');
+ if(complete){await outro.play({immediate:true});renderer.render(scene,camera);}
+}
+async function ensureStudioFeatures(){
+ return featuresReady??=(async()=>{
+  const features=await import('./studio-features.js?v=20261010-deferred');
+  ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
+  priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
+const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
+modules=Object.fromEntries(M.map(m=>[m.id,m]));
+modules['i-seat']={id:'i-seat',name:moduleName('i-seat'),en:moduleName('i-seat','en'),selection_description:moduleNames['i-seat'].noteJa};
+verification=await fetch('fit-report.json?v=front-fit-6').then(r=>r.json());
+wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json());
+
+  offsets={...verification.offsets_mm,'i-seat':[...I_SEAT_MOUNT.position_mm]};
+  dealerOptionsUI=createDealerOptionsUI({available:dealerOptions,getState:()=>state,getLanguage});
+  pricing=createReferencePricing({getDealer:selectedDealer,catalogue:priceCatalogue,getState:()=>state,getLocation:()=>getStudioLocation().id,getLanguage,onFloorSlide:enabled=>apply({...state,floorSlide:enabled,storage:false}).catch(console.error)});
+  newVehicleControls=createNewVehicleControls({getState:()=>state,getLanguage,onChange:change=>{
+ state=normalizeNewVehicle({...state,...change});newVehicleControls.update();pricing.update?.();updateFloorRequirement();trackStudioSelection(state);
+ window.history.replaceState(null,'',urlFor());
+}});
+  moduleDetails=createModuleDetails({modules,getState:()=>state,getLanguage});
+  mattressControls=createMattressControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error)});
+  iSeatControls=createISeatControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error),onSlidePreview:slide=>{state=normalizeISeat({...state,iSeatSlide:slide});iSeatVisuals.update(scene.getObjectByName('i-seat'),state);needsFrame=true}});
+  mattressVisuals=createMattressVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
+  iSeatVisuals=createISeatVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
+  countertopVisuals=await createCountertopVisuals({renderer});
+  outro=createOutro({
  captureSpecification:enquiryPreviews,
  captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
@@ -1021,61 +1041,17 @@ const outro=createOutro({
   return {configuration,layoutNumber:pricing.quote(configuration).number,customerSummary,summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:includeImage?(()=>{try{return contactPreview()}catch{return ''}})():''};
  }
 });
-// Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
-window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:(options={})=>capturePhoto({...options,renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
-$('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
-initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:contactPreview});
 
-$('#outro-night-toggle').onclick=()=>{
- if(!outro.ready)return;
- state={...state,night:!state.night};outroState={...outroState,night:state.night};
- // Change only the lighting: retain the full shell, open doors and current orbit.
- setLighting();scene.fog=null;grid.visible=false;lightingUI();updateOutroLighting();
- window.history.replaceState(null,'',urlFor(outroState));
- updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
-};
-$$('[data-outro-view]').forEach(b=>b.onclick=()=>{if(outro.ready)frameOutro(b.dataset.outroView)});
-
-// Pick visible furniture through the transparent shell. Raycasting runs only
-// on a short click/tap, never on orbit drags, pinches or the intro/outro scenes.
-const furnitureRay=new THREE.Raycaster(),furniturePointer=new THREE.Vector2();
-const furnitureTouches=new Set();let furnitureTap=null;
-const pickCanvas=renderer.domElement;
-pickCanvas.addEventListener('pointerdown',e=>{
- furnitureTouches.add(e.pointerId);
- if(furnitureTouches.size>1){furnitureTap=null;return;}
- furnitureTap=e.button===0?{id:e.pointerId,x:e.clientX,y:e.clientY,time:performance.now(),moved:false}:null;
- moduleDetails.close();
-});
-pickCanvas.addEventListener('pointermove',e=>{
- if(furnitureTap?.id===e.pointerId&&Math.hypot(e.clientX-furnitureTap.x,e.clientY-furnitureTap.y)>7)furnitureTap.moved=true;
-});
-pickCanvas.addEventListener('pointercancel',e=>{furnitureTouches.delete(e.pointerId);furnitureTap=null});
-pickCanvas.addEventListener('lostpointercapture',e=>{furnitureTouches.delete(e.pointerId)});
-pickCanvas.addEventListener('pointerup',e=>{
- const tap=furnitureTap;furnitureTap=null;furnitureTouches.delete(e.pointerId);
- if(!tap||tap.id!==e.pointerId||tap.moved||performance.now()-tap.time>650||opening.active||outro.active||batchRunning||!controls.enabled||$('#loading').style.display!=='none')return;
- const rect=pickCanvas.getBoundingClientRect();
- furniturePointer.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);
- furnitureRay.setFromCamera(furniturePointer,camera);
- const selected=new Set([state.front,state.bed,state.cab,WALL.key,PANEL.key,CEILING.key,FLOOR.key,TWI_KEYS.ceiling]);
- const groups=scene.children.filter(g=>g.visible&&selected.has(g.userData.moduleId));
- for(const hit of furnitureRay.intersectObjects(groups,true)){
-  let visible=true,id=null;
-  for(let node=hit.object;node;node=node.parent){if(!node.visible)visible=false;if(node.userData.moduleId)id=node.userData.moduleId;}
-  if(visible&&id){openReplacement(id);break;}
- }
-});
-
-async function restoreLayout(saved,{complete=false}={}){
- await ensurePins();
- if(outro.active)await outro.edit();
- if(opening.active)await opening.start?.();
- await apply({...state,...saved,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,night:false},{history:true});
- $('#tab-review').click();setView('rear');
- if(complete){await outro.play({immediate:true});renderer.render(scene,camera);}
+  initStudio({getLocation:()=>getStudioLocation().id,hasRequiredFloor:()=>true,hasElectrical:()=>dealerOptions.electrical,hasVehicleSelection:()=>vehicleSelectionComplete(state)});
+  initRetailerSimulation({getState:()=>state,canApply:readyForReview,capture:contactPreview});
+  ({airconUI,heaterUI,insulationUI,electricalUI}=createEquipmentUI({getState:()=>state,getLastWallColor:()=>lastWallColor,apply,AIRCON,HEATER,INSULATION,WALL_COLORS,dealerOptions,airconEnabled,heaterEnabled,insulationEnabled,electricalEnabled,wallEnabled,isSuperGL,electricalLabel}));
+  createLayoutShare({urlFor});
+  await import('./studio-photo.js?v=20261008-ga');
+  if(document.documentElement.classList.contains('intro-active'))initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout});
+ })();
 }
 if(completeEntry){
+ await ensureStudioFeatures();
  requestAnimationFrame(()=>studioEnvironment.load());
  try{
   const recalled=await initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout,complete:true});
@@ -1083,8 +1059,7 @@ if(completeEntry){
  }finally{document.documentElement.classList.remove('complete-loading');}
 }else{
  if(document.documentElement.classList.contains('intro-active')&&!reviewMode)await opening.play();
- else {await apply();await ensurePins();requestAnimationFrame(()=>studioEnvironment.load());}
- initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout});
+ else {await ensureStudioFeatures();await apply();await ensurePins();requestAnimationFrame(()=>studioEnvironment.load());initLayoutRecall({begin:()=>opening.start(),restore:restoreLayout});}
 }
 
 })().catch(e=>{
