@@ -72,3 +72,13 @@ WebP品質82→Meshopt、位置16bit／法線12bit／UV14bit。元UVが[0,1]外�
 run.pyは標準出力・標準エラーをまとめ、blender-run.logへ逐次保存する。最後のBEGINにENDがなければ停止候補。
 全実行／AOなし／AOと出力なしのコマンドは `exports/hexa-studio-blender-20261010/報告-SIGBUS-2026-10-10.md` を参照。
 今回のBlender実行はジョブズ担当。packによるSIGBUS解消は未確認。
+
+## AOモード（2026-10-10）
+
+`run.py`／`pipeline.py` の `--ao-mode` は `plain`（既定）／`packed`／`lowres`／`gpu-off`／`none`。
+plainは焼く間だけ白Diffuseへ交換（生成AOの焼き先ノードだけ残す）、終了後は木目＋AOへ復元。
+packedは焼く直前に全画像pack、lowresは512px・4samples・margin2、gpu-offはGPU無効・denoising無効・64pxタイル。
+noneは--skip-aoと同じ。--skip-ao併用はnone優先。各モードのSTAGEログとmetrics.jsonのao_settingsを比較する。
+BlenderでのSIGBUS回避成功は未確認。filled床・oakの5本の実行コマンドは作業場の
+`exports/hexa-studio-blender-20261010/報告-AOモード-2026-10-10.md` に記載。
+Python検査は `python3 -B -m unittest discover -s scripts/blender-pipeline -p 'test_*.py'`（Blender起動なし）。

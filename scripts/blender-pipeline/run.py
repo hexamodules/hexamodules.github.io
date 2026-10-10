@@ -21,6 +21,7 @@ def main():
     p.add_argument('--ratio', type=float, default=.2)
     p.add_argument('--units', choices=['mm','m'], default='mm')
     p.add_argument('--mode', choices=['floor','furniture-draft'], default='floor')
+    p.add_argument('--ao-mode', choices=['plain','packed','lowres','gpu-off','none'], default='plain')
     p.add_argument('--skip-ao', action='store_true')
     p.add_argument('--skip-export', action='store_true')
     p.add_argument('--dry-run', action='store_true')
@@ -37,7 +38,7 @@ def main():
     cmd = [a.blender, '--background', '--factory-startup', '--python-exit-code', '1', '--python',
            str(Path(__file__).with_name('pipeline.py')), '--', '--input', str(a.input.resolve()),
            '--output', str(a.output.resolve()), '--texture', str(texture.resolve()),
-           '--ratio', str(a.ratio), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode]
+           '--ratio', str(a.ratio), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode, '--ao-mode', a.ao_mode]
     for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':

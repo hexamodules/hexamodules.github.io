@@ -119,6 +119,7 @@ def load_texture(path):
 
 def args():
  p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.2);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=16);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
+ p.add_argument('--ao-mode',choices=['plain','packed','lowres','gpu-off','none'],default='plain')
  p.add_argument('--skip-ao',action='store_true');p.add_argument('--skip-export',action='store_true')
  a=p.parse_args(sys.argv[sys.argv.index('--')+1:])
  if any(not math.isfinite(v) or v<=0 for v in a.tile_mm) or not 0<a.ratio<=1:p.error('Invalid tile size or ratio')
@@ -193,8 +194,72 @@ def material(o, texture, ao, resin=False):
  return mat
 
 
+def ao_settings(a):
+ mode='none' if a.skip_ao else a.ao_mode
+ return {'mode':mode,'size':512 if mode=='lowres' else 1024,
+         'samples':4 if mode=='lowres' else a.samples,'margin':2 if mode=='lowres' else 8}
+
+def plain_material(ao=None):
+ mat=bpy.data.materials.new('AO temporary white');mat.use_nodes=True
+ nodes=mat.node_tree.nodes;nodes.clear()
+ diffuse=nodes.new('ShaderNodeBsdfDiffuse');diffuse.inputs['Color'].default_value=(1,1,1,1)
+ output=nodes.new('ShaderNodeOutputMaterial')
+ mat.node_tree.links.new(diffuse.outputs['BSDF'],output.inputs['Surface'])
+ if ao is not None:
+  # The sole image node is the generated bake destination, not a source texture.
+  target=nodes.new('ShaderNodeTexImage');target.image=ao
+  for node in nodes:node.select=False
+  target.select=True;nodes.active=target
+ return mat
+
+@contextmanager
+def plain_bake_materials(o,ao):
+ saved=[];temporary=[]
+ try:
+  with stage('AO mode plain materials swap '+o.name):
+   target=plain_material(ao);temporary.append(target)
+   white=plain_material();temporary.append(white)
+   # Cycles can inspect other objects too. Replace every scene material slot.
+   # Keep slot counts and polygon material indices unchanged.
+   for obj in bpy.context.scene.objects:
+    for slot in obj.material_slots:
+     saved.append((slot,slot.material))
+     slot.material=target if obj==o else white
+   bpy.context.view_layer.update()
+  yield
+ finally:
+  with stage('AO mode plain materials restore '+o.name):
+   for slot,original in reversed(saved):slot.material=original
+   bpy.context.view_layer.update()
+   for mat in temporary:bpy.data.materials.remove(mat)
+
+def bake_ao(o,ao,settings):
+ mode=settings['mode'];scene=bpy.context.scene
+ with stage('AO mode '+mode+' configure '+o.name):
+  scene.render.engine='CYCLES';scene.cycles.device='CPU'
+  scene.cycles.samples=settings['samples'];scene.render.bake.margin=settings['margin']
+  if mode=='gpu-off':
+   bpy.context.preferences.addons['cycles'].preferences.compute_device_type='NONE'
+   scene.cycles.use_denoising=False
+   scene.cycles.use_auto_tile=True;scene.cycles.tile_size=64
+   print('STAGE: AO mode gpu-off device=CPU compute_device_type=NONE denoising=False tile_size=64',flush=True)
+  print('STAGE: AO settings '+json.dumps(settings),flush=True)
+ if mode=='packed':
+  with stage('AO mode packed images '+o.name):
+   for im in list(bpy.data.images):
+    with stage('AO mode packed image '+im.name):im.pack()
+ def bake():
+  with stage('AO bake '+o.name+' mode='+mode):
+   bpy.ops.object.bake(type='AO',margin=settings['margin'],use_clear=True)
+ if mode=='plain':
+  with plain_bake_materials(o,ao):bake()
+ else:bake()
+
+
 def run(a,source):
  STAGE_METRICS.clear();LAST_METRICS.clear()
+ settings=ao_settings(a)
+ print('STAGE: AO mode '+settings['mode']+' SELECTED requested='+a.ao_mode+' skip_ao='+str(a.skip_ao),flush=True)
  with stage('reset'):
   bpy.ops.wm.read_factory_settings(use_empty=True)
  out=Path(a.output)/source.name.replace('.mesh.json','').replace(source.suffix,'');out.mkdir(parents=True,exist_ok=False)
@@ -254,9 +319,9 @@ def run(a,source):
    bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.02);bpy.ops.object.mode_set(mode='OBJECT')
   resin='step' in o.get('source_role','') or 'resin' in o.get('source_material','').lower()
   ao=None
-  if not a.skip_ao:
+  if settings['mode']!='none':
    with stage('AO image create '+o.name):
-    ao=bpy.data.images.new(o.name+' AO',1024,1024);ao.colorspace_settings.name='Non-Color'
+    ao=bpy.data.images.new(o.name+' AO',settings['size'],settings['size']);ao.colorspace_settings.name='Non-Color'
   with stage('materials '+o.name):
    o.data.materials.clear()
    o.data.materials.append(material(o,face_texture if furniture else texture,ao,resin))
@@ -264,13 +329,11 @@ def run(a,source):
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name,[o]):
    planar_uv(o,a.tile_mm,furniture)
-  if a.skip_ao:
-   print('STAGE: AO bake SKIP '+o.name,flush=True)
-   print('STAGE: AO save SKIP '+o.name,flush=True)
+  if settings['mode']=='none':
+   print('STAGE: AO mode none bake SKIP '+o.name,flush=True)
+   print('STAGE: AO mode none save SKIP '+o.name,flush=True)
   else:
-   with stage('AO bake '+o.name):
-    bpy.context.scene.render.engine='CYCLES';bpy.context.scene.cycles.device='CPU';bpy.context.scene.cycles.samples=a.samples
-    bpy.ops.object.bake(type='AO',margin=8,use_clear=True)
+   bake_ao(o,ao,settings)
    with stage('AO save '+o.name):
     ao.filepath_raw=str(out/(o.name.replace('/','_')+'-ao.png'));ao.file_format='PNG'
     with stage('AO pack '+o.name):
@@ -287,7 +350,7 @@ def run(a,source):
  else:
   with stage('GLB export',objects):
    bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',export_extras=True,export_yup=True)
- (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':a.skip_ao,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
+ (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':settings['mode']=='none','ao_settings':settings,'ao_mode_requested':a.ao_mode,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
 
 if __name__=='__main__':
  a=args();src=Path(a.input).resolve();sources=[src] if src.is_file() else sorted(p for p in src.iterdir() if p.name.endswith('.mesh.json') or p.suffix.lower() in ['.fbx','.glb','.obj'])
