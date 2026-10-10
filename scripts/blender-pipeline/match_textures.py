@@ -49,7 +49,7 @@ def prepare(assets, tiles, output, face_source='studio'):
     with Image.open(assets/'wood-grain.jpg') as im: reference = im.convert('RGB')
     raw = reference
     if face_source == 'tetsuya':
-        with Image.open(tiles/'birch-face.png') as im: raw = histogram_match(im, reference)
+        with Image.open(tiles/'birch-face.png') as im: raw = im.convert('RGB')
     brightness=[]
     bright,adjustment=brighten_face(raw,reference) if face_source == 'tetsuya' else (None,None)
     for variant, birch, toned in [('toned',True,True),('natural',True,False),('raw',False,False)]:
@@ -57,18 +57,22 @@ def prepare(assets, tiles, output, face_source='studio'):
         if face_source == 'tetsuya':
             brightness.append(dict(variant=variant,**adjustment))
         save_new(face, output/f'face-{variant}.png')
+    if face_source == 'tetsuya':
+        with Image.open(tiles/'birch-edge-15mm.png') as im:
+            edge, _ = brighten_face(im, reference)
+        save_new(edge, output/'edge-birch.png')
     # Actual I-Seat default texture: retain the source image's weave and tint.
     with Image.open(assets/'mattress-colors/light-green.jpg') as im:
         save_new(im.convert('RGB'), output/'seat-fabric.png')
     report = dict(face_source=face_source, studio_image=str(assets/'wood-grain.jpg'),
                   reference=stats(reference), matched=stats(raw), brightness=brightness,
                   fabric_image=str(assets/'mattress-colors/light-green.jpg'),
-                  tone=('photo gain 1.14, cream #e8dcc8, saturation .85, reference contrast; no dark display multiplier' if face_source == 'tetsuya' else 'legacy studio linear tone'))
+                  tone=('birch #dccbb0, original photo colour variation, grain contrast +15%; no dark display multiplier' if face_source == 'tetsuya' else 'legacy studio linear tone'))
     with (output/'texture-match.json').open('x') as f: json.dump(report,f,indent=2)
     return report
 
 
-def brighten_face(image, reference):
+def previous_brighten_face(image, reference):
     """Lift photo 14%, then balance to cream; preserve reference grain contrast.
 
     Input is the photo before the old dark studio display multiplier. The 14%
@@ -96,3 +100,29 @@ def brighten_face(image, reference):
                     highlight_scale=safe,before=float(mean@weights),
                     after=float(np.asarray(out).mean(axis=(0,1))@weights),
                     reference_mean=float(ref.mean(axis=(0,1),dtype=np.float64)@weights))
+
+
+def brighten_face(image, reference):
+    """Warm birch mean; retain photo chroma variation with one common RGB gain.
+
+    Grain contrast is luminance standard deviation, 15% above the previous
+    #e8dcc8 treatment of this same photo. No neutral/desaturation mix.
+    """
+    weights=np.array([.2126,.7152,.0722])
+    rgb=np.asarray(image.convert('RGB'),dtype=np.float64)
+    mean=rgb.mean(axis=(0,1))
+    previous,_=previous_brighten_face(histogram_match(image,reference),reference)
+    old_spread=float((np.asarray(previous,dtype=float)@weights).std())
+    centered=rgb-mean
+    spread=float((centered@weights).std())
+    scale=old_spread*1.15/spread if spread>1e-6 else 1.
+    target=np.array([220.,203.,176.])
+    centered*=scale
+    low=centered.min(axis=(0,1));high=centered.max(axis=(0,1))
+    safe=min(1.,float(np.min((255-target)/np.maximum(high,1e-6))),
+             float(np.min(target/np.maximum(-low,1e-6))))
+    out=Image.fromarray(np.rint(target+centered*safe).astype('uint8'))
+    return out,dict(saturation=1.,target_rgb=target.tolist(),contrast_gain=1.15,
+                    photo_rgb_scale=scale,highlight_scale=safe,
+                    previous_grain_std=old_spread,
+                    grain_std=float((np.asarray(out,dtype=float)@weights).std()))

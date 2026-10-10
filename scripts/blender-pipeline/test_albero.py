@@ -34,8 +34,8 @@ class AlberoTests(unittest.TestCase):
  def test_brightness_cream_target_and_edge_material(self):
   src=Image.new('RGB',(10,10),(100,100,100));ref=Image.new('RGB',(10,10),(180,180,180))
   out,record=brighten_face(src,ref)
-  self.assertEqual(record['gain'],1.14);self.assertEqual(out.getpixel((0,0)),(232,220,200))
-  out,record=brighten_face(ref,src);self.assertEqual(record['gain'],1.14)
+  self.assertEqual(record['saturation'],1.);self.assertEqual(out.getpixel((0,0)),(220,203,176))
+  out,record=brighten_face(ref,src);self.assertEqual(record['saturation'],1.)
   rules=load_rules()
   for spec in [rules['materials']['plywood'],rules['hexa_face']]:
    self.assertEqual(spec['roughness'],.6);self.assertEqual(spec['metalness'],0)
