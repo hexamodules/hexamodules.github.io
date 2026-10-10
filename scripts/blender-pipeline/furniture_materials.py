@@ -53,7 +53,11 @@ def project(point, normal, axes, mapping, finish='birch'):
     if edge:
         run = across if abs(normal[grain]) > abs(normal[across]) else grain
         return 1, (point[run]*1000/mapping['edge_mm'][0], point[thickness]*1000/mapping['edge_mm'][1])
-    mm = mapping['hexa_mm'] if finish == 'hexa' else mapping['face_mm']
+    if finish == 'hexa':
+        mm = mapping['hexa_mm']
+        # Studio UV: short in-plane axis / 450, long / 900, repeat(5, 10).
+        return 0, (point[grain]*1000/mm[0], point[across]*1000/mm[1])
+    mm = mapping['face_mm']
     return 0, (point[across]*1000/mm[0], point[grain]*1000/mm[1])
 
 

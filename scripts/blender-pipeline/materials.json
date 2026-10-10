@@ -141,8 +141,8 @@
     "face_normal_threshold": 0.7,
     "grain_axis": "shorter in-plane body axis (width)",
     "hexa_mm": [
-      244,
-      244
+      90,
+      90
     ]
   },
   "textures": {
@@ -155,14 +155,8 @@
       3900
     ],
     "edge": "birch-edge-15mm.png",
-    "hexa_source": "furniture-finish-hexa.webp",
-    "hexa_crop": [
-      120,
-      20,
-      480,
-      300
-    ],
-    "hexa_note": "layouts/patterns/*-black* are whole-vehicle renders; use the existing material photograph, cropped to exclude background and plywood edge. Pitch is illustrative, not a calibrated scan."
+    "hexa_source": "hexa-studio.png",
+    "hexa_note": "Generated from layouts/visual-materials.js canvas geometry and sRGB palette. prepare_assets.py UV spans 450 x 900 mm; repeat(5,10) gives 90 x 90 mm per 288 x 256 px tile."
   },
   "source_guards": [
     {
@@ -203,5 +197,10 @@
       "kind": "seat_fabric",
       "pattern": "座面クッション|背もたれクッション"
     }
-  ]
+  ],
+  "hexa_face": {
+    "color": "#ffffff",
+    "metalness": 0,
+    "roughness": 0.7
+  }
 }

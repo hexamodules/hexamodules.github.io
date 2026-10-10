@@ -107,7 +107,8 @@ Blenderでの実焼き・画質・アルミベッド2MB達成はジョブズの�
 materials.jsonのボディ名→元材質名の順で判定し、同種材質を共有、合板は面／小口だけを分ける。
 板の最短軸と法線で面小口を判定し、面内の短い軸を木目方向とする。AO1枚共有は維持。
 未判定は合板に仮置きし、実行先のmaterial-report.jsonへ一覧を保存する。
-Hexaは既存assets/furniture-finish-hexa.webpの表面部分を実行時に切り出す。
-patterns/*-black*は車全体の画像なので素材として使用しない。写真のピッチ・木目方向は仮設定。
+Hexaはvisual-materials.jsの六角模様とsRGB色をPillowで生成し、新しい出力フォルダに保存する。
+元UV450×900mmとrepeat(5,10)に合わせ1タイル90×90mm。小口は従来のバーチ、表面roughness=0.7、REPEAT指定。Canvas2Dとの輪郭のアンチエイリアス差はあり。
+手順は作業場のexports/hexa-studio-blender-20261010/報告-Hexa柄-2026-10-10.md。
 詳細・未判定32ボディ・実行1行は作業場のexports/hexa-studio-blender-20261010/報告-材質の貼り分け-2026-10-10.md。
 実Blender出力は未検証。Python検査は上のunittest discoverで実行する。

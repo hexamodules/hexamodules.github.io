@@ -7,6 +7,7 @@ import sys
 from pathlib import Path
 from extract_tile import defaults
 from furniture_materials import load_rules
+from hexa_texture import studio_hexa_tile
 
 
 def main():
@@ -33,7 +34,7 @@ def main():
     if a.mode == 'furniture-draft':
         if a.finish not in ('birch','hexa'): p.error('Furniture finish must be birch or hexa')
         texture = a.texture or a.tiles/rules['textures']['birch_face']
-        tile_mm = a.tile_mm or rules['mapping']['face_mm']
+        tile_mm = a.tile_mm or rules['mapping']['hexa_mm' if a.finish == 'hexa' else 'face_mm']
     else:
         finishes = {f['value']:f for f in json.loads((a.assets/'floor-finishes.json').read_text())['colors']}
         if a.finish not in finishes: p.error('--finish must be one of: '+', '.join(finishes))
@@ -56,8 +57,8 @@ def main():
                 p.error('Furniture tiles missing; extract with --furniture-source')
             cmd.extend([flag,str((a.tiles/name).resolve())])
     if a.mode == 'furniture-draft' and a.finish == 'hexa':
-        hexa_source = a.texture or a.assets/rules['textures']['hexa_source']
-        if not hexa_source.is_file(): p.error('Hexa material photograph missing')
+        hexa_source = a.texture or a.output/rules['textures']['hexa_source']
+        if a.texture and not hexa_source.is_file(): p.error('Hexa tile missing')
         cmd.extend(['--hexa-source',str(hexa_source.resolve())])
     if a.output.exists():
         p.error('Output exists; choose a new directory')
@@ -65,6 +66,8 @@ def main():
         print(json.dumps({'command':cmd, 'tile_mm':tile_mm, 'blender_started':False},ensure_ascii=False,indent=2))
         return
     a.output.mkdir(parents=True, exist_ok=False)
+    if a.mode == 'furniture-draft' and a.finish == 'hexa' and not a.texture:
+        studio_hexa_tile().save(hexa_source, format='PNG')
     # Merge streams to preserve warning/STAGE order and keep a live crash log.
     with (a.output/'blender-run.log').open('x') as log:
         with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1) as process:

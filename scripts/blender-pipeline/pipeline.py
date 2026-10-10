@@ -191,7 +191,7 @@ def material(o, texture, ao, resin=False, spec=None):
   bsdf.inputs['Metallic'].default_value=spec['metalness']
   bsdf.inputs['Base Color'].default_value=linear_color(spec['color'])
  if not resin and texture is not None:
-  tex=nodes.new('ShaderNodeTexImage');tex.image=texture;tex.extension='MIRROR'
+  tex=nodes.new('ShaderNodeTexImage');tex.image=texture;tex.extension='REPEAT' if spec and spec.get('repeat') else 'MIRROR'
   uv=nodes.new('ShaderNodeUVMap');uv.uv_map='UVMap0'
   links.new(uv.outputs['UV'],tex.inputs['Vector']);links.new(tex.outputs['Color'],bsdf.inputs['Base Color'])
  if ao is None:return mat
@@ -354,14 +354,9 @@ def run(a,source):
  edge_texture=load_texture(a.edge_texture) if furniture else None
  rules=load_rules();shared={};decisions=[]
  if furniture and a.finish=='hexa':
-  # Read the existing material photo; never modify layouts. Crop via Blender pixels.
-  original=load_texture(a.hexa_source)
-  x0,y0,x1,y1=rules['textures']['hexa_crop'];w,h=original.size
-  if not (0<=x0<x1<=w and 0<=y0<y1<=h):raise ValueError('Hexa crop outside photo')
-  pixels=list(original.pixels[:]);cropped=[]
-  for y in range(h-y1,h-y0):cropped.extend(pixels[(y*w+x0)*4:(y*w+x1)*4])
-  face_texture=bpy.data.images.new('Hexa face crop',x1-x0,y1-y0,alpha=False)
-  face_texture.pixels.foreach_set(cropped);face_texture.pack()
+  # Prepared studio tile: preserve encoded RGB; no float-pixel crop conversion.
+  face_texture=load_texture(a.hexa_source)
+  face_texture.colorspace_settings.name='sRGB'
  atlas=None
  if furniture and settings['mode']!='none':
   with stage('furniture atlas image create'):
@@ -424,7 +419,9 @@ def run(a,source):
     for key in keys:
      if key not in shared:
       image=face_texture if key=='plywood-face' else edge_texture if key=='plywood-edge' else None
-      shared[key]=material(type('Name',(),{'name':key})(),image,atlas,spec=rules['materials'][kind])
+      spec=rules['materials'][kind]
+      if key=='plywood-face' and a.finish=='hexa':spec=dict(rules['hexa_face'],repeat=True)
+      shared[key]=material(type('Name',(),{'name':key})(),image,atlas,spec=spec)
      o.data.materials.append(shared[key])
    else:o.data.materials.append(material(o,texture,ao,resin))
   # Set indices after installing slots: clearing slots may reset polygon indices.

@@ -6,11 +6,26 @@ import unittest
 from pathlib import Path
 from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color
 from extract_tile import defaults
+from hexa_texture import studio_hexa_tile
 
 HERE=Path(__file__).parent
 ASSETS,TILES=defaults()
 
 class FurnitureTests(unittest.TestCase):
+ def test_hexa_studio_scale_and_color(self):
+  rules=load_rules()
+  for thin in range(3):
+   spans=[650,900,1200];spans[thin]=15
+   axes=board_axes([[0,0,0],spans]);normal=[0,0,0];normal[thin]=1
+   point=[0,0,0];point[axes[1]]=.45;point[axes[2]]=.9
+   self.assertEqual(project(point,normal,axes,rules['mapping'],'hexa'),(0,(5,10)))
+  image=studio_hexa_tile()
+  self.assertEqual(image.size,(288,256))
+  # Studio brown-black palette has no green tint (R >= G >= B).
+  self.assertTrue(all(r>=g>=b for r,g,b in image.getdata()))
+  self.assertIn((41,35,33),set(image.getdata()))
+  self.assertEqual(rules['hexa_face'],dict(color='#ffffff',metalness=0,roughness=.7))
+
  def test_collisions_and_source_materials(self):
   cases=[('rail outer','aluminum','hardware'),('slide','アルミニウム - サテン','hardware'),
          ('rail','クロム','aluminum'),('天板1','SKY Birch plywood - aluminum reference grain','plywood'),
