@@ -210,7 +210,7 @@ def material(o, texture, ao, resin=False, spec=None):
   tex=nodes.new('ShaderNodeTexImage');tex.image=texture;tex.extension='REPEAT' if spec and spec.get('repeat') else 'MIRROR'
   uv=nodes.new('ShaderNodeUVMap');uv.uv_map='UVMap0'
   links.new(uv.outputs['UV'],tex.inputs['Vector']);links.new(tex.outputs['Color'],bsdf.inputs['Base Color'])
- if ao is None:return mat
+ if ao is None or (spec and spec.get('ao_constant') == 1):return mat
  bake=nodes.new('ShaderNodeTexImage');bake.image=ao;nodes.active=bake
  group=bpy.data.node_groups.new('glTF Material Output','ShaderNodeTree')
  group.interface.new_socket(name='Occlusion',in_out='INPUT',socket_type='NodeSocketFloat')
@@ -573,6 +573,7 @@ def run(a,source):
      slot_spec=dict(spec)
      if kind=='plywood':slot_spec['repeat']=True
      if key=='plywood-face' and policy['finish']=='hexa':slot_spec=dict(rules['hexa_face'],repeat=True)
+     if key=='plywood-face':slot_spec.update(roughness=.45,metalness=0,ao_constant=1)
      image=None
      if key=='plywood-face':image=hexa_texture if policy['finish']=='hexa' else face_textures[policy['variant']]
      elif key=='plywood-edge':image=edge_texture
@@ -590,7 +591,7 @@ def run(a,source):
   if furniture and albero:
    albero_key='ALBERO melamine surface'
    if albero_key not in shared:
-    shared[albero_key]=material(type('Name',(),{'name':albero_key})(),countertop_texture,atlas,spec=dict(color='#ffffff',roughness=.86,metalness=0,repeat=False))
+    shared[albero_key]=material(type('Name',(),{'name':albero_key})(),countertop_texture,atlas,spec=dict(color='#ffffff',roughness=.86,metalness=0,repeat=False,ao_constant=1))
    o.data.materials.append(shared[albero_key])
    decisions[-1]['albero_faces']=apply_countertop(o,len(o.data.materials)-1,source_body['bounds'],countertop_definition['web_surface']['tile_mm'])
   if furniture:

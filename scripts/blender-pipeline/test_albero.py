@@ -31,11 +31,11 @@ class AlberoTests(unittest.TestCase):
    self.assertEqual(countertop_uv(bounds[0],bounds,tile),(0,0))
    self.assertEqual(countertop_uv(point,bounds,tile),(1,1))
 
- def test_brightness_six_percent_cap_and_material(self):
+ def test_brightness_cream_target_and_edge_material(self):
   src=Image.new('RGB',(10,10),(100,100,100));ref=Image.new('RGB',(10,10),(180,180,180))
   out,record=brighten_face(src,ref)
-  self.assertEqual(record['gain'],1.06);self.assertEqual(out.getpixel((0,0)),(106,106,106))
-  out,record=brighten_face(ref,src);self.assertEqual(record['gain'],1)
+  self.assertEqual(record['gain'],1.14);self.assertEqual(out.getpixel((0,0)),(232,220,200))
+  out,record=brighten_face(ref,src);self.assertEqual(record['gain'],1.14)
   rules=load_rules()
   for spec in [rules['materials']['plywood'],rules['hexa_face']]:
    self.assertEqual(spec['roughness'],.6);self.assertEqual(spec['metalness'],0)

@@ -20,7 +20,12 @@ def atlas_info(path):
     used={p['material'] for mesh in doc.get('meshes',[]) for p in mesh['primitives']}
     images=set()
     for index in used:
-        occlusion=doc['materials'][index].get('occlusionTexture')
+        material=doc['materials'][index]
+        occlusion=material.get('occlusionTexture')
+        face=material.get('name','').startswith('plywood-face:') or material.get('name','')=='ALBERO melamine surface'
+        if face:
+            if occlusion:raise ValueError('Plywood face must have constant AO 1 (no occlusion texture)')
+            continue
         if not occlusion:raise ValueError('Furniture material has no AO')
         uv=occlusion.get('extensions',{}).get('KHR_texture_transform',{}).get('texCoord',occlusion.get('texCoord',0))
         if uv!=1:raise ValueError('Furniture AO must use UV1')
@@ -31,7 +36,7 @@ def atlas_info(path):
     if len(images)!=1:raise ValueError('Furniture must reference exactly one AO atlas')
     for mesh in doc.get('meshes',[]):
         for primitive in mesh['primitives']:
-            if 'TEXCOORD_1' not in primitive['attributes']:raise ValueError('Missing UV1 accessor')
+            if doc['materials'][primitive['material']].get('occlusionTexture') and 'TEXCOORD_1' not in primitive['attributes']:raise ValueError('Missing UV1 accessor')
     image=doc['images'][next(iter(images))]
     return {'ao_images':len(images),'ao_mime_type':image.get('mimeType'),'materials':len(used),'bytes':len(raw)}
 

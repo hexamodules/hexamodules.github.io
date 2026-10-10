@@ -51,10 +51,10 @@ def prepare(assets, tiles, output, face_source='studio'):
     if face_source == 'tetsuya':
         with Image.open(tiles/'birch-face.png') as im: raw = histogram_match(im, reference)
     brightness=[]
+    bright,adjustment=brighten_face(raw,reference) if face_source == 'tetsuya' else (None,None)
     for variant, birch, toned in [('toned',True,True),('natural',True,False),('raw',False,False)]:
-        face=studio_face(raw,birch,toned)
+        face=bright if bright is not None else studio_face(raw,birch,toned)
         if face_source == 'tetsuya':
-            face,adjustment=brighten_face(face, reference)
             brightness.append(dict(variant=variant,**adjustment))
         save_new(face, output/f'face-{variant}.png')
     # Actual I-Seat default texture: retain the source image's weave and tint.
@@ -63,17 +63,36 @@ def prepare(assets, tiles, output, face_source='studio'):
     report = dict(face_source=face_source, studio_image=str(assets/'wood-grain.jpg'),
                   reference=stats(reference), matched=stats(raw), brightness=brightness,
                   fabric_image=str(assets/'mattress-colors/light-green.jpg'),
-                  tone='linear mix .19, power 1.08, saturation .92, gain .40/.40/.46; sRGB once')
+                  tone=('photo gain 1.14, cream #e8dcc8, saturation .85, reference contrast; no dark display multiplier' if face_source == 'tetsuya' else 'legacy studio linear tone'))
     with (output/'texture-match.json').open('x') as f: json.dump(report,f,indent=2)
     return report
 
 
 def brighten_face(image, reference):
-    """Raise displayed photograph gently, capped at the studio image mean."""
+    """Lift photo 14%, then balance to cream; preserve reference grain contrast.
+
+    Input is the photo before the old dark studio display multiplier. The 14%
+    exposure and the separate white balance are reported rather than conflated.
+    """
     weights=np.array([.2126,.7152,.0722])
-    rgb=np.asarray(image.convert('RGB'),dtype=float)
-    before=float((rgb@weights).mean())
-    target=float((np.asarray(reference.convert('RGB'),dtype=float)@weights).mean())
-    gain=max(1.0,min(1.06,target/before)) if before else 1.0
-    out=Image.fromarray(np.rint(np.clip(rgb*gain,0,255)).astype('uint8'))
-    return out,dict(gain=gain,before=before,after=float((np.asarray(out)@weights).mean()),reference_mean=target)
+    rgb=np.asarray(image.convert('RGB'),dtype=np.float32)
+    ref=np.asarray(reference.convert('RGB'),dtype=np.float32)
+    mean=rgb.mean(axis=(0,1),dtype=np.float64)
+    target=np.array([232.,220.,200.])
+    exposed=rgb*1.14
+    centered=exposed-mean*1.14
+    neutral=(centered@weights)[...,None]
+    centered=.85*centered+.15*neutral
+    # Reference contrast, with a common highlight-safe scale (no hard clipping).
+    spread=centered.std(axis=(0,1),dtype=np.float64)
+    contrast=ref.std(axis=(0,1),dtype=np.float64)/np.maximum(spread,1e-6)
+    centered*=contrast
+    low=centered.min(axis=(0,1));high=centered.max(axis=(0,1))
+    safe=min(1.,float(np.min((255-target)/np.maximum(high,1e-6))),
+             float(np.min(target/np.maximum(-low,1e-6))))
+    out=Image.fromarray(np.rint(np.clip(target+centered*safe,0,255)).astype('uint8'))
+    return out,dict(gain=1.14,saturation=.85,target_rgb=target.tolist(),
+                    white_balance_offset=(target-mean*1.14).tolist(),contrast_scale=contrast.tolist(),
+                    highlight_scale=safe,before=float(mean@weights),
+                    after=float(np.asarray(out).mean(axis=(0,1))@weights),
+                    reference_mean=float(ref.mean(axis=(0,1),dtype=np.float64)@weights))

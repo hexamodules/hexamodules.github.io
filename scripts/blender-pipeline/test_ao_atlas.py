@@ -76,6 +76,11 @@ class AtlasTests(unittest.TestCase):
    with self.assertRaisesRegex(ValueError,'UV1'):compress.atlas_info(p)
    doc['materials'][1]={};write()
    with self.assertRaisesRegex(ValueError,'no AO'):compress.atlas_info(p)
+   doc['materials'][1]={'name':'plywood-face:test'}
+   doc['meshes'][0]['primitives'][1]['attributes']={}
+   write();self.assertEqual(compress.atlas_info(p)['ao_images'],1)
+   doc['materials'][1]['occlusionTexture']={'index':0,'texCoord':1};write()
+   with self.assertRaisesRegex(ValueError,'constant AO'):compress.atlas_info(p)
 
  def test_compression_quality_floor_unchanged_furniture_80_and_default_target(self):
   with tempfile.TemporaryDirectory(dir=TILES.parent) as temp:

@@ -213,3 +213,24 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts front-mo
 
 `--execute`を外すと実行せず40コマンドを表示する。5種類×2仕上げ=10本。
 出力はexports/hexa-studio-blender-20261010/、既存出力は拒否。layouts/への書込なし。
+
+### 2026-10-10 バーチをスッキリ明るく（旧6%補正より優先）
+
+テツヤ写真は旧表示用の暗い乗算を通さず、写真の木目を元画像へ色合わせした後、
+明るさ1.14・彩度0.85・平均色#e8dcc8へホワイトバランスを補正する。
+参照の木目の標準偏差へ合わせ、白飛びを防ぐ共通係数でコントラストを抑える。
+14%は露出段だけの値。旧暗色補正の撤去と平均色合わせもあるため最終増加率とは異なる。
+全3variantに同じ明るい写真を使う。黒Hexaの画像とALBEROの色は維持。
+合板面（Hexa面も含む）はroughness .45・metalness 0、AO=1固定。
+ALBERO面もAO=1、専用roughness .86は維持。小口・金物は従来のAO .92〜1。
+AO=1はocclusionTextureを出力しないことで表現し、圧縮検査も面だけ例外とする。
+既定plainモードのAO焼込み用材質は独立しているため、小口・金物の焼込みを維持する。
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts all --finishes birch,hexa --face-source tetsuya --tag bright-20261010-1 --max-bytes 4000000
+```
+
+全13モジュール＋付属6種×2仕上げ=38本。ジョブズが実行する。
+`--execute`なしで152段階のdry-run。layoutsへは書き込まない。
+`bright_samples.py`はBlenderを起動せず、tiles/へ561×768の前後画像と比較画像を新規保存する。
+同名がある場合は上書きせず停止する。小さい見本と本番解像度では統計に軽微な差がある。
