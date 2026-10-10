@@ -247,3 +247,46 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts all --fi
 ```
 
 38本。`--execute`を外せばBlenderを起動せず152段階を表示。layoutsへのコピーなし。
+
+### 2026-10-10 見た目を変えずに共通画像化（最新）
+
+承認済み38本（ba0e824）の形状・画像をそのまま使い、画像の保存先だけ変更する。
+`--external-textures` を付けた `rebuild_bounds.py` は **Blenderを起動せず**、
+既存 `exports/hexa-public/layouts/assets/blender/` のGLBを読む専用経路になる。
+再焼込み・画像の縮小・画像再圧縮・二重のmeshopt量子化は行わない。
+色指定の変更は拒否。AOは元の解像度・元のバイト列のまま埋め込む。
+
+ジョブズ用の38本一括再出力（Codexは今回未実行）：
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts all --finishes birch,hexa --tag shared-tex-20261010-1 --external-textures
+```
+
+`--execute` を外すと38コマンドと容量の計算結果だけを表示する。
+出力先は `exports/hexa-studio-blender-20261010/shared-textures-shared-tex-20261010-1/`。
+配下の `assets/blender/` に38GLB、`assets/blender/tex/` に共通WebPができる。
+画像内容のSHA-256をファイル名に使い、内容が同じ画像を仕上げ・部品間でも共有する。
+GLB内は `images[].uri = "tex/<sha256>.webp"`。既存の出力先は上書きしない。
+結果は `capacity.json` に残る。`layouts/` へのコピー・採用は別作業。
+採用時はGLBと `tex/` を同じ構成でまとめて渡す（GLB単独では画像が不足する）。
+
+`compress.py --external-textures` は既存WebPだけ受け付ける。
+既にmeshopt済みなら形状の再圧縮も省略。未圧縮の入力ではmeshoptだけを実行し、
+全画像・AOのバイト一致を検査してから外部参照を復元する。WebP変換コマンドは呼ばない。
+PNG/JPEG入力は再圧縮禁止のため拒否する。既存のオプションなし経路は従来どおり。
+
+基準38本からのメモリ上の算出では93,302,584→27,519,944 bytes（共通画像込み）。
+GLB 25,851,084＋共通画像5枚1,668,860 bytes。生成済みファイルの実測ではない。
+アルミベッドbirch単体：初回2,512,964→2,512,264 bytes、画像が全てキャッシュに
+残っている場合は1,005,980 bytes。外部化だけで初回の全画像取得が不要になる訳ではない。
+HTTPキャッシュの設定・再検証・同時読込によって実通信量／回数は変わる。
+
+検査（Blender不要）：
+
+```sh
+python3 -B -m unittest discover -s scripts/blender-pipeline -p test_external_textures.py -v
+```
+
+全38本の画像・AO・圧縮形状バイト一致、材質・UV・変換情報の保持、
+共通化・再入力・上書き拒否・dry-run・meshoptのみの分岐を検査する。
+画面のピクセル比較は未実施。表示データの同一性をバイト単位で確認する。

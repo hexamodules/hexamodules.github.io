@@ -31,6 +31,7 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--container-color',type=container_color,help='Container and lid colour: #RRGGBB')
     p.add_argument('--execute',action='store_true')
+    p.add_argument('--external-textures',action='store_true',help='Repack approved GLBs losslessly; no Blender or image encoding')
     p.add_argument('--tag',default='match-20261010-1')
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target forwarded to compress.py')
@@ -46,6 +47,12 @@ def main():
     if not a.tag or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.tag):
         p.error('tag must contain only letters, digits, dash, underscore')
     base=ROOT/'exports/hexa-studio-blender-20261010'
+    if a.external_textures:
+        if a.face_source != 'studio' or a.container_color is not None:
+            p.error('External textures preserves approved materials; colour changes are not allowed')
+        from shared_texture_batch import run_batch
+        run_batch(ROOT, HERE, base, parts, finishes, a.tag, a.execute, a.max_bytes)
+        return
     jobs=[]
     for part in parts:
         for finish in finishes:

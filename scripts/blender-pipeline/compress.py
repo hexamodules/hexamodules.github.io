@@ -6,6 +6,8 @@ import json
 import struct
 import subprocess
 import sys
+import tempfile
+from external_textures import read_glb, save_external, image_bytes, ao_images
 from pathlib import Path
 
 
@@ -44,6 +46,7 @@ def atlas_info(path):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('input');p.add_argument('output')
+    p.add_argument('--external-textures', action='store_true', help='Keep WebP bytes; extract shared images, retain embedded AO')
     p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor')
     p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target in bytes (default: 4000000); excess only warns')
     a=p.parse_args()
@@ -55,8 +58,38 @@ def main():
     temp=out.with_name(out.stem+'-webp.glb')
     report=out.with_suffix('.compression.json')
     furniture=a.mode=='furniture-draft'
-    if out.exists() or temp.exists() or (furniture and report.exists()):
+    if out.exists() or temp.exists() or ((furniture or a.external_textures) and report.exists()):
         raise SystemExit('Choose a new output name')
+    if a.external_textures:
+        if furniture: atlas_info(src)
+        doc, binary = read_glb(src.read_bytes())
+        # Validate before any mesh transform: this mode must never encode images.
+        from external_textures import externalize
+        externalize(src.read_bytes(), src.parent)
+        if 'EXT_meshopt_compression' in doc.get('extensionsUsed', []):
+            # Approved assets are already compressed; a second quantization could
+            # change the appearance, so only relocate their existing payloads.
+            result = save_external(src, out)
+        else:
+            out.parent.mkdir(parents=True, exist_ok=True)
+            with tempfile.TemporaryDirectory(prefix='meshopt-', dir=out.parent) as work:
+                packed = Path(work)/'meshopt.glb'
+                subprocess.run([str(node),str(cli),'meshopt',str(src),str(packed),
+                                '--quantize-position','16','--quantize-normal','12',
+                                '--quantize-texcoord','14'],check=True)
+                after, data = read_glb(packed.read_bytes())
+                for indices, other in [(range(len(doc.get('images', []))), range(len(after.get('images', [])))),
+                                       (ao_images(doc), ao_images(after))]:
+                    if {image_bytes(doc,binary,i,src.parent) for i in indices} != {image_bytes(after,data,i,packed.parent) for i in other}:
+                        raise ValueError('Meshopt changed image bytes')
+                result = save_external(packed, out)
+        if furniture: result.update(atlas_info(out))
+        result.update(target_bytes=a.max_bytes, target_met=result['cold_bytes']<=a.max_bytes,
+                      meshopt_reused='EXT_meshopt_compression' in doc.get('extensionsUsed', []))
+        with report.open('x') as stream:
+            stream.write(json.dumps(result,indent=2)+'\n')
+        print(json.dumps(result))
+        return
     if furniture:atlas_info(src)
     quality=80 if furniture else 82
     subprocess.run([str(node),str(cli),'webp',str(src),str(temp),'--quality',str(quality)],check=True)
