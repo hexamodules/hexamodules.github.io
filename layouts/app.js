@@ -620,7 +620,7 @@ async function ensurePins(){
   bedMattressEnabled,frontMattressEnabled
  });
 }
-function openReplacement(id){pinStudio?.openForModel(id);}
+function openReplacement(id){if(document.documentElement.dataset.studioStep==='interior')pinStudio?.openForModel(id);}
 const shareLayout=document.createElement('button');shareLayout.id='share-layout';shareLayout.type='button';shareLayout.className='text-button';shareLayout.textContent='URLを共有';$('#pane-review').append(shareLayout);
 const shareStatus=document.createElement('p');shareStatus.setAttribute('role','status');$('#pane-review').append(shareStatus);
 shareLayout.onclick=async()=>{const url=new URL(urlFor(),location.href);url.searchParams.set('complete','1');try{await navigator.clipboard.writeText(url.href);shareStatus.textContent='URLをコピーしました';studioEvent('share_url');}catch{shareStatus.textContent=url.href;}};

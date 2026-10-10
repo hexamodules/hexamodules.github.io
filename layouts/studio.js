@@ -65,6 +65,7 @@ export function initStudio({getLocation=()=> 'jp',hasRequiredFloor=()=>true,hasE
  window.addEventListener('studio-locale-change',()=>syncLocation());
  $('#tab-interior').lastChild.textContent='レイアウト';
  syncLocation(true);
+ new MutationObserver(()=>{if(!document.documentElement.classList.contains('intro-active'))trackStudioStep(tabs[active]);}).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
 }
 
 export function updateStudio(values){
