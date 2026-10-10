@@ -23,8 +23,8 @@ export function createAssetLoader(){
   if([...jobs.values()].every(j=>j.finished))jobs.clear();
   const job={done:0,total:1,finished:false};jobs.set(key,job);progress();return job;
  }
- async function load(key,revision='',metadata=null){
-  const compressed=vehicleKeys.has(key),id=compressed?`${key}.${tier}`:key,job=begin(key);
+ async function load(key,revision='',metadata=null,vehicleTier=tier){
+  const compressed=vehicleKeys.has(key),id=compressed?`${key}.${vehicleTier}`:key,job=begin(key);
   try{
    manifestPromise??=fetch('assets/lightweight/manifest.json').then(r=>{if(!r.ok)throw Error('Asset manifest unavailable');return r.json()}).catch(e=>{manifestPromise=null;throw e});
    const manifest=await manifestPromise,info=manifest[id];
