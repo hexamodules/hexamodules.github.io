@@ -2,6 +2,8 @@ import {vehicleTranslations} from './vehicle-language.js?v=2';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 // UI-only localization: the same model, configuration and camera stay in place.
 const pairs=[
+['人の目安 170cm','Human scale 170cm'],['横にするとワイドで見られます','Rotate your phone for a wider view'],['幅 × 奥行 × 高さ:','Width × depth × height:'],['選択肢','Options'],['これと入れ替える','Replace this with'],['外す','Remove'],['色を変える','Change colour'],['パネルのみに変更','Use panels only'],
+
 ['参考構成','Reference configuration'],
 ['完成したあなたの一台','Your completed van'],['完成車を見る →','See your van →'],['← 編集に戻る','← Back to editing'],['あなたの旅を、この一台から。','Your journey starts here.'],['コンタクト','Contact'],['完成車を見る角度','Explore your van'],['ドラッグで回転 · あなたの一台を、いろんな角度から。','Drag to rotate · Explore your van from every angle.'],
 ['バックドアとスライドドアが開いています','The tailgate and sliding door are open'],['後ろのドアを閉じながら、助手席ドアを開いています','Closing the rear access doors while opening the front passenger door'],['助手席ドアが開いています','The front passenger door is open'],['助手席ドアを閉じています','Closing the front passenger door'],['バックドアを閉じています','Closing the tailgate'],['助手席側のスライドドアを開いています','Opening the passenger-side sliding door'],['スライドドアを閉じています','Closing the sliding door'],['あなたの一台が、走り出します','Your van is ready for the journey'],['完成したレイアウトです。ドラッグで回してご覧ください。','Your layout is ready. Drag to explore.'],['車体を準備しています','Preparing your vehicle'],['完成車を準備しています','Preparing your van'],['保存後の表示を読み込めませんでした。組み合わせは保持しています。','The final preview could not load. Your configuration is still here.'],['画像を保存できませんでした。もう一度お試しください。','The image could not be saved. Please try again.'],

@@ -1,3 +1,4 @@
+import {createStudioScale} from './studio-scale.js';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
@@ -128,6 +129,7 @@ const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,preserveDrawi
 const visualMaterials=createVisualMaterials(renderer,scene);
 const studioEnvironment=scheduleStudioEnvironment(renderer,scene,()=>{needsFrame=true});
 const studioShadow=contactShadow(scene);
+const studioScale=createStudioScale({scene,stage:$('.stage'),onChange:()=>{needsFrame=true}});
 const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
  needsFrame=true;
  // Publish only the currently visible camera so a chosen view can be reused accurately.
@@ -403,7 +405,7 @@ const mattressControls=createMattressControls({getState:()=>state,getLanguage,on
 const iSeatControls=createISeatControls({getState:()=>state,getLanguage,onChange:patch=>apply({...state,...patch}).catch(console.error),onSlidePreview:slide=>{state=normalizeISeat({...state,iSeatSlide:slide});iSeatVisuals.update(scene.getObjectByName('i-seat'),state);needsFrame=true}});
 function imageFor(k,finish=state.finish){if(k==='i-seat')return 'assets/iseat/forward.webp';if(k==='seat')return 'patterns/seat-base.webp?v=front-fit-6';let m=modules[k];return `../assets/${k}-${finish}-${m.scenes[0].key}.webp`}
 function option(k,chosen,note=''){
- const img=k==='none'?'<span class="seat-icon">—</span>':`<img src="${imageFor(k)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`;
+ const img='';
  const button=`<button class="option ${chosen===k?'active':''}" data-key="${k}" aria-pressed="${chosen===k}">${img}<span><span class="name">${name(k)}</span>${constructionBadge(modules[k])}${note?`<small>${note}</small>`:''}</span><span class="check">✓</span></button>`;
  if(chosen!==k)return button;
  const mattress=iSeatControls.inline(k)||mattressControls.inline(k),details=moduleDetails.inline(k);
@@ -424,20 +426,20 @@ function configureUI(){
  $('#ceiling-view').hidden=!ceilingEnabled();
  $('#ceiling-view-help').hidden=!ceilingEnabled();
  $('#ceiling-color-section').hidden=!ceilingEnabled();
- $('#ceiling-color-options').innerHTML=ceilingPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.ceiling===c.value?'active':''}" data-ceiling-color="${c.value}" aria-pressed="${state.ceiling===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="" width="1000" height="1000"><span>${c.label}</span></button>`).join('');
+ $('#ceiling-color-options').innerHTML=ceilingPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.ceiling===c.value?'active':''}" data-ceiling-color="${c.value}" aria-pressed="${state.ceiling===c.value}"><span>${c.label}</span></button>`).join('');
  const panelOn=panelEnabled(),panelFinish=panelColor(),wallColor=WALL_COLORS[panelFinish];
  $$('[data-wall-choice]').forEach(b=>{const on=b.dataset.wallChoice===wallChoice();b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
  $('#wall-options').style.setProperty('--wall-finish-color',`rgb(${(wallColor.web_rgb||wallColor.rgb).join(',')})`);
  $('#wall-options').style.setProperty('--panel-finish-color',`rgb(${(wallColor.web_rgb||wallColor.rgb).join(',')})`);
  $('#wall-color-section').hidden=!panelOn;
- $('#wall-color-options').innerHTML=wallPalette.colors.map(c=>`<button type="button" class="wall-color-option ${panelOn&&panelFinish===c.value?'active':''}" data-wall-color="${c.value}" aria-pressed="${panelOn&&panelFinish===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="${c.label}の合板見本" width="220" height="220"><span>${c.label}</span></button>`).join('');
+ $('#wall-color-options').innerHTML=wallPalette.colors.map(c=>`<button type="button" class="wall-color-option ${panelOn&&panelFinish===c.value?'active':''}" data-wall-color="${c.value}" aria-pressed="${panelOn&&panelFinish===c.value}"><span>${c.label}</span></button>`).join('');
  $('#panel-inclusion-help').hidden=!panelOn;
  $('#panel-inclusion-help').textContent=wallEnabled()?'壁面板張り仕上げには、同色のカラーパネルも付きます。':'窓下3枚のパネルだけを取り付けます。';
  $('#wall-view').hidden=!wallEnabled();$('#wall-view-help').hidden=!wallEnabled();
  $('#panel-view').hidden=!panelOn;$('#tailgate-view').hidden=!panelOn;
  $('#panel-view').textContent=wallEnabled()?'カラーパネルを見る':'カラーパネル3枚を見る';
  // Flooring is selected directly from the five samples, without an enable card.
- $('#floor-color-options').innerHTML=floorPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.floor===c.value?'active':''}" data-floor-color="${c.value}" aria-pressed="${state.floor===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="" width="${c.image_width}" height="${c.image_height}"><span>${c.label}</span></button>`).join('');
+ $('#floor-color-options').innerHTML=floorPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.floor===c.value?'active':''}" data-floor-color="${c.value}" aria-pressed="${state.floor===c.value}"><span>${c.label}</span></button>`).join('');
  $('#floor-view').hidden=!floorEnabled();updateFloorRequirement();
  const rows=[['前側',state.front],['ベッド',state.bed],['サイド',state.cab]];$('#selection-summary').innerHTML=`<div class="selection-row" id="vehicle-compatibility-summary"><span>対応車種</span><b><span>${vehicleName(state)}</span><br> <span>標準ボディ（ナロー）・標準ルーフ・5ドア専用</span></b></div>${getStudioLocation().id==='au'?`<div class="selection-row"><span>ロケーション</span><b id="selection-location">未選択</b></div>`: ''}`+rows.map(([label,k])=>`<div class="selection-row"><span>${label}</span>${modules[k]?`<div class="selection-module"><a href="${modules[k].external_url||`../${k}.html`}" ${modules[k].external_url?'target="_blank" rel="noopener noreferrer"':''}>${name(k)} ↗</a> ${constructionBadge(modules[k])}</div>`:`<b>${name(k)}</b>`}</div>`).join('')+`<div class="selection-row"><span>仕上げ</span><b>${state.finish==='black'?'ヘキサ合板':'バーチ合板'}</b></div>`;
  $('#selection-summary').insertAdjacentHTML('beforeend',mattressControls.summary()+iSeatControls.summary());
@@ -553,7 +555,7 @@ async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVer
  if(ui&&((!airconEnabled()&&activeView==='aircon')||(!panelEnabled()&&['panels','tailgate'].includes(activeView))||(!panelEnabled()&&!state.tailgateLights&&activeView==='tailgate-light')||(!ceilingEnabled()&&!twiCeilingEnabled(state)&&activeView==='ceiling')||(!floorEnabled()&&activeView==='floor')))setView('rear');
  updateInteriorPresentation();
  updateFitDisplay();
- if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');renderer.render(scene,camera);return {keys,fit,bedLength:bedLength()}}
+ if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');studioScale.dimensions(models[0]?.userData.data?.bounds);renderer.render(scene,camera);return {keys,fit,bedLength:bedLength()}}
 const checkMarkers=new THREE.Group();scene.add(checkMarkers);
 function updateFitDisplay(){
  if(state.front==='i-seat'){$('#geometry-check').hidden=false;$('#geometry-check').classList.remove('has-issues');$('#check-title').textContent=getLanguage()==='en'?'i seat · installation':'i seat の取り付けについて';$('#check-details').textContent=iSeatInstallationNote(getLanguage());$('#toggle-checks').hidden=true;checkMarkers.clear();updateReviewIndicator(false);return}
