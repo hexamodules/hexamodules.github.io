@@ -64,6 +64,9 @@ export function createISeatVisuals({renderer,onTextureReady}){
   if(!group)return;
   const color=iSeatColor(state),m=fabric(color.id);
   group.userData.iSeatPose=state.iSeatPose;group.userData.iSeatColor=color.id;group.userData.iSeatSlide=iSeatSlide(state);
-  for(const node of group.children){node.position.z=node.userData.sliding?iSeatSlide(state):0;node.visible=node.userData.pose===state.iSeatPose;for(const mesh of node.children){if(node.userData.role==='fabric')mesh.material=m.material;else if(node.userData.role==='seam')mesh.material=m.seam;}}
+  for(const node of group.children){node.position.z=node.userData.sliding?iSeatSlide(state):0;node.visible=node.userData.pose===state.iSeatPose;for(const mesh of node.children){const selected=node.userData.role==='fabric'?m.material:node.userData.role==='seam'?m.seam:null;if(!selected)continue;if(mesh.userData.blenderFurniture){
+   // Keep each GLB's UV1 occlusion when the shared upholstery changes colour.
+   mesh.onBeforeRender=()=>{const target=mesh.material;if(target.map!==selected.map){target.map=selected.map;target.needsUpdate=true}target.color.copy(selected.color);target.roughness=selected.roughness;target.metalness=0;};
+  }else mesh.material=selected;}}
  }};
 }

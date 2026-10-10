@@ -71,3 +71,6 @@ html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!
 .pin-hint{bottom:calc(var(--place-bar-height) + 20px);right:12px}
 .pin-popup.from-place{position:fixed;right:auto!important;bottom:auto!important;border-radius:16px;width:320px;max-width:calc(100vw - 24px);padding-bottom:0}
 @media(max-width:1000px){.place-toolbar button[data-place]{font-size:10px;padding:5px 7px;min-height:34px}.view-toolbar.place-toolbar{gap:2px;padding:3px;bottom:8px}}
+
+/* The landscape workspace is block layout: auto height collapses the completed view. */
+@media(max-width:850px) and (orientation:landscape){html.outro-active[data-studio-step] .stage{height:100%}}

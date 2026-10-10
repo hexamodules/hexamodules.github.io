@@ -23,7 +23,7 @@ export function createAssetLoader(){
   if([...jobs.values()].every(j=>j.finished))jobs.clear();
   const job={done:0,total:1,finished:false};jobs.set(key,job);progress();return job;
  }
- async function load(key,revision=''){
+ async function load(key,revision='',metadata=null){
   const compressed=vehicleKeys.has(key),id=compressed?`${key}.${tier}`:key,job=begin(key);
   try{
    manifestPromise??=fetch('assets/lightweight/manifest.json').then(r=>{if(!r.ok)throw Error('Asset manifest unavailable');return r.json()}).catch(e=>{manifestPromise=null;throw e});
@@ -31,7 +31,7 @@ export function createAssetLoader(){
    if(!info)throw Error(`Missing asset manifest: ${id}`);
    job.total=info.json+(compressed&&gzip?info.gzip:info.binary);
    const base=compressed?'assets/lightweight/':'assets/';
-   const data=JSON.parse(new TextDecoder().decode(await read(`${base}${id}.mesh.json${revision}`,job)));
+   const data=metadata||JSON.parse(new TextDecoder().decode(await read(`${base}${id}.mesh.json${revision}`,job)));
    let buffer=await read(base+data.binary+(compressed&&gzip?'.gz':''),job);
    if(compressed){
     if(gzip){const bytes=new Uint8Array(buffer);if(bytes[0]===31&&bytes[1]===139)buffer=await new Response(new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer()}

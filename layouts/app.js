@@ -1,4 +1,3 @@
-import {loadBlenderFloor} from './blender-floor.js';
 import {moduleNames,moduleName} from './module-names.js?v=20261010';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
@@ -11,7 +10,7 @@ import {initRetailerSimulation} from './retailer-simulation.js?v=1';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {createNewVehicleControls} from './new-vehicle-controls.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
-import {createISeatControls,createISeatVisuals} from './i-seat.js?v=20261010-names';
+import {createISeatControls,createISeatVisuals} from './i-seat.js?v=20261010-furniture-glb';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
 import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261005';
 import {selectedDealer} from './dealer-preview.js?v=20261005-procurement';
@@ -140,7 +139,7 @@ const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient)
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=false;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
-const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-light');
+const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-furniture');
 const assetLoader=createAssetLoader();
 const textureJobs=new Map();
 function loadTexture(url){if(!textureJobs.has(url)){const pending=sharedTexture(url);textureJobs.set(url,pending);pending.catch(()=>textureJobs.delete(url));}return textureJobs.get(url)}
@@ -219,6 +218,16 @@ function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colo
  visualMaterials.material(mat,{woodKind,edge,metal,isVehicle,switchable,key});
  return mat;}
 // Loader-owned resources are released after a completed placement only.
+const blenderFurnitureKeys=new Set(['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-seat']);
+function furnitureVersion(key){return blenderFurnitureKeys.has(key)?state.finish+':'+(key==='aluminum-bed'&&(state.frontExpanded||state.rearExpanded||state.storage)?'motion':'rest'):null}
+function releaseFurniture(key){
+ const entry=loadedModels.get(key);if(!entry)return;
+ entry.group.traverse(n=>n.geometry?.dispose());scene.remove(entry.group);
+ for(let i=swappable.length-1;i>=0;i--)if(entry.materials.has(swappable[i]))swappable.splice(i,1);
+ for(const mat of entry.materials)mat.dispose();
+ for(const texture of entry.textures||[]){texture.dispose();texture.source?.data?.close?.()}
+ loadedModels.delete(key);cache.delete(key);
+}
 const loadedModels=new Map();
 let blenderFloorDisabled=false;
 function releaseFloorModel(){
@@ -234,15 +243,19 @@ const assetReleaseObserver=new MutationObserver(()=>{
  for(const [key,{group,materials}] of loadedModels){
   if(keep.has(key)||assetLoader.isVehicle(key)||(!group.userData.moduleId&&key!=='seat'&&key!==FLOOR.key))continue;
   if(key===FLOOR.key){releaseFloorModel();continue;}
-  // Shared worktop/upholstery/wood textures and materials belong to their factories.
-  group.traverse(node=>node.geometry?.dispose());scene.remove(group);
-  for(let i=swappable.length-1;i>=0;i--)if(materials.has(swappable[i]))swappable.splice(i,1);
-  for(const mat of materials)mat.dispose();
-  loadedModels.delete(key);cache.delete(key);
+  releaseFurniture(key);
  }
 });
 assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['data-assets']});
-async function loadModel(key){if(cache.has(key))return cache.get(key);if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{const loaded=(key===FLOOR.key&&!blenderFloorDisabled?await loadBlenderFloor(assetLoader,key):null)||await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"");const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;group.userData.blenderFloor=!!loaded.geometries;
+async function loadModel(key){const version=furnitureVersion(key);if(cache.has(key)){const pending=cache.get(key),existing=await pending;if(cache.get(key)!==pending)return loadModel(key);if(!version||existing.userData.furnitureVersion===version)return existing;releaseFurniture(key);}if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{
+ let furnitureData;
+ if(version&&!version.endsWith(':motion')){
+  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010');
+  const result=await loadBlenderFurniture(assetLoader,key,version.split(':')[0]);
+  furnitureData=result?.data;
+  if(result?.group){result.group.userData.furnitureVersion=version;scene.add(result.group);result.finish();loadedModels.set(key,result);return result.group}
+ }
+ const loaded=(key===FLOOR.key&&!blenderFloorDisabled?await (await import('./blender-floor.js')).loadBlenderFloor(assetLoader,key):null)||await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"",furnitureData);const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.furnitureVersion=version;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;group.userData.blenderFloor=!!loaded.geometries;
  if(loaded.geometries)for(const mat of Object.values(mats))if(mat.userData.floorFinish){mat.userData.blenderFloor=true;mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=>'blender-floor-tile-v1'}
  for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=loaded.geometries?.get(b.name)?.clone()||new THREE.BufferGeometry();if(!loaded.geometries){g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));}g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);if(/PFS BOX23L/.test(b.path||'')&&/^ボディ/.test(b.name)){mesh.material=mesh.material.clone();mesh.material.color.set('#969594');mesh.material.metalness=0;mesh.material.roughness=.6;mesh.material.envMapIntensity=.35;}mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}if(!loaded.geometries)visualMaterials.mesh(mesh,b.bounds);mesh.userData.blenderFloor=!!loaded.geometries;node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set([...Object.values(mats),...group.children.flatMap(n=>n.children.map(m=>m.material))])});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
 
@@ -641,7 +654,7 @@ function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hi
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-places';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-furniture';document.head.append(css);
  const {createPinStudio}=await import('./studio-pins.js?v=20261010-load-fix');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
