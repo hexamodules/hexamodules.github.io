@@ -1,7 +1,7 @@
 import {trackStudioStep} from './analytics.js?v=20261010-events';
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const allTabs=['interior','furniture','equipment','electrical','vehicle','shipping','review'];
-const labels={interior:'内装',furniture:'家具',equipment:'装備',electrical:'電装',vehicle:'車体',shipping:'Shipping',review:'確認'};
+const allTabs=['interior','equipment','electrical','vehicle','shipping','review'];
+const labels={interior:'レイアウト',furniture:'レイアウト',equipment:'装備',electrical:'電装',vehicle:'車体',shipping:'Shipping',review:'確認'};
 let tabs=allTabs.filter(key=>key!=='shipping');
 let active=0;
 let refreshRequiredFloor=()=>{};
@@ -24,8 +24,11 @@ export function initStudio({getLocation=()=> 'jp',hasRequiredFloor=()=>true,hasE
   if(!hasRequiredFloor()&&tabs[active]!=='interior')active=tabs.indexOf('interior');
   $$('[data-studio-tab]').forEach(b=>{const on=b.dataset.studioTab===tabs[active];b.setAttribute('aria-selected',on);b.tabIndex=on?0:-1;if(on&&focus)b.focus()});
   allTabs.forEach(key=>$('#pane-'+key).hidden=key!==tabs[active]);
+  $('#pane-furniture').hidden=true;$('#tab-furniture').hidden=true;
+  document.documentElement.dataset.studioStep=tabs[active];
+  window.dispatchEvent(new CustomEvent('studio-step-change',{detail:tabs[active]}));
   $('.panel-scroll').scrollTop=0;$('#studio-back').hidden=active===0;$('#studio-next').hidden=active===tabs.length-1;
-  $('#studio-next').textContent=(labels[tabs[active+1]]||'確認')+'へ →';$('#step-position').textContent=`${String(active+1).padStart(2,'0')} / ${String(tabs.length).padStart(2,'0')}`;
+  $('#studio-next').textContent=active===0?'レイアウトを確定して次へ':(labels[tabs[active+1]]||'確認')+'へ →';$('#step-position').textContent=`${String(active+1).padStart(2,'0')} / ${String(tabs.length).padStart(2,'0')}`;
   syncRequirements();trackStudioStep(tabs[active]);
  };
  refreshRequiredFloor=syncRequirements;
@@ -60,6 +63,7 @@ export function initStudio({getLocation=()=> 'jp',hasRequiredFloor=()=>true,hasE
   select(Math.max(0,tabs.indexOf(tabs.includes(current)?current:'review')));
  };
  window.addEventListener('studio-locale-change',()=>syncLocation());
+ $('#tab-interior').lastChild.textContent='レイアウト';
  syncLocation(true);
 }
 

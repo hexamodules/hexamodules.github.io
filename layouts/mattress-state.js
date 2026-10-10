@@ -9,10 +9,10 @@ export const MATTRESS_COLORS=[
 ].map(c=>({...c,image:`assets/mattress-colors/${c.id}.jpg`}));
 export const mattressColor=(s,slot)=>MATTRESS_COLORS.find(c=>c.id===s[slot+'MattressColor'])||MATTRESS_COLORS[1];
 export const mattressIncluded=s=>s.bed==='two-side-bed';
-export const bedMattressEnabled=s=>MATTRESS_BEDS.includes(s.bed)&&(mattressIncluded(s)||s.bedMattress===true);
+export const bedMattressEnabled=s=>MATTRESS_BEDS.includes(s.bed)&&(s.bedMattress===true||(mattressIncluded(s)&&s.bedMattress===undefined));
 export const frontMattressEnabled=s=>s.front==='front-module'&&s.frontMattress===true;
 export function normalizeMattresses(s){
- return {...s,bedMattress:MATTRESS_BEDS.includes(s.bed)&&!mattressIncluded(s)&&s.bedMattress===true,frontMattress:frontMattressEnabled(s),bedMattressColor:mattressColor(s,'bed').id,frontMattressColor:mattressColor(s,'front').id};
+ return {...s,bedMattress:bedMattressEnabled(s),frontMattress:frontMattressEnabled(s),bedMattressColor:mattressColor(s,'bed').id,frontMattressColor:mattressColor(s,'front').id};
 }
 export function mattressSpecification(s){
  return [bedMattressEnabled(s)?{module:s.bed,slot:'bed',included:mattressIncluded(s)}:null,frontMattressEnabled(s)?{module:s.front,slot:'front',included:false}:null].filter(Boolean).map(item=>({...item,thickness_mm:80,core:'urethane',cover:'fabric',color:mattressColor(s,item.slot).id,price_status:item.included?'included':'reference_price'}));

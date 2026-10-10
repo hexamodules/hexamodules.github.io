@@ -1,5 +1,5 @@
 // Only fixed choices enter analytics; never read forms, prices, receipts or shared URLs.
-const steps={interior:'内装',furniture:'家具',equipment:'装備',electrical:'電装',vehicle:'車体',shipping:'配送',review:'確認'};
+const steps={interior:'レイアウト',furniture:'レイアウト',equipment:'装備',electrical:'電装',vehicle:'車体',shipping:'配送',review:'確認'};
 const colors=['beige','light-green','light-brown','dark-brown','black'];
 const modules=['seat','i-seat','front-module','aluminum-front-kitchen','slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed','side-cabinet','simple-side-cabinet','active-side-cabinet','aluminum-side-cabinet'];
 // [state field, step, item, permitted values]. No arbitrary state is copied or serialized.
@@ -43,7 +43,7 @@ export function studioEvent(name,choice){
   let params={vehicle:vehicle==='super-gl'?'hiace-super-gl':vehicle==='dx'?'hiace-dx':'hiace'};
   if(legacy.includes(name))params.language=lang;
   else if(name==='studio_step'){
-   if(!Object.hasOwn(steps,choice?.step))return;
+   if(!['interior','equipment','electrical','vehicle','review'].includes(choice?.step))return;
    params.step=steps[choice.step];
   }else if(['studio_select','studio_deselect'].includes(name)){
    const rule=allowed.get(choice?.item);
