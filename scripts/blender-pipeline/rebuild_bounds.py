@@ -16,12 +16,12 @@ PARTS=['front-module','aluminum-front-kitchen','i-seat','seat','side-cabinet',
 FRONT_REARS=[f'front-module-rear-{n}' for n in (20,114,130,140)]
 ACCESSORIES={'front-module':FRONT_REARS, 'two-side-bed':['centre-mattresses'], 'lounge-bed':['lounge-fillers']}
 
-def selected_parts(value):
+def selected_parts(value, include_accessories=True):
     parts=PARTS.copy() if value.strip()=='all' else list(dict.fromkeys(p.strip() for p in value.split(',')))
     allowed=PARTS+[p for items in ACCESSORIES.values() for p in items]
     if any(p not in allowed for p in parts):
         raise ValueError('--parts must be all or comma-separated: '+','.join(allowed))
-    for part in parts.copy():
+    for part in parts.copy() if include_accessories else []:
         for accessory in ACCESSORIES.get(part,[]):
             if accessory not in parts:parts.append(accessory)
     return parts
@@ -35,12 +35,13 @@ def main():
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target forwarded to compress.py')
     p.add_argument('--parts',default=','.join(DEFAULT_PARTS),help='all or comma-separated parts: '+','.join(PARTS))
+    p.add_argument('--no-accessories',action='store_true',help='Build only the explicitly selected parts')
     p.add_argument('--finishes', default='birch,hexa', help='Comma-separated finishes: birch,hexa')
     a=p.parse_args()
     finishes=list(dict.fromkeys(f.strip() for f in a.finishes.split(',')))
     if any(f not in ('birch','hexa') for f in finishes):p.error('--finishes must contain only birch,hexa')
     if a.max_bytes<=0:p.error('--max-bytes must be positive')
-    try:parts=selected_parts(a.parts)
+    try:parts=selected_parts(a.parts, include_accessories=not a.no_accessories)
     except ValueError as error:p.error(str(error))
     if not a.tag or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.tag):
         p.error('tag must contain only letters, digits, dash, underscore')

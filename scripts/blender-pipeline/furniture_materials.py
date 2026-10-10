@@ -139,9 +139,38 @@ def linear_color(color):
     return tuple(v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4 for v in rgb)+(1,)
 
 
+# Reviewed source body names: do not treat storage floors or horizontal shelf
+# supports as sleeping surfaces. Several source bodies have no descriptive name.
+WOOD_BED_TOPS = {
+    'slide-bed': {'ボディ6 (1)', 'ボディ67'},
+    'lounge-slide-bed': {
+        'Fixed comb top - rounded fingers R20',
+        'Lift-out hatch 1 - 2mm clearance',
+        'Sliding comb top - rounded fingers',
+        'Hexa fixed rear top strip -85mm',
+        'Hexa hinged top A -524.5x490x15',
+        'Hexa hinged top B -524.5x490x15',
+    },
+    'lounge-bed': {'天板', *(f'ボディ{i} (1)' for i in range(44, 50))},
+    'two-side-bed': {'ボディ69', 'ボディ78', 'ボディ214', 'ボディ215'},
+    'lounge-fillers': {
+        'Bed side filler positive - 115x15mm',
+        'Bed side filler negative - 115x15mm',
+    },
+}
+
+
 def bed_top_board(model_key, body, kind):
     """Bed-only wood tops; source bounds are Y-up, including unnamed slats."""
-    if model_key != 'aluminum-bed' or kind != 'plywood':
+    if kind != 'plywood':
+        return False
+    if model_key in WOOD_BED_TOPS:
+        bounds = body.get('bounds')
+        if body.get('name') not in WOOD_BED_TOPS[model_key] or not bounds:
+            return False
+        spans = [bounds[1][i] - bounds[0][i] for i in range(3)]
+        return 0 < spans[1] < min(spans[0], spans[2])
+    if model_key != 'aluminum-bed':
         return False
     name = body.get('name', '')
     if re.search(r'天板|すのこ|(?:^|[\W_])(?:top|slat)s?(?:$|[\W_])', name, re.I):
