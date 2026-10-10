@@ -21,6 +21,8 @@ def main():
     p.add_argument('--ratio', type=float, default=.2)
     p.add_argument('--units', choices=['mm','m'], default='mm')
     p.add_argument('--mode', choices=['floor','furniture-draft'], default='floor')
+    p.add_argument('--skip-ao', action='store_true')
+    p.add_argument('--skip-export', action='store_true')
     p.add_argument('--dry-run', action='store_true')
     a = p.parse_args()
     finishes = {f['value']:f for f in json.loads((a.assets/'floor-finishes.json').read_text())['colors']}
@@ -36,6 +38,8 @@ def main():
            str(Path(__file__).with_name('pipeline.py')), '--', '--input', str(a.input.resolve()),
            '--output', str(a.output.resolve()), '--texture', str(texture.resolve()),
            '--ratio', str(a.ratio), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode]
+    for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
+        if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':
         for flag,name in [('--face-texture','birch-face.png'),('--edge-texture','birch-edge-15mm.png')]:
             if not (a.tiles/name).is_file():
@@ -47,10 +51,15 @@ def main():
         print(json.dumps({'command':cmd, 'tile_mm':tile_mm, 'blender_started':False},ensure_ascii=False,indent=2))
         return
     a.output.mkdir(parents=True, exist_ok=False)
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    (a.output/'blender-run.log').write_text(result.stdout+'\n'+result.stderr)
-    print(result.stdout,result.stderr)
-    sys.exit(0 if result.returncode == 0 else 1)
+    # Merge streams to preserve warning/STAGE order and keep a live crash log.
+    with (a.output/'blender-run.log').open('x') as log:
+        with subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1) as process:
+            for line in process.stdout:
+                log.write(line); log.flush()
+                print(line, end='', flush=True)
+            returncode = process.wait()
+        log.write(f'RUNNER: returncode={returncode}\n'); log.flush()
+    sys.exit(0 if returncode == 0 else 1)
 
 
 if __name__ == '__main__':

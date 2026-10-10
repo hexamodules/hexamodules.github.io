@@ -1,0 +1,6 @@
+PASS runner -> worker parser: []
+PASS runner -> worker parser: ['--skip-ao']
+PASS runner -> worker parser: ['--skip-ao', '--skip-export']
+PASS runner -> worker parser: ['--skip-export']
+PASS dry-run produced no output directory; Blender not started
+Existing test_mapping.py: 4 tests PASS

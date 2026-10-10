@@ -62,3 +62,13 @@ WebP品質82→Meshopt、位置16bit／法線12bit／UV14bit。元UVが[0,1]外�
 `validate.mjs`で圧縮前後GLBをデコードし、三角形数・メートル外形を比較できる。floor-input-referenceの圧縮で検証済み。AOやFBXを含む完成経路の成功を意味しない。
 
 サイトへモデルを組み込む処理は含まない。スタジオの元assetsには書き込まない。
+
+
+## SIGBUS切り分け（2026-10-10）
+
+`--skip-ao` はAO画像生成・AOノード・焼き・保存を省略する。UV1 Smart UVは残し、UV処理とAO処理を切り分ける。
+`--skip-export` はGLB出力を省略し、metrics.jsonのbytesはnullになる。両方の併用が可能。
+`STAGE: … BEGIN/END` で各処理を記録し、例外時はERROR、意図的な省略時はSKIPを表示する。
+run.pyは標準出力・標準エラーをまとめ、blender-run.logへ逐次保存する。最後のBEGINにENDがなければ停止候補。
+全実行／AOなし／AOと出力なしのコマンドは `exports/hexa-studio-blender-20261010/報告-SIGBUS-2026-10-10.md` を参照。
+今回のBlender実行はジョブズ担当。packによるSIGBUS解消は未確認。
