@@ -1,11 +1,8 @@
 // Optional furniture assets. Original CAD metadata controls placement and motion.
 // Replace <key>-birch.glb / <key>-hexa.glb in assets/blender; no size/hash manifest.
-// 2026-10-10 visual review: preserve original grain/fabric and appliance tone.
-// Both finishes are withheld; candidates remain on disk for a later review.
-const visualReviewHold=new Set(['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-seat']);
+// 2026-10-10: both finishes approved by the owner; validate each loaded asset.
 const unavailable=new Set();
 export async function loadBlenderFurniture(transport,key,finish){
- if(visualReviewHold.has(key))return null;
  const [{GLTFLoader},{MeshoptDecoder},THREE]=await Promise.all([
   import('./vendor/GLTFLoader.js'),import('./vendor/meshopt_decoder.module.js'),import('./vendor/three.module.js')]);
  const response=await fetch(`assets/${key}.mesh.json`);

@@ -280,7 +280,7 @@ assetReleaseObserver.observe($('#viewport'),{attributes:true,attributeFilter:['d
 async function loadModel(key){const version=furnitureVersion(key);if(cache.has(key)){const pending=cache.get(key),existing=await pending;if(cache.get(key)!==pending)return loadModel(key);if(!version||existing.userData.furnitureVersion===version)return existing;releaseFurniture(key);}if(Object.values(TWI_KEYS).includes(key)){const pending=Promise.resolve(twiVisuals.get(key));cache.set(key,pending);return pending}let promise=(async()=>{
  let furnitureData;
  if(version&&!version.endsWith(':motion')){
-  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-fidelity-review');
+  const {loadBlenderFurniture}=await import('./blender-furniture.js?v=20261010-owner-approved');
   const result=await loadBlenderFurniture(assetLoader,key,version.split(':')[0]);
   furnitureData=result?.data;
   if(result?.group){result.group.userData.furnitureVersion=version;scene.add(result.group);result.finish();loadedModels.set(key,result);return result.group}
