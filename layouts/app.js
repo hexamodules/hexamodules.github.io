@@ -138,7 +138,7 @@ const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new Orbit
  $('#viewport').dataset.cameraView=JSON.stringify({eye:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),fov:camera.fov,viewport:[renderer.domElement.clientWidth,renderer.domElement.clientHeight]});
 });
 const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient);const sun=new THREE.DirectionalLight(0xfff7e6,2.1);sun.position.set(-3200,7000,-3000);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);Object.assign(sun.shadow.camera,{left:-3300,right:3300,top:3300,bottom:-3300,near:100,far:14000});sun.shadow.bias=-.0003;sun.shadow.normalBias=1;scene.add(sun);const fill=new THREE.DirectionalLight(0xd7e2ec,.6);fill.position.set(3000,2500,5000);scene.add(fill);
-const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=true;scene.add(floor);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=false;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=0;scene.add(grid);
 const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-light');
