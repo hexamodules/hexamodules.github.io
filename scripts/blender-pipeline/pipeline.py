@@ -52,6 +52,7 @@ def run(a,source):
   dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio;dec.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=dec.name)
   if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
   grain=o.data.uv_layers[0];grain.name='UVMap0'
+  for extra in list(o.data.uv_layers)[1:]:o.data.uv_layers.remove(extra)
   # Preserve the source grain UVs; unwrap only the second AO channel.
   grain.active_render=True
   aoUV=o.data.uv_layers.new(name='AO');o.data.uv_layers.active=aoUV;aoUV.active_render=True
