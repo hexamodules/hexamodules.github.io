@@ -97,10 +97,27 @@ def linear_color(color):
     return tuple(v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4 for v in rgb)+(1,)
 
 
-def face_policy(material_key, materials, finish):
+def bed_top_board(model_key, body, kind):
+    """Bed-only wood tops; source bounds are Y-up, including unnamed slats."""
+    if model_key != 'aluminum-bed' or kind != 'plywood':
+        return False
+    name = body.get('name', '')
+    if re.search(r'天板|すのこ|(?:^|[\W_])(?:top|slat)s?(?:$|[\W_])', name, re.I):
+        return True
+    bounds = body.get('bounds')
+    if not bounds:
+        return False
+    spans = [bounds[1][i] - bounds[0][i] for i in range(3)]
+    # A vertical panel also has upward edge normals: require a horizontal plate.
+    return 0 < spans[1] < min(spans[0], spans[2])
+
+
+def face_policy(material_key, materials, finish, model_key='', body=None, kind=''):
     """Same material-name switch as app.js; a body name alone is not a switch."""
     name = materials.get(str(material_key), {}).get('name', str(material_key))
     switchable = bool(re.search(r'SKY Hexa plywood|Hexa lightweight - charcoal', name))
+    if finish == 'hexa' and bed_top_board(model_key, body or {}, kind):
+        switchable = False
     hexa = finish == 'hexa' and switchable
     toned = switchable or bool(re.search('birch', name, re.I))
     return dict(finish='hexa' if hexa else 'birch', switchable=switchable,

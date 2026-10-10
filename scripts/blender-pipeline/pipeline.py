@@ -469,7 +469,9 @@ def run(a,source):
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
    spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''))
-   policy=face_policy(label,meta.get('materials',{}),a.finish)
+   source_body=meta.get('bodies',[])[o['source_body_index']] if 'source_body_index' in o and 'bodies' in meta else {}
+   policy=face_policy(label,meta.get('materials',{}),a.finish,
+                      model_key=meta.get('key',''),body=source_body,kind=decision['kind'])
    preserve_face=a.face_source=='studio' and policy['finish']!='hexa'
    decisions[-1].update(face_policy=policy,face_source=a.face_source)
    decisions[-1].update(source_body_index=o.get('source_body_index'),source_part_index=o.get('source_part_index'),source_path=o.get('source_path',''),spec=spec,color_source=color_source,projection_origin_m=origin,projection_axes=axes)

@@ -18,7 +18,10 @@ def main():
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target forwarded to compress.py')
     p.add_argument('--parts',default=','.join(PARTS),help='Comma-separated parts: '+','.join(PARTS))
+    p.add_argument('--finishes', default='birch,hexa', help='Comma-separated finishes: birch,hexa')
     a=p.parse_args()
+    finishes=list(dict.fromkeys(f.strip() for f in a.finishes.split(',')))
+    if any(f not in ('birch','hexa') for f in finishes):p.error('--finishes must contain only birch,hexa')
     if a.max_bytes<=0:p.error('--max-bytes must be positive')
     parts=[part.strip() for part in a.parts.split(',')]
     if any(part not in PARTS for part in parts):p.error('--parts must contain only: '+','.join(PARTS))
@@ -28,7 +31,7 @@ def main():
     base=ROOT/'exports/hexa-studio-blender-20261010'
     jobs=[]
     for part in parts:
-        for finish in ['birch','hexa']:
+        for finish in finishes:
             source=ROOT/f'exports/hexa-public/layouts/assets/{part}.mesh.json'
             output=base/f'out-furn-{part}-{a.tag}-{finish}'
             if output.exists():p.error('Output already exists: '+str(output))
