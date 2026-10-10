@@ -55,11 +55,12 @@ export function createPinStudio(api){
   const toggle=(key,title,on,patch,disabled=false)=>group(key,title,[['on','あり',on,patch(true),null,disabled],['off','なし',!on,patch(false),null,disabled]]);
   toggle('mattress','マットレス',mattress,on=>({bedMattress:on,frontMattress:on,flat:on&&s.bed==='two-side-bed'}),!available);
   if(mattress){
-   const label=document.createElement('label'),select=document.createElement('select'),caption=document.createElement('span');label.className='pin-mattress-color';caption.textContent=t('マットレスの色');select.dataset.cardChoice='mattress-color';
-   for(const c of STUDIO_MATTRESS_COLORS){const option=document.createElement('option');option.value=c.id;option.textContent=getLanguage()==='en'?c.en:t(c.ja);select.append(option);}
+   const colors=document.createElement('div');colors.className='pin-mattress-color';colors.setAttribute('role','group');colors.setAttribute('aria-label',t('マットレスの色'));
    const current=s.bedMattress?s.bedMattressColor:s.frontMattressColor;
-   select.value=STUDIO_MATTRESS_COLORS.some(c=>c.id===current)?current:STUDIO_MATTRESS_COLORS[0].id;
-   select.onchange=()=>apply({bedMattressColor:select.value,frontMattressColor:select.value}).catch(console.error);label.append(caption,select);card.append(label);
+   for(const c of STUDIO_MATTRESS_COLORS){
+    const button=document.createElement('button'),dot=document.createElement('span');button.type='button';button.dataset.cardChoice='mattress-color-'+c.id;button.setAttribute('aria-label',getLanguage()==='en'?c.en:c.ja);button.setAttribute('aria-pressed',String(c.id===current));dot.className='pin-swatch';dot.style.background=c.hex;dot.setAttribute('aria-hidden','true');button.append(dot);
+    button.onclick=()=>apply({bedMattressColor:c.id,frontMattressColor:c.id}).catch(console.error);colors.append(button);
+   }card.append(colors);
   }
   if(s.vehicle!=='super-gl')toggle('ceilingLights','天井ダウンライト',s.ceilingLights,on=>({ceilingLights:on,...(on&&s.ceiling==='none'?{ceiling:'white-ash'}:{})}));
   else if(s.twiCeiling!=='none')for(const [key,title] of [['twiBarLights','天井バーライト'],['twiIndirectLights','間接照明']])toggle(key,title,s[key],on=>({[key]:on}));
@@ -79,7 +80,7 @@ export function createPinStudio(api){
    }else{
     for(const c of [...palettes[key]].sort((a,b)=>{const order=key==='floor'?['teak','oak','walnut','light-canvas','dark-canvas']:key==='wall'?['white','teffy','volcanic-gray']:['white-ash','walnut','black-cherry'];return order.indexOf(a.value)-order.indexOf(b.value);}))row(key==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[c.value]:c.label||c.name,key==='ceiling'?'天然木突板':key==='floor'?'選んだ床柄＋黒い樹脂ステップ':'リア運転席側 · 100mmピッチ＋カラーパネル',(key==='wall'&&s.wall==='none'?s.panel:s[key])===c.value,key==='wall'?(s.wall==='none'&&s.panel!=='none'?{panel:c.value}:{wall:c.value,panel:'auto'}):{[key]:c.value},swatches[c.value]);
     if(key==='wall')row('パネルのみ','窓下3枚・溝なし',s.wall==='none'&&s.panel!=='none',{wall:'none',panel:s.wall!=='none'?s.wall:s.panel!=='none'?s.panel:'white'});
-    row('なし','',s[key]==='none'&&(key!=='wall'||s.panel==='none'),key==='wall'?{wall:'none',panel:'none'}:{[key]:'none'});
+    if(key!=='floor')row('なし','',s[key]==='none'&&(key!=='wall'||s.panel==='none'),key==='wall'?{wall:'none',panel:'none'}:{[key]:'none'});
    }
   }else{
    const slot=key==='front'?'front':key==='left'?'cab':'bed';

@@ -45,7 +45,7 @@ html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!
 @media(max-height:600px) and (orientation:landscape){.pin-card-controls legend{width:103px;font-size:9px}.pin-card-controls button{padding:4px 6px;font-size:9px}.pin-hint{font-size:9px}}
 
 #studio-vehicle-compatibility{padding:8px 0;border-top:1px solid #eee;font-size:9px;color:#888}#studio-vehicle-compatibility strong{font-weight:400;font-size:9px}
-.pin-mattress-color{display:flex;align-items:center;gap:6px;font-size:10px;padding:3px 0}.pin-mattress-color select{min-width:0;flex:1;min-height:32px;font-size:10px;border:1px solid #ddd;border-radius:7px;background:#fff;padding:4px}
+.pin-mattress-color{display:flex;align-items:center;gap:2px;padding:3px 0}.pin-card-controls .pin-mattress-color button{width:40px;min-height:40px;padding:6px;border:0;border-radius:50%;background:transparent}.pin-card-controls .pin-mattress-color .pin-swatch{width:22px;height:22px}.pin-card-controls .pin-mattress-color button[aria-pressed=true] .pin-swatch{outline:1px solid #555;outline-offset:3px}
 .landscape-prompt,.pin-card-toggle{display:none}.landscape-prompt[hidden]{display:none!important}
 @media(pointer:coarse) and (max-width:850px) and (orientation:portrait){
  .landscape-prompt{display:flex;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:9;align-items:center;gap:10px;width:max-content;max-width:90%;padding:12px 40px 12px 16px;background:#ffffffe8;border:1px solid #ddd;border-radius:12px;color:#666;box-shadow:0 4px 20px #0001;pointer-events:none}
