@@ -8,6 +8,7 @@ from pathlib import Path
 from extract_tile import defaults
 from furniture_materials import load_rules
 from hexa_texture import studio_hexa_tile
+from match_textures import prepare
 
 
 def main():
@@ -17,6 +18,7 @@ def main():
     p.add_argument('--assets', type=Path, default=assets)
     p.add_argument('--tiles', type=Path, default=tiles)
     p.add_argument('--finish')
+    p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--texture', type=Path)
     p.add_argument('--tile-mm', type=float, nargs=2)
     p.add_argument('--blender', default='/Applications/Blender.app/Contents/MacOS/Blender')
@@ -34,7 +36,7 @@ def main():
     a.finish = a.finish or ('birch' if a.mode == 'furniture-draft' else 'oak')
     if a.mode == 'furniture-draft':
         if a.finish not in ('birch','hexa'): p.error('Furniture finish must be birch or hexa')
-        texture = a.texture or a.tiles/rules['textures']['birch_face']
+        texture = a.texture or (a.assets/'wood-grain.jpg' if a.face_source == 'studio' else a.tiles/rules['textures']['birch_face'])
         tile_mm = a.tile_mm or rules['mapping']['hexa_mm' if a.finish == 'hexa' else 'face_mm']
     else:
         finishes = {f['value']:f for f in json.loads((a.assets/'floor-finishes.json').read_text())['colors']}
@@ -53,10 +55,16 @@ def main():
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':
         cmd.extend(['--ao-atlas-size', str(a.ao_atlas_size), '--finish', a.finish])
-        for flag,name in [('--face-texture','birch-face.png'),('--edge-texture','birch-edge-15mm.png')]:
+        for flag,name in [('--edge-texture','birch-edge-15mm.png')]:
             if not (a.tiles/name).is_file():
                 p.error('Furniture tiles missing; extract with --furniture-source')
             cmd.extend([flag,str((a.tiles/name).resolve())])
+        for name in ['wood-grain.jpg','mattress-colors/light-green.jpg']:
+            if not (a.assets/name).is_file(): p.error('Studio texture missing: '+name)
+        cmd.extend(['--face-source',a.face_source,'--face-texture',str((a.output/'face-toned.png').resolve()),
+                    '--natural-face-texture',str((a.output/'face-natural.png').resolve()),
+                    '--raw-face-texture',str((a.output/'face-raw.png').resolve()),
+                    '--fabric-texture',str((a.output/'seat-fabric.png').resolve())])
     if a.mode == 'furniture-draft' and a.finish == 'hexa':
         hexa_source = a.texture or a.output/rules['textures']['hexa_source']
         if a.texture and not hexa_source.is_file(): p.error('Hexa tile missing')
@@ -67,6 +75,8 @@ def main():
         print(json.dumps({'command':cmd, 'tile_mm':tile_mm, 'blender_started':False},ensure_ascii=False,indent=2))
         return
     a.output.mkdir(parents=True, exist_ok=False)
+    if a.mode == 'furniture-draft':
+        prepare(a.assets,a.tiles,a.output,a.face_source)
     if a.mode == 'furniture-draft' and a.finish == 'hexa' and not a.texture:
         studio_hexa_tile().save(hexa_source, format='PNG')
     # Merge streams to preserve warning/STAGE order and keep a live crash log.

@@ -131,3 +131,27 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --tag reality-20
 
 `--execute`なしなら24コマンドを表示するだけ。再実行時は未使用のtagを指定。旧GLB・layoutsへの書込や採用処理は含まない。
 今回のBlender実生成・実容量・見た目は未検証。元色・AO・保護境界のBlenderなし検査はtest_reality.pyに追加。
+
+## 2026-10-10 元表示への色味合わせ
+
+`rebuild_bounds.py --execute --tag match-20261010-1` は既定で `--face-source studio`。
+元画面が使う `assets/wood-grain.jpg`（仕上げ見本の furniture-finish-birch.webp とは別）を使い、
+面の混色・濃淡・彩度・線形RGB倍率を画像へ一度だけ反映する。元UV0を維持し、
+Hexa切替対象は app.js と同じ材質名 `SKY Hexa plywood|Hexa lightweight - charcoal` のみ。
+切替対象でない天板は木目のまま。Hexa時の木目面は元画面と同じくバーチ補正なし。
+小口の既存写真と投影、AO UV1、形状・外形保護は維持。
+
+`--face-source tetsuya` は従来の実写切抜きを元木目画像のRGB累積ヒストグラムへ合わせ、
+同じ画面補正を適用する。こちらは従来の物理寸法による木目投影を維持する。
+色統計・画像参照元は各新規出力直下の `texture-match.json` に残す。
+元画像、tiles、layoutsには書き込まない。
+
+I-Seatは元画面の `assets/mattress-colors/light-green.jpg` を色と布目に使用し、
+元UV0を消去しない。縫い目は画像なしで元の線形倍率0.64を適用。
+冷蔵庫のgraphite材質は元meshのmetal_f0そのままでは元画面と異なるため、
+元画面のrgb(61,65,69)→線形0.85倍と同じ #383c40 にする。
+AOの白クリアやsRGB二重変換が扉の色差の原因ではない。
+
+再生成はジョブズが実行する。出力済みtagは拒否し、layoutsへのコピーは行わない。
+検査は `python3 -B -m unittest discover -s scripts/blender-pipeline -p 'test_*.py'`。
+Blenderを起動せず、色値・切替規則・木目統計・UV保持・コマンド伝達を検査できる。

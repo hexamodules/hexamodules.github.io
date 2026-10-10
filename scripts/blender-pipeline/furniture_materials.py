@@ -95,3 +95,30 @@ def audit_mesh(data, rules=None):
 def linear_color(color):
     rgb = [int(color.lstrip('#')[i:i+2],16)/255 for i in (0,2,4)]
     return tuple(v/12.92 if v <= .04045 else ((v+.055)/1.055)**2.4 for v in rgb)+(1,)
+
+
+def face_policy(material_key, materials, finish):
+    """Same material-name switch as app.js; a body name alone is not a switch."""
+    name = materials.get(str(material_key), {}).get('name', str(material_key))
+    switchable = bool(re.search(r'SKY Hexa plywood|Hexa lightweight - charcoal', name))
+    hexa = finish == 'hexa' and switchable
+    toned = switchable or bool(re.search('birch', name, re.I))
+    return dict(finish='hexa' if hexa else 'birch', switchable=switchable,
+                variant='raw' if finish == 'hexa' else 'toned' if toned else 'natural')
+
+
+def studio_spec(kind, material_key, materials, rules, role=''):
+    spec, source = resolved_spec(kind, material_key, materials, rules)
+    name = materials.get(str(material_key), {}).get('name', str(material_key))
+    if re.search('graphite satin metallic', name, re.I):
+        # app.js rgb(61,65,69), then visual-materials.js linear multiply .85.
+        rgb = linear_color('#3d4145')[:3]
+        encoded = [12.92*v*.85 if v*.85 <= .0031308 else 1.055*(v*.85)**(1/2.4)-.055 for v in rgb]
+        spec.update(color='#'+''.join(f'{round(v*255):02x}' for v in encoded), metalness=.9, roughness=.35)
+        source = 'studio graphite rgb(61,65,69) * .85 linear'
+    if kind == 'seat_fabric':
+        # Texture supplies the default olive colour; seams have no colour map.
+        spec.update(color='#ffffff' if role != 'seam' else '#797b65', metalness=0,
+                    roughness=.96 if role != 'seam' else 1)
+        source = 'studio light-green fabric image' if role != 'seam' else 'studio light-green seam * .64 linear'
+    return spec, source

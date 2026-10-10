@@ -13,7 +13,8 @@ if ROOT.name=='hexa-public':ROOT=ROOT.parent.parent
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--execute',action='store_true')
-    p.add_argument('--tag',default='reality-20261010-1')
+    p.add_argument('--tag',default='match-20261010-1')
+    p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     a=p.parse_args()
     if not a.tag or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.tag):
         p.error('tag must contain only letters, digits, dash, underscore')
@@ -26,7 +27,7 @@ def main():
             if output.exists():p.error('Output already exists: '+str(output))
             folder=output/part
             jobs.extend([
-                [sys.executable,'-B',str(HERE/'run.py'),str(source),str(output),'--mode','furniture-draft','--finish',finish,'--ratio','0.6','--samples','64','--ao-mode','plain','--ao-atlas-size','2048'],
+                [sys.executable,'-B',str(HERE/'run.py'),str(source),str(output),'--mode','furniture-draft','--finish',finish,'--face-source',a.face_source,'--ratio','0.6','--samples','64','--ao-mode','plain','--ao-atlas-size','2048'],
                 [sys.executable,'-B',str(HERE/'compress.py'),str(folder/'trial.glb'),str(folder/'trial-meshopt.glb'),'--mode','furniture-draft'],
                 [sys.executable,'-B',str(HERE/'compare_bounds.py'),str(source),str(folder/'trial-meshopt.glb'),'--json',str(folder/'bounds-compressed.json'),'--require-pass']])
     for cmd in jobs:

@@ -7,7 +7,7 @@ from contextlib import contextmanager
 import bpy
 import bmesh
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec
+from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec, face_policy, studio_spec
 from mathutils import Vector, Matrix
 from bounds_policy import transform_rows, bounds_changed, keep_geometry
 
@@ -133,13 +133,15 @@ def args():
  p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.6);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=64);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
  p.add_argument('--finish',choices=['birch','hexa'],default='birch')
  p.add_argument('--hexa-source')
+ p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
+ p.add_argument('--natural-face-texture');p.add_argument('--raw-face-texture');p.add_argument('--fabric-texture')
  p.add_argument('--ao-atlas-size',type=int,choices=[2048,4096],default=2048)
  p.add_argument('--ao-mode',choices=['plain','packed','lowres','gpu-off','none'],default='plain')
  p.add_argument('--skip-ao',action='store_true');p.add_argument('--skip-export',action='store_true')
  a=p.parse_args(sys.argv[sys.argv.index('--')+1:])
  if any(not math.isfinite(v) or v<=0 for v in a.tile_mm) or not 0<a.ratio<=1:p.error('Invalid tile size or ratio')
  if a.samples<1:p.error('samples must be positive')
- if a.mode=='furniture-draft' and not (a.face_texture and a.edge_texture):p.error('Furniture draft needs face and edge textures')
+ if a.mode=='furniture-draft' and not (a.face_texture and a.edge_texture and a.natural_face_texture and a.raw_face_texture and a.fabric_texture):p.error('Furniture draft needs prepared face, edge and fabric textures; use run.py')
  if a.mode=='furniture-draft' and a.finish=='hexa' and not a.hexa_source:p.error('Hexa needs --hexa-source')
  return a
 
@@ -216,16 +218,19 @@ def material(o, texture, ao, resin=False, spec=None):
  return mat
 
 
-def furniture_uv(o, axes, rules, finish, plywood, origin=(0,0,0)):
+def furniture_uv(o, axes, rules, finish, plywood, origin=(0,0,0), preserve_face=False):
  mesh=o.data;mesh.update()
  uv=[0.0]*(2*len(mesh.loops));indices=[]
+ mesh.uv_layers['UVMap0'].data.foreach_get('uv',uv)
  # Local axes follow each body, including rotated imported objects. Scale was applied.
  for face in mesh.polygons:
   index=0
   for loop in face.loop_indices:
    point=tuple(mesh.vertices[mesh.loops[loop].vertex_index].co[i]-origin[i] for i in range(3))
-   index,value=project(point,tuple(face.normal),axes,rules['mapping'],finish) if plywood else (0,(0,0))
-   uv[2*loop:2*loop+2]=value
+   if plywood:
+    index,value=project(point,tuple(face.normal),axes,rules['mapping'],finish)
+    if not (preserve_face and index==0):uv[2*loop:2*loop+2]=value
+   # Cloth and other source UVs must survive; (0,0) erased the weave before.
   indices.append(index)
  mesh.polygons.foreach_set('material_index',indices)
  mesh.uv_layers['UVMap0'].data.foreach_set('uv',uv)
@@ -433,6 +438,12 @@ def run(a,source):
  texture=load_texture(a.texture) if a.mode=='floor' else None
  furniture=a.mode=='furniture-draft'
  face_texture=load_texture(a.face_texture) if furniture else None
+ face_textures={}
+ fabric_texture=None
+ if furniture:
+  face_textures={'toned':face_texture,'natural':load_texture(a.natural_face_texture),'raw':load_texture(a.raw_face_texture)}
+  fabric_texture=load_texture(a.fabric_texture)
+  for image in [*face_textures.values(),fabric_texture]:image.colorspace_settings.name='sRGB'
  edge_texture=load_texture(a.edge_texture) if furniture else None
  rules=load_rules();shared={};decisions=[]
  frames=body_projection_frames(objects) if furniture else {}
@@ -441,8 +452,8 @@ def run(a,source):
   edge_texture.colorspace_settings.name='sRGB'
  if furniture and a.finish=='hexa':
   # Prepared studio tile: preserve encoded RGB; no float-pixel crop conversion.
-  face_texture=load_texture(a.hexa_source)
-  face_texture.colorspace_settings.name='sRGB'
+  hexa_texture=load_texture(a.hexa_source)
+  hexa_texture.colorspace_settings.name='sRGB'
  atlas=None
  if furniture and settings['mode']!='none':
   with stage('furniture atlas image create'):
@@ -457,7 +468,10 @@ def run(a,source):
    decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''))
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
-   spec,color_source=resolved_spec(decision['kind'],label,meta.get('materials',{}),rules)
+   spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''))
+   policy=face_policy(label,meta.get('materials',{}),a.finish)
+   preserve_face=a.face_source=='studio' and policy['finish']!='hexa'
+   decisions[-1].update(face_policy=policy,face_source=a.face_source)
    decisions[-1].update(source_body_index=o.get('source_body_index'),source_part_index=o.get('source_part_index'),source_path=o.get('source_path',''),spec=spec,color_source=color_source,projection_origin_m=origin,projection_axes=axes)
   with stage('apply scale '+o.name,[o]):
    bpy.ops.object.select_all(action='DESELECT')
@@ -508,7 +522,7 @@ def run(a,source):
    grain=o.data.uv_layers[0];grain.name='UVMap0'
    for name in [layer.name for layer in o.data.uv_layers][1:]:o.data.uv_layers.remove(o.data.uv_layers[name])
    # UV0 is world XY planar projection. UV1 alone receives Smart UV.
-   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood',origin) if furniture else planar_uv(o,a.tile_mm)
+   furniture_uv(o,axes,rules,policy['finish'],decision['kind']=='plywood',origin,preserve_face) if furniture else planar_uv(o,a.tile_mm)
    o.data.uv_layers['UVMap0'].active_render=True
   if not furniture:
    with stage('UV1 Smart UV '+o.name,[o]):
@@ -530,17 +544,21 @@ def run(a,source):
     for key in keys:
      slot_spec=dict(spec)
      if kind=='plywood':slot_spec['repeat']=True
-     if key=='plywood-face' and a.finish=='hexa':slot_spec=dict(rules['hexa_face'],repeat=True)
+     if key=='plywood-face' and policy['finish']=='hexa':slot_spec=dict(rules['hexa_face'],repeat=True)
+     image=None
+     if key=='plywood-face':image=hexa_texture if policy['finish']=='hexa' else face_textures[policy['variant']]
+     elif key=='plywood-edge':image=edge_texture
+     elif kind=='seat_fabric' and o.get('source_role','')!='seam':
+      image=fabric_texture;slot_spec['repeat']=True
      # Do not merge distinct source colors just because their kinds match.
-     cache_key=key+':'+json.dumps(slot_spec,sort_keys=True)
+     cache_key=key+':'+json.dumps(slot_spec,sort_keys=True)+':'+(image.name if image is not None else 'solid')
      if cache_key not in shared:
-      image=face_texture if key=='plywood-face' else edge_texture if key=='plywood-edge' else None
       shared[cache_key]=material(type('Name',(),{'name':cache_key})(),image,atlas,spec=slot_spec)
      o.data.materials.append(shared[cache_key])
    else:o.data.materials.append(material(o,texture,ao,resin))
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name,[o]):
-   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood',origin) if furniture else planar_uv(o,a.tile_mm)
+   furniture_uv(o,axes,rules,policy['finish'],decision['kind']=='plywood',origin,preserve_face) if furniture else planar_uv(o,a.tile_mm)
   if furniture:
    o.select_set(False)
    continue
