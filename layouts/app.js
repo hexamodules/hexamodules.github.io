@@ -251,7 +251,7 @@ function materialFor(info,key){const n=info.name,l=n.toLowerCase(),col=info.colo
  return mat;}
 // Loader-owned resources are released after a completed placement only.
 const blenderFurnitureKeys=new Set(['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-seat']);
-function furnitureVersion(key){return blenderFurnitureKeys.has(key)?state.finish+':'+(key==='aluminum-bed'&&(state.frontExpanded||state.rearExpanded||state.storage)?'motion':'rest'):null}
+function furnitureVersion(key){return blenderFurnitureKeys.has(key)?state.finish+':'+((key==='aluminum-bed'&&(state.frontExpanded||state.rearExpanded||state.storage)||key==='aluminum-front-kitchen'&&state.frontStorage||key==='active-side-cabinet'&&state.cabStorage)?'motion':'rest'):null}
 function releaseFurniture(key){
  const entry=loadedModels.get(key);if(!entry)return;
  entry.group.traverse(n=>n.geometry?.dispose());scene.remove(entry.group);
@@ -538,7 +538,19 @@ function shippingUI(){
  const requested=state.vehicleSourcing||state.shippingAgent;
  $('#selection-summary').insertAdjacentHTML('beforeend',`<div id="shipping-summary">${rows.map(([title,on])=>`<div class="selection-row"><span>${title}</span><b>${on?'外部エージェントの紹介を希望':'希望しない'}</b></div>`).join('')}${preferenceSummary}${destinationSummary}${requested?'<div class="selection-row shipping-referral-summary"><span>Shipping</span><b>外部エージェントへの紹介希望です。各手配は紹介先のエージェントが行います。</b></div>':''}</div>`);
 }
-function urlFor(s=state){const q=new URLSearchParams({vehicle:s.vehicle||'dx',front:s.front,bed:s.bed,cab:s.cab,finish:s.finish||state.finish});addNewVehicleParams(q,s);if(s.front==='i-seat'){q.set('i_seat_slide',String(s.iSeatSlide||0));q.set('i_seat_pose',s.iSeatPose||'forward');q.set('i_seat_color',s.iSeatColor||'light-green');}if(twiCeilingEnabled(s)){q.set('twi_ceiling',s.twiCeiling);if(s.twiBarLights===false)q.set('twi_bar','0');if(s.twiIndirectLights===false)q.set('twi_indirect','0')}if(quarterCount(s))q.set('quarter',s.quarterPanels);if(s.bed==='two-side-bed'&&s.floorSlide)q.set('floor_slide','1');if(s.bedMattress)q.set('bed_mattress','1');else if(s.bed==='two-side-bed')q.set('bed_mattress','0');if(s.frontMattress)q.set('front_mattress','1');if(bedMattressEnabled(s))q.set('bed_mattress_color',s.bedMattressColor||'light-green');if(frontMattressEnabled(s))q.set('front_mattress_color',s.frontMattressColor||'light-green');if(wallEnabled(s))q.set('wall',s.wall);if(panelEnabled(s))q.set('panel',Object.hasOwn(WALL_COLORS,s.panel)?s.panel:'auto');if(ceilingEnabled(s))q.set('ceiling',s.ceiling);if(floorEnabled(s))q.set('floor',s.floor);if(airconEnabled(s))q.set('ac',AIRCON.value);if(heaterEnabled(s))q.set('heater',HEATER.value);if(insulationEnabled(s))q.set('insulation',INSULATION.value);if(electricalEnabled(s)){q.set('electrical','standard');q.set('battery',String(s.batteryAh));if(s.inverterW)q.set('inverter',String(s.inverterW))}if(shippingForAustralia()){if(s.vehicleSourcing){q.set('sourcing','1');if(s.sourcingFuel)q.set('sourcing_fuel',s.sourcingFuel);if(s.sourcingDrive)q.set('sourcing_drive',s.sourcingDrive);if(s.sourcingBudget)q.set('vehicle_budget',String(s.sourcingBudget))}if(s.shippingAgent){q.set('shipping','1');addRegistrationParams(q,s)}}if(s.ceilingLights)q.set('ceiling_lights','1');if(s.tailgateLights)q.set('tailgate_lights','1');if(s.night)q.set('night','1');for(const [key,param] of [['expanded','expanded'],['frontExpanded','front_expanded'],['rearExpanded','rear_expanded'],['storage','storage'],['flat','flat']])if(s[key])q.set(param,'1');q.set('location',getStudioLocation().id);q.set('lang',getLanguage());if(reviewMode)q.set("review","1");dealerParams(q);return `${location.pathname}?${q}`}
+function urlFor(s=state){s=motionExportState(s);const q=new URLSearchParams({vehicle:s.vehicle||'dx',front:s.front,bed:s.bed,cab:s.cab,finish:s.finish||state.finish});addNewVehicleParams(q,s);if(s.front==='i-seat'){q.set('i_seat_slide',String(s.iSeatSlide||0));q.set('i_seat_pose',s.iSeatPose||'forward');q.set('i_seat_color',s.iSeatColor||'light-green');}if(twiCeilingEnabled(s)){q.set('twi_ceiling',s.twiCeiling);if(s.twiBarLights===false)q.set('twi_bar','0');if(s.twiIndirectLights===false)q.set('twi_indirect','0')}if(quarterCount(s))q.set('quarter',s.quarterPanels);if(s.bed==='two-side-bed'&&s.floorSlide)q.set('floor_slide','1');if(s.bedMattress)q.set('bed_mattress','1');else if(s.bed==='two-side-bed')q.set('bed_mattress','0');if(s.frontMattress)q.set('front_mattress','1');if(bedMattressEnabled(s))q.set('bed_mattress_color',s.bedMattressColor||'light-green');if(frontMattressEnabled(s))q.set('front_mattress_color',s.frontMattressColor||'light-green');if(wallEnabled(s))q.set('wall',s.wall);if(panelEnabled(s))q.set('panel',Object.hasOwn(WALL_COLORS,s.panel)?s.panel:'auto');if(ceilingEnabled(s))q.set('ceiling',s.ceiling);if(floorEnabled(s))q.set('floor',s.floor);if(airconEnabled(s))q.set('ac',AIRCON.value);if(heaterEnabled(s))q.set('heater',HEATER.value);if(insulationEnabled(s))q.set('insulation',INSULATION.value);if(electricalEnabled(s)){q.set('electrical','standard');q.set('battery',String(s.batteryAh));if(s.inverterW)q.set('inverter',String(s.inverterW))}if(shippingForAustralia()){if(s.vehicleSourcing){q.set('sourcing','1');if(s.sourcingFuel)q.set('sourcing_fuel',s.sourcingFuel);if(s.sourcingDrive)q.set('sourcing_drive',s.sourcingDrive);if(s.sourcingBudget)q.set('vehicle_budget',String(s.sourcingBudget))}if(s.shippingAgent){q.set('shipping','1');addRegistrationParams(q,s)}}if(s.ceilingLights)q.set('ceiling_lights','1');if(s.tailgateLights)q.set('tailgate_lights','1');if(s.night)q.set('night','1');for(const [key,param] of [['expanded','expanded'],['frontExpanded','front_expanded'],['rearExpanded','rear_expanded'],['storage','storage'],['flat','flat']])if(s[key])q.set(param,'1');q.set('location',getStudioLocation().id);q.set('lang',getLanguage());if(reviewMode)q.set("review","1");dealerParams(q);return `${location.pathname}?${q}`}
+// Preview-only changes are projected out of saved configurations and specification images.
+const motionBaseline=new Map();
+function motionExportState(s=state){const clean={...s,...Object.fromEntries(motionBaseline)};delete clean.frontStorage;delete clean.cabStorage;return clean}
+async function previewMotion(patch){
+ for(const key of Object.keys(patch))if(!motionBaseline.has(key))motionBaseline.set(key,state[key]);
+ return apply({...state,...patch},{history:false});
+}
+function clearMotionBaseline(patch){
+ for(const key of Object.keys(patch))motionBaseline.delete(key);
+ if(patch.front!==undefined){motionBaseline.delete('iSeatPose');motionBaseline.delete('iSeatSlide');patch.iSeatPose='forward';patch.iSeatSlide=0;patch.frontStorage=false;}
+ if(patch.cab!==undefined)patch.cabStorage=false;
+}
 function moveBody(node,delta){node.position.add(new THREE.Vector3(...delta))}
 function rotateBody(node,pivot,axis,degrees){let q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...axis),THREE.MathUtils.degToRad(degrees));node.quaternion.copy(q);let v=new THREE.Vector3(...pivot);node.position.copy(v).sub(v.clone().applyQuaternion(q))}
 function bedLength(s=state){return s.bed==='none'?0:1800}
@@ -563,6 +575,10 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
   if(sliding&&state.floorSlide&&state.storage)moveBody(n,[0,0,-900]);
  }
  if(key==='two-side-bed'&&state.flat&&path.includes('STORED'))n.visible=false;
+ // Existing presentation tray travel, transformed by each mesh's source-axis matrix.
+ if(key==='aluminum-front-kitchen'&&state.frontStorage&&/^(05 PFS|20 Eurocontainer)/.test(path))moveBody(n,[0,0,-300]);
+ if(key==='active-side-cabinet'&&state.cabStorage&&path.startsWith('04 Original'))moveBody(n,[-250,0,0]);
+ if(key==='aluminum-side-cabinet'&&state.cabStorage&&/^(11|12) Push-open/.test(path))moveBody(n,[-250,0,0]);
  }}
 async function apply(s=state,{history=true,ui=true,entryReveal=false}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');const loading=$('#loading');
  const showLoading=()=>{loading.style.display='flex'};
@@ -589,7 +605,7 @@ async function apply(s=state,{history=true,ui=true,entryReveal=false}={}){const 
  activeAirconMount=null;const airconModel=models.find(g=>g.name===AIRCON.key);if(airconModel&&isSuperGL(state)){activeAirconMount=twiVisuals.airconMount(airconModel.userData.data.bounds);airconModel.position.set(...activeAirconMount.translation_mm);airconModel.rotation.set(0,0,0);airconModel.userData.mount=activeAirconMount}else if(airconModel){delete airconModel.userData.mount}
  const floorModel=models.find(g=>g.name===FLOOR.key);if(floorModel){const replaced=new Set(floorModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}
  const panelModel=models.find(g=>g.name===PANEL.key);if(panelModel){for(const node of panelModel.children)node.visible=!(wallEnabled()&&node.userData.hide_with_wall);const replaced=new Set(panelModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}
- let bed=models.find(g=>g.name===state.bed),cab=models.find(g=>g.name===state.cab);let fit=bed&&SINGLE.includes(state.bed)?(placementReportFor()?.fit||travelFor(bed,cab)):null;if(bed&&['lounge-bed','slide-bed','lounge-slide-bed'].includes(state.bed))stretch(bed,bedLength());if(bed)positionMotion(bed,fit);mattressVisuals.update(models,state,fit,bedLength());setFinish();setWallFinish();setPanelFinish();setCeilingFinish();setFloorFinish();setLighting();
+ let bed=models.find(g=>g.name===state.bed),cab=models.find(g=>g.name===state.cab);let fit=bed&&SINGLE.includes(state.bed)?(placementReportFor()?.fit||travelFor(bed,cab)):null;if(bed&&['lounge-bed','slide-bed','lounge-slide-bed'].includes(state.bed))stretch(bed,bedLength());if(bed)positionMotion(bed,fit);if(cab)positionMotion(cab,null);const frontModel=models.find(g=>g.name===state.front);if(frontModel)positionMotion(frontModel,null);mattressVisuals.update(models,state,fit,bedLength());setFinish();setWallFinish();setPanelFinish();setCeilingFinish();setFloorFinish();setLighting();
  if(ui){motionUI(fit);$('#dimensions').textContent=state.bed==='none'?`ナロー車体 · ${name(state.front)}`:`ベッド長 ${bedLength().toLocaleString()}mm${fit?'　·　横への展開 '+(state.bed==='aluminum-bed'?fit.front_travel+' / '+fit.rear_travel:fit.travel)+'mm':''}　·　${state.finish==='black'?'ヘキサ':'バーチ'}合板`}
  if(ui&&((!airconEnabled()&&activeView==='aircon')||(!panelEnabled()&&['panels','tailgate'].includes(activeView))||(!panelEnabled()&&!state.tailgateLights&&activeView==='tailgate-light')||(!ceilingEnabled()&&!twiCeilingEnabled(state)&&activeView==='ceiling')||(!floorEnabled()&&activeView==='floor')))setView('rear');
  updateInteriorPresentation();
@@ -648,10 +664,11 @@ function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hi
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-furniture';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261010-wall-return');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-motion';document.head.append(css);
+ const {createPinStudio}=await import('./studio-pins.js?v=20261010-motion');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
-  apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
+  previewMotion,
+  apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
   getGroup:key=>loadedModels.get(key)?.group,
   keys:{floor:FLOOR.key,ceiling:CEILING.key,wall:WALL.key},
   palettes:{floor:floorPalette.colors,ceiling:ceilingPalette.colors,wall:wallPalette.colors},
@@ -977,7 +994,7 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
  captureSpecification:enquiryPreviews,
  captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
- getVehicleState:()=>outroState||state,
+ getVehicleState:()=>motionExportState(outroState||state),
  getLocation:()=>getStudioLocation().id,
  prepare:async()=>{
   outroState={...state};outroView=activeView;controls.enabled=false;controls.maxDistance=28000;
@@ -991,7 +1008,7 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
   $('#outro-equipment').hidden=![lightsAvailable(),electricalEnabled(),airconEnabled(),heaterEnabled(),insulationEnabled()].some(Boolean);
   updateOutroLighting();$('#outro-night-toggle').disabled=true;
   // Store extended furniture for the driving scene. The editing pose is retained.
-  await apply({...state,expanded:false,frontExpanded:false,rearExpanded:false,storage:false},{history:false});
+  await apply({...motionExportState(state),expanded:false,frontExpanded:false,rearExpanded:false,storage:false,frontStorage:false,cabStorage:false},{history:false});
   $('#loading').style.display='flex';$('#loading p').textContent='車体を準備しています';
   outroVehicle=await loadModel('vehicle');outroTail=await loadModel(TAILGATE);outroSlider=await loadModel(SLIDING_DOOR);
   outroBody=await loadModel(BODY_COMPLETION);outroFrontDoor=await loadModel(FRONT_DOOR);
@@ -1039,7 +1056,7 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
  },
  describe:({includeImage=true}={})=>{
   if(includeImage){try{renderer.render(scene,camera)}catch{/* Optional preview only. */}}
-  const configuration={...(outroState||state)},customerSummary=$$('#selection-summary .selection-row').filter(row=>!row.querySelector('.selection-module')||configuration.front==='i-seat'&&row.querySelector('a[href*="i-seat.html"]')).map(row=>({label:row.children[0].textContent.trim(),value:[...row.children].slice(1).map(c=>c.textContent.trim()).join(' ')})).filter(r=>r.label&&r.value);
+  const configuration=motionExportState(outroState||state),customerSummary=$$('#selection-summary .selection-row').filter(row=>!row.querySelector('.selection-module')||configuration.front==='i-seat'&&row.querySelector('a[href*="i-seat.html"]')).map(row=>({label:row.children[0].textContent.trim(),value:[...row.children].slice(1).map(c=>c.textContent.trim()).join(' ')})).filter(r=>r.label&&r.value);
   return {configuration,layoutNumber:pricing.quote(configuration).number,customerSummary,summary:dealerSummary(getLanguage())+$$('#selection-summary .selection-row').map(row=>[...row.children].map(c=>c.textContent).join(': ')).join('\n')+'\n'+lightingCutoutSummary(outroState,getLanguage())+pricing.summary(outroState)+dealerOptionSummary(outroState,getLanguage()),url:new URL(urlFor(outroState),location.href).href,image:includeImage?(()=>{try{return contactPreview()}catch{return ''}})():''};
  }
 });
