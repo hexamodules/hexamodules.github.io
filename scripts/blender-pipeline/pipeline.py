@@ -7,7 +7,7 @@ import bpy
 from mathutils import Vector
 
 def args():
- p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.15);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=16)
+ p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.2);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=16)
  return p.parse_args(sys.argv[sys.argv.index('--')+1:])
 
 def custom(source):
@@ -21,7 +21,7 @@ def custom(source):
    mesh=bpy.data.meshes.new(body['name']);mesh.from_pydata(read(part,'position',3),[],read(part,'index',3));mesh.update()
    obj=bpy.data.objects.new(body['name']+'_'+str(i),mesh);bpy.context.collection.objects.link(obj)
    obj['source_material']=part['material'];obj['source_role']=body.get('role','');obj['source_bounds_mm']=json.dumps(body['bounds'])
-   uv=read(part,'uv',2);layer=mesh.uv_layers.new(name='Grain')
+   uv=read(part,'uv',2);layer=mesh.uv_layers.new(name='UVMap0')
    for loop in mesh.loops:layer.data[loop.index].uv=uv[loop.vertex_index]
    normals=read(part,'normal',3);mesh.normals_split_custom_set_from_vertices(normals)
  return data
@@ -50,23 +50,18 @@ def run(a,source):
   bpy.ops.object.modifier_apply(modifier=dissolve.name)
   # Trial collapse ratio is a target, not a manufacturing tolerance guarantee.
   dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio;dec.use_collapse_triangulate=True;bpy.ops.object.modifier_apply(modifier=dec.name)
-  if not o.data.uv_layers:o.data.uv_layers.new(name='Grain')
-  grain=o.data.uv_layers[0];grain.name='Grain'
-  # Existing studio floor uses world-space photo mapping, not input UVs.
-  if source.name.endswith('.mesh.json') and 'floor' in o.get('source_role',''):
-   palette=json.loads((source.parent/'floor-finishes.json').read_text());finish=next(c for c in palette['colors'] if c['value']=='oak');mapping=finish['mapping']
-   for loop in o.data.loops:
-    v=o.data.vertices[loop.vertex_index].co*1000
-    u=1-abs((v.x/mapping['tile_mm'][0])%2-1);w=1-abs((v.z/mapping['tile_mm'][1])%2-1)
-    grain.data[loop.index].uv=tuple(mapping['center'][i]+(u-.5)*mapping['across'][i]+(w-.5)*mapping['along'][i] for i in range(2))
-  aoUV=o.data.uv_layers.new(name='AO');o.data.uv_layers.active=aoUV
+  if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
+  grain=o.data.uv_layers[0];grain.name='UVMap0'
+  # Preserve the source grain UVs; unwrap only the second AO channel.
+  grain.active_render=True
+  aoUV=o.data.uv_layers.new(name='AO');o.data.uv_layers.active=aoUV;aoUV.active_render=True
   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.02);bpy.ops.object.mode_set(mode='OBJECT')
   mat=bpy.data.materials.new(o.name);mat.use_nodes=True;o.data.materials.clear();o.data.materials.append(mat)
   nodes=mat.node_tree.nodes;links=mat.node_tree.links;bsdf=nodes.get('Principled BSDF');bsdf.inputs['Roughness'].default_value=.94
   resin='step' in o.get('source_role','') or 'resin' in o.get('source_material','').lower()
   bsdf.inputs['Base Color'].default_value=(.0185,.0185,.023,1) if resin else (1,1,1,1)
   if not resin:
-   tex=nodes.new('ShaderNodeTexImage');tex.image=texture;uv=nodes.new('ShaderNodeUVMap');uv.uv_map='Grain';links.new(uv.outputs['UV'],tex.inputs['Vector']);links.new(tex.outputs['Color'],bsdf.inputs['Base Color'])
+   tex=nodes.new('ShaderNodeTexImage');tex.image=texture;uv=nodes.new('ShaderNodeUVMap');uv.uv_map='UVMap0';links.new(uv.outputs['UV'],tex.inputs['Vector']);links.new(tex.outputs['Color'],bsdf.inputs['Base Color'])
   ao=bpy.data.images.new(o.name+' AO',1024,1024);ao.colorspace_settings.name='Non-Color';bake=nodes.new('ShaderNodeTexImage');bake.image=ao;nodes.active=bake
   bpy.context.scene.render.engine='CYCLES';bpy.context.scene.cycles.device='CPU';bpy.context.scene.cycles.samples=a.samples
   bpy.ops.object.bake(type='AO',margin=8,use_clear=True)
@@ -74,7 +69,7 @@ def run(a,source):
   # glTF exporter recognizes the glTF Material Output occlusion group.
   group=bpy.data.node_groups.new('glTF Material Output','ShaderNodeTree');group.interface.new_socket(name='Occlusion',in_out='INPUT',socket_type='NodeSocketFloat');g=nodes.new('ShaderNodeGroup');g.node_tree=group
   uv=nodes.new('ShaderNodeUVMap');uv.uv_map='AO';links.new(uv.outputs['UV'],bake.inputs['Vector']);links.new(bake.outputs['Color'],g.inputs['Occlusion'])
-  o.data.uv_layers.active=grain;o.select_set(False)
+  o.data.uv_layers.active=grain;grain.active_render=True;o.select_set(False)
  points=[o.matrix_world@Vector(c) for o in objects for c in o.bound_box]
  bounds=[[min(p[i] for p in points) for i in range(3)],[max(p[i] for p in points) for i in range(3)]]
  # Millimetre custom format is Y-up; glTF exporter converts Blender Z-up to Y-up.
