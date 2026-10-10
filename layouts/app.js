@@ -620,7 +620,7 @@ function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hi
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-5';document.head.append(css);
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-glow-8';document.head.append(css);
  const {createPinStudio}=await import('./studio-pins.js?v=20261010-5');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},

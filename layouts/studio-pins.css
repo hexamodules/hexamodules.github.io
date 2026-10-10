@@ -11,12 +11,15 @@
 [data-studio-step=equipment] .workspace,[data-studio-step=electrical] .workspace,[data-studio-step=vehicle] .workspace{grid-template-columns:minmax(0,1fr) minmax(380px,52%)}
 [data-studio-step=equipment] .configuration,[data-studio-step=electrical] .configuration,[data-studio-step=vehicle] .configuration{height:100%;align-self:stretch}
 .pin-layer{position:absolute;inset:0;pointer-events:none;z-index:5}.studio-pin{position:absolute;pointer-events:auto;width:30px;height:38px;min-height:0;padding:0;border:0;border-radius:0;background:transparent;transform:translate(-50%,-100%);box-shadow:none;transition:opacity .15s}
-.studio-pin::before{content:"";position:absolute;width:9px;height:9px;box-sizing:border-box;border:1px solid #333;border-radius:50%;background:#fff;left:calc(50% - 4.5px);bottom:10px;box-shadow:0 1px 2px #0002}
-.studio-pin{background:linear-gradient(#333,#333) center bottom/1px 11px no-repeat}
-.studio-pin::after{content:attr(data-label);position:absolute;left:calc(50% + 9px);bottom:10px;white-space:nowrap;font-size:9px;line-height:1.3;font-weight:400;background:#ffffffd9;color:#777;padding:2px 4px;border-radius:3px;pointer-events:none;opacity:0}
-.studio-pin:hover::after,.studio-pin:focus-visible::after,.studio-pin[aria-expanded=true]::after{opacity:1}
-.studio-pin:hover::before,.studio-pin:focus-visible::before,.studio-pin[aria-expanded=true]::before{transform:scale(1.2);background:#555}
-.studio-pin:focus-visible{outline:1px solid #6a7966;outline-offset:2px}.studio-pin[aria-expanded=true]{opacity:1!important}
+/* Candidate 08: radius 2.3px white core, radius 9px soft glow. Keep the existing pin centre. */
+.studio-pin,.studio-pin:hover,.studio-pin:focus,.studio-pin:active{background:transparent;box-shadow:none}
+.studio-pin::before{content:"";position:absolute;width:18px;height:18px;box-sizing:border-box;border:1px solid #77777712;border-radius:50%;left:calc(50% - 9px);bottom:5.5px;background:radial-gradient(circle,#fff 0 2.3px,transparent 2.3px),radial-gradient(circle 9px,rgba(255,255,255,.95) 0%,rgba(255,255,255,.65) 35%,rgba(255,255,255,0) 100%);background-origin:border-box;background-clip:border-box;transition:border-color .24s ease}
+.studio-pin::after{content:attr(data-label);position:absolute;left:calc(50% + 22px);bottom:2px;white-space:nowrap;font-size:11px;line-height:23px;font-weight:400;background:#fff;color:#242725;padding:0 9px;border:1px solid #d6dad3;border-radius:5px;pointer-events:none;opacity:0;transform:translateX(-3px);transition:opacity .24s ease,transform .24s ease}
+.studio-pin:focus-visible::after,.studio-pin[aria-expanded=true]::after{opacity:1;transform:translateX(0)}
+.studio-pin:focus-visible::before,.studio-pin[aria-expanded=true]::before{border-color:#fff}
+@media(hover:hover){.studio-pin:hover::after{opacity:1;transform:translateX(0)}.studio-pin:hover::before{border-color:#fff}}
+.studio-pin:focus-visible{outline:1px solid #6a7966;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.studio-pin::before,.studio-pin::after{transition:none}}
 @media(pointer:coarse){.studio-pin{width:44px!important;height:44px!important}}
 
 .pin-layer[hidden],.studio-pin[hidden],.pin-popup[hidden],.pin-backdrop[hidden]{display:none!important}
