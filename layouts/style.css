@@ -221,3 +221,6 @@
 .mattress-order-options legend{font-size:12px}
 #mattress-summary button{display:block;border:0;background:transparent;color:inherit;font:inherit;text-align:left;text-decoration:underline;cursor:pointer;min-height:44px}
 #mattress-summary .mattress-pending{color:#858b80;font-weight:400}
+
+/* The initial ceiling swatch uses the existing mobile photograph as well. */
+@media (max-width:700px),(pointer:coarse){:root{--ceiling-finish-image:url(assets/mobile/ceiling-finish-white-ash.jpg)}}

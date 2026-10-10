@@ -3,14 +3,15 @@ import * as THREE from 'three';
 const MODULES=new Set(['front-module','aluminum-front-kitchen','side-cabinet','aluminum-side-cabinet','simple-side-cabinet','active-side-cabinet']);
 
 export async function createCountertopVisuals({renderer}){
- const texture=await new THREE.TextureLoader().loadAsync('assets/countertop-albero-surface.jpg?v=1');
+ const texture=new THREE.Texture();let pending;
+ function ready(){return pending??=(new THREE.TextureLoader().loadAsync('assets/countertop-albero-surface.jpg?v=1').then(t=>{texture.image=t.image;texture.needsUpdate=true}).catch(e=>{pending=null;throw e}))}
  texture.colorSpace=THREE.SRGBColorSpace;
  texture.wrapS=texture.wrapT=THREE.MirroredRepeatWrapping;
  texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
  const material=new THREE.MeshStandardMaterial({name:'ALBERO melamine oak-grain surface',map:texture,color:0xffffff,roughness:.86,metalness:0,side:THREE.DoubleSide});
  material.userData.countertop='albero';
 
- return {apply(node,moduleId){
+ return {ready,apply(node,moduleId){
   if(!MODULES.has(moduleId))return;
   const [lo,hi]=node.userData.bounds,longAxis=hi[0]-lo[0]>hi[2]-lo[2]?0:2,crossAxis=longAxis===0?2:0;
   for(const original of [...node.children]){

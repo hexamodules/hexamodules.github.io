@@ -1,5 +1,6 @@
 // Asset transport only. CAD metadata, materials and placement stay in app.js.
 import {MeshoptDecoder} from './vendor/meshopt_decoder.module.js';
+const optimizedTextures={"assets/floor-finish-walnut.jpg":"assets/optimized-20261010/floor-finish-walnut.webp","assets/floor-finish-oak.jpg":"assets/optimized-20261010/floor-finish-oak.webp","assets/floor-finish-dark-canvas.jpg":"assets/optimized-20261010/floor-finish-dark-canvas.webp","assets/floor-finish-light-canvas.jpg":"assets/optimized-20261010/floor-finish-light-canvas.webp","assets/floor-finish-teak.jpg":"assets/optimized-20261010/floor-finish-teak.webp","assets/mobile/floor-finish-walnut.jpg":"assets/optimized-20261010/mobile/floor-finish-walnut.webp","assets/mobile/floor-finish-oak.jpg":"assets/optimized-20261010/mobile/floor-finish-oak.webp","assets/mobile/floor-finish-dark-canvas.jpg":"assets/optimized-20261010/mobile/floor-finish-dark-canvas.webp","assets/mobile/floor-finish-light-canvas.jpg":"assets/optimized-20261010/mobile/floor-finish-light-canvas.webp","assets/mobile/floor-finish-teak.jpg":"assets/optimized-20261010/mobile/floor-finish-teak.webp"};
 export function createAssetLoader(){
  const mobile=matchMedia('(max-width: 700px)').matches||(navigator.maxTouchPoints>0&&matchMedia('(pointer: coarse)').matches);
  const tier=mobile?'mobile':'pc',gzip=typeof DecompressionStream==='function';
@@ -47,5 +48,5 @@ export function createAssetLoader(){
   if(name==='index')return new Uint32Array(raw.buffer);
   return Float32Array.from(new Int32Array(raw.buffer),v=>v*s.scale);
  }
- return {load,attribute,tier,isVehicle:key=>vehicleKeys.has(key),textureURL:url=>mobile?url.replace(/^assets\/(?!mobile\/)/,'assets/mobile/'):url};
+ return {load,attribute,tier,isVehicle:key=>vehicleKeys.has(key),textureURL:url=>{const target=mobile?url.replace(/^assets\/(?!mobile\/)/,'assets/mobile/'):url;return optimizedTextures[target]||target}};
 }

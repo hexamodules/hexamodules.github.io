@@ -1,3 +1,4 @@
+import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
 import {capturePhoto,photoCamera} from './photo-camera.js?v=20261008-lower-v13';
 import {createVisualMaterials} from './visual-materials.js?v=2';
@@ -12,9 +13,9 @@ import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dea
 import {selectedDealer} from './dealer-preview.js?v=20261005-procurement';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
 import {createDealerOptionsUI} from './dealer-options-ui.js?v=4';
-import {createCountertopVisuals} from './countertops.js?v=1';
+import {createCountertopVisuals} from './countertops.js?v=20261010-light';
 import {createTwiLightingControls} from './twi-lighting-controls.js?v=1';
-import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=7';
+import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261010-light';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {createReferencePricing} from './reference-pricing.js?v=20261005-mobile-fix';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
@@ -131,25 +132,35 @@ const ambient=new THREE.HemisphereLight(0xffffff,0x9a9687,.9);scene.add(ambient)
 const floor=new THREE.Mesh(new THREE.PlaneGeometry(20000,20000),new THREE.ShadowMaterial({color:0x4a4941,opacity:.18}));floor.rotation.x=-Math.PI/2;floor.position.y=-588;floor.receiveShadow=true;scene.add(floor);
 const dayGround=floor.material,nightGround=new THREE.MeshStandardMaterial({color:0x77716a,roughness:1,metalness:0});
 const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-587,2000);grid.material.transparent=true;grid.material.opacity=.15;scene.add(grid);
-const {createAssetLoader}=await import('./lightweight-loader.js?v=20261004');
+const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-light');
 const assetLoader=createAssetLoader();
-const wood=await new THREE.TextureLoader().loadAsync(assetLoader.textureURL('assets/wood-grain.jpg'));wood.colorSpace=THREE.SRGBColorSpace;wood.wrapS=wood.wrapT=THREE.RepeatWrapping;wood.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+const textureJobs=new Map();
+function loadTexture(url){if(!textureJobs.has(url)){const pending=sharedTexture(url);textureJobs.set(url,pending);pending.catch(()=>textureJobs.delete(url));}return textureJobs.get(url)}
+const wood=new THREE.Texture();let woodReady;
+function ensureWood(){return woodReady??=(loadTexture(assetLoader.textureURL('assets/wood-grain.jpg')).then(t=>{wood.image=t.image;wood.needsUpdate=true}).catch(e=>{woodReady=null;throw e}))}
+wood.colorSpace=THREE.SRGBColorSpace;wood.wrapS=wood.wrapT=THREE.RepeatWrapping;wood.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
 // Fine moulded-resin grain for the original step; units in the asset are mm.
 const resinNoise=new Uint8Array(128*128*4);let noiseSeed=173;for(let i=0;i<resinNoise.length;i+=4){noiseSeed=(Math.imul(noiseSeed,1664525)+1013904223)>>>0;const v=110+(noiseSeed>>>25);resinNoise.set([v,v,v,255],i)}
 const resinBump=new THREE.DataTexture(resinNoise,128,128);resinBump.wrapS=resinBump.wrapT=THREE.RepeatWrapping;resinBump.magFilter=THREE.LinearFilter;resinBump.minFilter=THREE.LinearMipmapLinearFilter;resinBump.generateMipmaps=true;resinBump.needsUpdate=true;
-const ceilingTextures=Object.fromEntries(await Promise.all(ceilingPalette.colors.map(async c=>{
- c.image=assetLoader.textureURL(c.image);
- const texture=await new THREE.TextureLoader().loadAsync(c.image);
+const ceilingTextures={},floorTextures={};
+for(const c of [...ceilingPalette.colors,...floorPalette.colors])c.image=assetLoader.textureURL(c.image);
+async function ensurePalette(palette,textures,key,ceiling=false){
+ if(textures[key])return;
+ const c=palette.colors.find(c=>c.value===key);if(!c)return;
+ const texture=await loadTexture(c.image);
  texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=THREE.ClampToEdgeWrapping;
- texture.wrapT=THREE.MirroredRepeatWrapping;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
- return [c.value,texture];
-})));
-const floorTextures=Object.fromEntries(await Promise.all(floorPalette.colors.map(async c=>{
- c.image=assetLoader.textureURL(c.image);
- const texture=await new THREE.TextureLoader().loadAsync(c.image);
- texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;
- texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());return [c.value,texture];
-})));
+ texture.wrapT=ceiling?THREE.MirroredRepeatWrapping:THREE.ClampToEdgeWrapping;
+ texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());textures[key]=texture;
+}
+async function ensureMaterials(s){
+ const jobs=[];
+ if([s.front,s.bed,s.cab].some(k=>k&&k!=='none')||ceilingEnabled(s)||floorEnabled(s))jobs.push(ensureWood());
+ if([s.front,s.cab].some(k=>k&&k!=='none'&&k!=='seat'&&k!=='i-seat'))jobs.push(countertopVisuals.ready());
+ if(ceilingEnabled(s))jobs.push(ensurePalette(ceilingPalette,ceilingTextures,s.ceiling,true));
+ if(twiCeilingEnabled(s))jobs.push(ensurePalette(ceilingPalette,ceilingTextures,s.twiCeiling==='walnut'?'walnut':'white-ash',true));
+ if(floorEnabled(s))jobs.push(ensurePalette(floorPalette,floorTextures,s.floor));
+ await Promise.all(jobs);
+}
 const floorSurfaces=[],floorMaterials=[];
 const lightRigs=new Map(),lightDiffusers=[],lightTrims=[],daySurfaceMaterials=[];
 const isLight=key=>Object.values(LIGHTS).some(v=>v.key===key);
@@ -408,20 +419,20 @@ function configureUI(){
  $('#ceiling-view').hidden=!ceilingEnabled();
  $('#ceiling-view-help').hidden=!ceilingEnabled();
  $('#ceiling-color-section').hidden=!ceilingEnabled();
- $('#ceiling-color-options').innerHTML=ceilingPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.ceiling===c.value?'active':''}" data-ceiling-color="${c.value}" aria-pressed="${state.ceiling===c.value}"><img src="${c.image}" alt="" width="1000" height="1000"><span>${c.label}</span></button>`).join('');
+ $('#ceiling-color-options').innerHTML=ceilingPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.ceiling===c.value?'active':''}" data-ceiling-color="${c.value}" aria-pressed="${state.ceiling===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="" width="1000" height="1000"><span>${c.label}</span></button>`).join('');
  const panelOn=panelEnabled(),panelFinish=panelColor(),wallColor=WALL_COLORS[panelFinish];
  $$('[data-wall-choice]').forEach(b=>{const on=b.dataset.wallChoice===wallChoice();b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
  $('#wall-options').style.setProperty('--wall-finish-color',`rgb(${(wallColor.web_rgb||wallColor.rgb).join(',')})`);
  $('#wall-options').style.setProperty('--panel-finish-color',`rgb(${(wallColor.web_rgb||wallColor.rgb).join(',')})`);
  $('#wall-color-section').hidden=!panelOn;
- $('#wall-color-options').innerHTML=wallPalette.colors.map(c=>`<button type="button" class="wall-color-option ${panelOn&&panelFinish===c.value?'active':''}" data-wall-color="${c.value}" aria-pressed="${panelOn&&panelFinish===c.value}"><img src="${c.image}" alt="${c.label}の合板見本" width="220" height="220"><span>${c.label}</span></button>`).join('');
+ $('#wall-color-options').innerHTML=wallPalette.colors.map(c=>`<button type="button" class="wall-color-option ${panelOn&&panelFinish===c.value?'active':''}" data-wall-color="${c.value}" aria-pressed="${panelOn&&panelFinish===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="${c.label}の合板見本" width="220" height="220"><span>${c.label}</span></button>`).join('');
  $('#panel-inclusion-help').hidden=!panelOn;
  $('#panel-inclusion-help').textContent=wallEnabled()?'壁面板張り仕上げには、同色のカラーパネルも付きます。':'窓下3枚のパネルだけを取り付けます。';
  $('#wall-view').hidden=!wallEnabled();$('#wall-view-help').hidden=!wallEnabled();
  $('#panel-view').hidden=!panelOn;$('#tailgate-view').hidden=!panelOn;
  $('#panel-view').textContent=wallEnabled()?'カラーパネルを見る':'カラーパネル3枚を見る';
  // Flooring is selected directly from the five samples, without an enable card.
- $('#floor-color-options').innerHTML=floorPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.floor===c.value?'active':''}" data-floor-color="${c.value}" aria-pressed="${state.floor===c.value}"><img src="${c.image}" alt="" width="${c.image_width}" height="${c.image_height}"><span>${c.label}</span></button>`).join('');
+ $('#floor-color-options').innerHTML=floorPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.floor===c.value?'active':''}" data-floor-color="${c.value}" aria-pressed="${state.floor===c.value}"><img loading="lazy" data-shared-image="${c.image}" alt="" width="${c.image_width}" height="${c.image_height}"><span>${c.label}</span></button>`).join('');
  $('#floor-view').hidden=!floorEnabled();updateFloorRequirement();
  const rows=[['前側',state.front],['ベッド',state.bed],['サイド',state.cab]];$('#selection-summary').innerHTML=`<div class="selection-row" id="vehicle-compatibility-summary"><span>対応車種</span><b><span>${vehicleName(state)}</span><br> <span>標準ボディ（ナロー）・標準ルーフ・5ドア専用</span></b></div>${getStudioLocation().id==='au'?`<div class="selection-row"><span>ロケーション</span><b id="selection-location">未選択</b></div>`: ''}`+rows.map(([label,k])=>`<div class="selection-row"><span>${label}</span>${modules[k]?`<div class="selection-module"><a href="${modules[k].external_url||`../${k}.html`}" ${modules[k].external_url?'target="_blank" rel="noopener noreferrer"':''}>${name(k)} ↗</a> ${constructionBadge(modules[k])}</div>`:`<b>${name(k)}</b>`}</div>`).join('')+`<div class="selection-row"><span>仕上げ</span><b>${state.finish==='black'?'ヘキサ合板':'バーチ合板'}</b></div>`;
  $('#selection-summary').insertAdjacentHTML('beforeend',mattressControls.summary()+iSeatControls.summary());
@@ -527,7 +538,7 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
  }
  if(key==='two-side-bed'&&state.flat&&path.includes('STORED'))n.visible=false;
  }}
-async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(!ceilingEnabled())state.ceilingLights=false;if(!panelEnabled()&&!isSuperGL(state))state.tailgateLights=false;if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{models=await Promise.all(keys.map(loadModel))}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
+async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(!ceilingEnabled())state.ceilingLights=false;if(!panelEnabled()&&!isSuperGL(state))state.tailgateLights=false;if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{[models]=await Promise.all([Promise.all(keys.map(loadModel)),ensureMaterials({...state})])}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
  for(const p of cache.values()){const g=await p;resetNodes(g)}for(const g of models)g.visible=true;iSeatVisuals.update(models.find(g=>g.name==='i-seat'),state);
  activeAirconMount=null;const airconModel=models.find(g=>g.name===AIRCON.key);if(airconModel&&isSuperGL(state)){activeAirconMount=twiVisuals.airconMount(airconModel.userData.data.bounds);airconModel.position.set(...activeAirconMount.translation_mm);airconModel.rotation.set(0,0,0);airconModel.userData.mount=activeAirconMount}else if(airconModel){delete airconModel.userData.mount}
  const floorModel=models.find(g=>g.name===FLOOR.key);if(floorModel){const replaced=new Set(floorModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}
