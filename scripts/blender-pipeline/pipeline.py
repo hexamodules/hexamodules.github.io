@@ -8,7 +8,8 @@ import bpy
 import bmesh
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color
-from mathutils import Vector
+from mathutils import Vector, Matrix
+from bounds_policy import transform_rows, bounds_changed, SMALL_TRIANGLE_COUNT
 
 @contextmanager
 def stage(name, objects=None):
@@ -112,6 +113,15 @@ def verify_fixed(o,frozen):
  missing=frozen-remaining
  if missing:raise RuntimeError(f'{o.name}: {len(missing)} protected coordinates changed; refusing export')
 
+class ReductionRejected(RuntimeError):
+ pass
+
+def object_bounds_mm(o):
+ points=[o.matrix_world@v.co for v in o.data.vertices]
+ if not points:return None
+ return [[min(p[i] for p in points)*1000 for i in range(3)],
+         [max(p[i] for p in points)*1000 for i in range(3)]]
+
 def load_texture(path):
  with stage('texture load '+str(path)):
   im=bpy.data.images.load(str(Path(path).resolve()),check_existing=True)
@@ -139,10 +149,12 @@ def custom(source):
  def read(part,key,width):
   offset,count=part[key];values=struct.unpack_from('<'+('I' if key=='index' else 'f')*count,buf,offset)
   return [values[i:i+width] for i in range(0,len(values),width)]
- for body in data['bodies']:
+ for body_index,body in enumerate(data['bodies']):
   for i,part in enumerate(body['parts']):
    mesh=bpy.data.meshes.new(body['name']);mesh.from_pydata(read(part,'position',3),[],read(part,'index',3));mesh.update()
    obj=bpy.data.objects.new(body['name']+'_'+str(i),mesh);bpy.context.collection.objects.link(obj)
+   obj.matrix_world=Matrix(transform_rows(body.get('transform')))
+   obj['source_body_index']=body_index;obj['source_part_index']=i
    obj['source_path']=body.get('path','');obj['source_body_name']=body['name'];obj['source_material']=part['material'];obj['source_role']=body.get('role','');obj['source_bounds_mm']=json.dumps(body['bounds'])
    uv=read(part,'uv',2);layer=mesh.uv_layers.new(name='UVMap0')
    for loop in mesh.loops:layer.data[loop.index].uv=uv[loop.vertex_index]
@@ -283,10 +295,38 @@ def bake_ao(o,ao,settings):
  else:bake()
 
 
+def tag_atlas_parts(objects):
+ identities=[]
+ for index,obj in enumerate(objects):
+  identities.append((obj.name,dict(obj.items())))
+  tag=obj.data.attributes.new(name='source_part_tag',type='INT',domain='FACE')
+  tag.data.foreach_set('value',[index]*len(obj.data.polygons))
+ return identities
+
+def restore_atlas_parts(o,identities):
+ result=[]
+ for index,(name,extras) in enumerate(identities):
+  mesh=o.data.copy();bm=bmesh.new()
+  try:
+   bm.from_mesh(mesh);tag=bm.faces.layers.int.get('source_part_tag')
+   if tag is None:raise RuntimeError('Atlas lost body identity')
+   bmesh.ops.delete(bm,geom=[f for f in bm.faces if f[tag]!=index],context='FACES')
+   bm.to_mesh(mesh)
+  finally:bm.free()
+  if not mesh.polygons:raise RuntimeError('Atlas lost source part '+name)
+  mesh.attributes.remove(mesh.attributes['source_part_tag'])
+  obj=bpy.data.objects.new(name,mesh);bpy.context.collection.objects.link(obj)
+  obj.matrix_world=o.matrix_world.copy()
+  for key,value in extras.items():obj[key]=value
+  result.append(obj)
+ bpy.data.objects.remove(o,do_unlink=True)
+ return result
+
 def furniture_atlas(objects,ao,settings,out):
  # One source file is one furniture item. Join only after per-body reduction
  # and UV0/material assignment, retaining material slots and world positions.
  if not objects:raise ValueError('Furniture input contains no meshes')
+ identities=tag_atlas_parts(objects)
  with stage('furniture atlas join'):
   bpy.ops.object.select_all(action='DESELECT')
   for o in objects:o.select_set(True)
@@ -321,7 +361,8 @@ def furniture_atlas(objects,ao,settings,out):
  else:print('STAGE: furniture atlas AO bake/save SKIP',flush=True)
  grain=o.data.uv_layers['UVMap0'];o.data.uv_layers.active=grain;grain.active_render=True
  o.select_set(False)
- return [o]
+ return restore_atlas_parts(o,identities)
+
 
 
 def run(a,source):
@@ -346,6 +387,16 @@ def run(a,source):
    if source.name.endswith('.mesh.json'):
     o.matrix_world=__import__('mathutils').Matrix.Rotation(math.pi/2,4,'X')@o.matrix_world
  geometry_stage('normalized input',objects)
+ if 'bodies' in meta:
+  for index,body in enumerate(meta['bodies']):
+   parts=[o for o in objects if o.get('source_body_index')==index]
+   if not parts:raise RuntimeError('Missing source body '+str(index))
+   points=[o.matrix_world@v.co for o in parts for v in o.data.vertices]
+   y_up=[(p.x*1000,p.z*1000,-p.y*1000) for p in points]
+   actual=[[min(p[i] for p in y_up) for i in range(3)],
+           [max(p[i] for p in y_up) for i in range(3)]]
+   if bounds_changed(body['bounds'],actual):
+    raise RuntimeError('Input body bounds/transform mismatch '+str(index))
  bpy.ops.object.select_all(action='DESELECT')
  before=sum(len(o.data.polygons) for o in objects)
  texture=load_texture(a.texture) if a.mode=='floor' else None
@@ -374,23 +425,43 @@ def run(a,source):
     bounds=[[min(v[i] for v in coords) for i in range(3)],[max(v[i] for v in coords) for i in range(3)]]
    axes=board_axes(bounds)
   with stage('apply scale '+o.name,[o]):
+   bpy.ops.object.select_all(action='DESELECT')
    bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
-  with stage('validate and degenerate cleanup before weld '+o.name,[o]):
-   clean_degenerate(o)
-  with stage('weld coincident vertices '+o.name,[o]):
-   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.mesh.remove_doubles(threshold=WELD_METRES);bpy.ops.object.mode_set(mode='OBJECT')
-  with stage('limited dissolve protected '+o.name,[o]):
-   safe_dissolve(o)
-  with stage('validate and degenerate cleanup before decimate '+o.name,[o]):
-   clean_degenerate(o)
-  with stage('boundary vertex group '+o.name,[o]):
-   group,frozen=boundary_group(o)
-  with stage('decimate '+o.name,[o]):
-   dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio
-   dec.use_collapse_triangulate=True;dec.use_symmetry=False
-   dec.vertex_group=group.name;dec.invert_vertex_group=False;dec.vertex_group_factor=1.0
-   bpy.ops.object.modifier_apply(modifier=dec.name)
-   verify_fixed(o,frozen)
+  original=o.data.copy()
+  original_bounds=object_bounds_mm(o)
+  try:
+   if furniture and len(o.data.polygons)<=SMALL_TRIANGLE_COUNT:
+    print('STAGE: small part kept unchanged '+o.name,flush=True)
+   else:
+    with stage('validate and degenerate cleanup before weld '+o.name,[o]):
+     clean_degenerate(o)
+    with stage('weld coincident vertices '+o.name,[o]):
+     bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.mesh.remove_doubles(threshold=WELD_METRES);bpy.ops.object.mode_set(mode='OBJECT')
+    with stage('limited dissolve protected '+o.name,[o]):
+     safe_dissolve(o)
+    with stage('validate and degenerate cleanup before decimate '+o.name,[o]):
+     clean_degenerate(o)
+    with stage('boundary vertex group '+o.name,[o]):
+     group,frozen=boundary_group(o)
+    with stage('decimate '+o.name,[o]):
+     dec=o.modifiers.new('Trial reduction','DECIMATE');dec.ratio=a.ratio
+     dec.use_collapse_triangulate=True;dec.use_symmetry=False
+     dec.vertex_group=group.name;dec.invert_vertex_group=False;dec.vertex_group_factor=1.0
+     bpy.ops.object.modifier_apply(modifier=dec.name)
+     verify_fixed(o,frozen)
+   if not o.data.polygons or bounds_changed(original_bounds,object_bounds_mm(o)):
+    raise ReductionRejected('outer bounds changed or empty mesh')
+  except (ReductionRejected, RuntimeError, ValueError) as error:
+   # Restore actual source geometry; never stretch a reduced mesh to fit its box.
+   if o.mode!='OBJECT':bpy.ops.object.mode_set(mode='OBJECT')
+   for modifier in list(o.modifiers):
+    if modifier.type=='DECIMATE':o.modifiers.remove(modifier)
+   reduced=o.data;o.data=original;bpy.data.meshes.remove(reduced)
+   print('STAGE: RESTORE '+o.name+' '+str(error),flush=True)
+  else:
+   bpy.data.meshes.remove(original)
+  o.vertex_groups.clear()
+  geometry_stage('bounds guarded', [o])
   with stage('UV0 planar projection '+o.name,[o]):
    if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
    o.data.update();o.data.validate()
@@ -455,6 +526,11 @@ def run(a,source):
  else:
   with stage('GLB export',objects):
    bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',export_extras=True,export_yup=True)
+  if 'bodies' in meta:
+   from compare_bounds import compare,decode
+   check=compare(meta,decode(target))
+   (out/'bounds-check.json').write_text(json.dumps(check,ensure_ascii=False,indent=2))
+   if not check['passed']:raise RuntimeError('Export bounds/body identity check failed')
  (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':settings['mode']=='none','ao_settings':settings,'ao_atlas_images':(1 if atlas is not None else 0) if furniture else None,'ao_mode_requested':a.ao_mode,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
 
 if __name__=='__main__':
