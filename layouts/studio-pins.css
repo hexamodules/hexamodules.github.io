@@ -27,6 +27,6 @@
 .pin-summary li{display:flex;gap:8px;align-items:baseline}.pin-summary strong{display:inline;flex:none;font-size:10px;min-width:42px}.pin-summary span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .pin-options small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:248px}.pin-option>span:not(.pin-swatch):not(.pin-check){min-width:0}
 [data-studio-step=review] .pin-tip{display:none}
-@media(max-width:850px) and (orientation:portrait){.pin-summary{grid-template-columns:1fr}.configuration .panel-scroll{max-height:8dvh}.pin-summary strong{min-width:70px}.pin-summary li{font-size:10px}.pin-option{min-height:58px}}
+@media(max-width:850px) and (orientation:portrait){.pin-summary{grid-template-columns:1fr}[data-studio-step=interior] .configuration .panel-scroll{max-height:8dvh}.pin-summary strong{min-width:70px}.pin-summary li{font-size:10px}.pin-option{min-height:58px}}
 html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!important}
 @media(max-height:600px) and (orientation:landscape){.studio-header{display:flex;position:fixed;inset:0 0 auto;height:44px;padding:4px 12px;z-index:10;gap:14px}.studio-heading h1{font-size:16px}.studio-heading h1 span,.studio-home-link,.concept-message{display:none!important}.studio-header .brand{flex-basis:84px}.studio-header .logo-window{transform:scale(.8);transform-origin:left center}.studio-header .help-button{font-size:10px}.workspace{top:44px;height:calc(100dvh - 44px)}}
