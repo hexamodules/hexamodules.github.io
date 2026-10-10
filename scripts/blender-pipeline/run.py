@@ -6,6 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 from extract_tile import defaults
+from furniture_materials import load_rules
 
 
 def main():
@@ -14,7 +15,7 @@ def main():
     p.add_argument('input', type=Path); p.add_argument('output', type=Path)
     p.add_argument('--assets', type=Path, default=assets)
     p.add_argument('--tiles', type=Path, default=tiles)
-    p.add_argument('--finish', default='oak')
+    p.add_argument('--finish')
     p.add_argument('--texture', type=Path)
     p.add_argument('--tile-mm', type=float, nargs=2)
     p.add_argument('--blender', default='/Applications/Blender.app/Contents/MacOS/Blender')
@@ -27,11 +28,17 @@ def main():
     p.add_argument('--skip-export', action='store_true')
     p.add_argument('--dry-run', action='store_true')
     a = p.parse_args()
-    finishes = {f['value']:f for f in json.loads((a.assets/'floor-finishes.json').read_text())['colors']}
-    if a.finish not in finishes:
-        p.error('--finish must be one of: '+', '.join(finishes))
-    texture = a.texture or a.tiles/f'floor-{a.finish}.png'
-    tile_mm = a.tile_mm or finishes[a.finish]['mapping']['tile_mm']
+    rules = load_rules()
+    a.finish = a.finish or ('birch' if a.mode == 'furniture-draft' else 'oak')
+    if a.mode == 'furniture-draft':
+        if a.finish not in ('birch','hexa'): p.error('Furniture finish must be birch or hexa')
+        texture = a.texture or a.tiles/rules['textures']['birch_face']
+        tile_mm = a.tile_mm or rules['mapping']['face_mm']
+    else:
+        finishes = {f['value']:f for f in json.loads((a.assets/'floor-finishes.json').read_text())['colors']}
+        if a.finish not in finishes: p.error('--finish must be one of: '+', '.join(finishes))
+        texture = a.texture or a.tiles/f'floor-{a.finish}.png'
+        tile_mm = a.tile_mm or finishes[a.finish]['mapping']['tile_mm']
     if not 0 < a.ratio <= 1 or any(not math.isfinite(n) or n <= 0 for n in tile_mm):
         p.error('ratio must be >0 and <=1; tile dimensions must be positive')
     if not a.input.exists() or not texture.is_file():
@@ -43,11 +50,15 @@ def main():
     for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':
-        cmd.extend(['--ao-atlas-size', str(a.ao_atlas_size)])
+        cmd.extend(['--ao-atlas-size', str(a.ao_atlas_size), '--finish', a.finish])
         for flag,name in [('--face-texture','birch-face.png'),('--edge-texture','birch-edge-15mm.png')]:
             if not (a.tiles/name).is_file():
                 p.error('Furniture tiles missing; extract with --furniture-source')
             cmd.extend([flag,str((a.tiles/name).resolve())])
+    if a.mode == 'furniture-draft' and a.finish == 'hexa':
+        hexa_source = a.texture or a.assets/rules['textures']['hexa_source']
+        if not hexa_source.is_file(): p.error('Hexa material photograph missing')
+        cmd.extend(['--hexa-source',str(hexa_source.resolve())])
     if a.output.exists():
         p.error('Output exists; choose a new directory')
     if a.dry_run:

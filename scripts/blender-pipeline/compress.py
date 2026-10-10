@@ -17,6 +17,7 @@ def atlas_info(path):
     if kind!=b'JSON':raise ValueError('Missing GLB JSON')
     doc=json.loads(raw[20:20+size])
     used={p['material'] for mesh in doc.get('meshes',[]) for p in mesh['primitives']}
+    if len(doc.get('materials',[]))>10:raise ValueError('Furniture exceeds 10 materials')
     images=set()
     for index in used:
         occlusion=doc['materials'][index].get('occlusionTexture')

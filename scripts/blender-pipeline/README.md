@@ -99,3 +99,15 @@ WebP品質80、Meshopt圧縮。使用する全材質がUV1・同じ1枚のAO画�
 Blenderでの実焼き・画質・アルミベッド2MB達成はジョブズの実行待ち。
 木の面／小口の既存の仮分類は継続し、アルミ材質の数値化・板の姿勢判定は今回変更しない。
 実行1行と制限の詳細は作業場の `exports/hexa-studio-blender-20261010/報告-AOアトラス-2026-10-10.md`。
+
+
+## 家具の材質貼り分け（2026-10-10、旧家具の仮分類を置換）
+
+`--mode furniture-draft --finish birch`（家具の既定）または `--finish hexa`。
+materials.jsonのボディ名→元材質名の順で判定し、同種材質を共有、合板は面／小口だけを分ける。
+板の最短軸と法線で面小口を判定し、面内の短い軸を木目方向とする。AO1枚共有は維持。
+未判定は合板に仮置きし、実行先のmaterial-report.jsonへ一覧を保存する。
+Hexaは既存assets/furniture-finish-hexa.webpの表面部分を実行時に切り出す。
+patterns/*-black*は車全体の画像なので素材として使用しない。写真のピッチ・木目方向は仮設定。
+詳細・未判定32ボディ・実行1行は作業場のexports/hexa-studio-blender-20261010/報告-材質の貼り分け-2026-10-10.md。
+実Blender出力は未検証。Python検査は上のunittest discoverで実行する。
