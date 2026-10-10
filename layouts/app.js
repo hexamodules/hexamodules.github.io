@@ -142,7 +142,27 @@ const grid=new THREE.GridHelper(7200,36,0xd1d1c5,0xe0e0d5);grid.position.set(0,-
 const {createAssetLoader}=await import('./lightweight-loader.js?v=20261010-furniture');
 const assetLoader=createAssetLoader();
 const entranceTier=document.documentElement.classList.contains('intro-active')?'mobile':assetLoader.tier;
-let vehicleUpgrade;
+let vehicleUpgrade,entranceShell=document.documentElement.classList.contains('intro-active');
+async function hydrateVehicleInterior(){
+ if(!entranceShell)return;
+ for(const key of ['vehicle',BODY_COMPLETION]){
+  const entry=loadedModels.get(key);if(!entry)continue;
+  const loaded=await assetLoader.load(key,'',null,'mobile.interior');
+  try{
+   loaded.data.bodies.forEach((body,i)=>{const node=entry.group.children[i];
+    for(const part of body.parts){
+     const geometry=new THREE.BufferGeometry();
+     for(const name of ['position','normal','uv'])geometry.setAttribute(name,new THREE.BufferAttribute(assetLoader.attribute(part,name,loaded.buffer),name==='uv'?2:3));
+     geometry.setIndex(new THREE.BufferAttribute(assetLoader.attribute(part,'index',loaded.buffer),1));geometry.computeBoundingSphere();
+     const material=materialFor(loaded.data.materials[part.material],key),mesh=new THREE.Mesh(geometry,material);
+     mesh.receiveShadow=true;visualMaterials.mesh(mesh,body.bounds);node.add(mesh);entry.materials.add(material);
+    }
+   });loaded.finish();
+  }catch(error){loaded.fail();throw error}
+ }
+ entranceShell=false;
+}
+
 function upgradeVehicle(){
  if(entranceTier===assetLoader.tier)return Promise.resolve();
  return vehicleUpgrade??=(async()=>{
@@ -279,7 +299,7 @@ async function loadModel(key){const version=furnitureVersion(key);if(cache.has(k
   furnitureData=result?.data;
   if(result?.group){result.group.userData.furnitureVersion=version;scene.add(result.group);result.finish();loadedModels.set(key,result);return result.group}
  }
- const loaded=(key===FLOOR.key&&!blenderFloorDisabled?await (await import('./blender-floor.js')).loadBlenderFloor(assetLoader,key):null)||await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"",furnitureData,entranceTier);const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.furnitureVersion=version;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;group.userData.blenderFloor=!!loaded.geometries;
+ const loaded=(key===FLOOR.key&&!blenderFloorDisabled?await (await import('./blender-floor.js')).loadBlenderFloor(assetLoader,key):null)||await assetLoader.load(key,key===PANEL.key?"?v="+PANEL.revision:"",furnitureData,entranceShell&&['vehicle',TAILGATE,BODY_COMPLETION,SLIDING_DOOR].includes(key)?'mobile.exterior':entranceTier);const {data,buffer:buf}=loaded;try{let mats=Object.fromEntries(Object.entries(data.materials).map(([k,v])=>[k,materialFor(v,key)]));let group=new THREE.Group();group.name=data.base_module||key;group.userData.data=data;group.userData.furnitureVersion=version;group.userData.moduleId=modules[data.base_module||key]?(data.base_module||key):key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':null;group.visible=false;group.userData.blenderFloor=!!loaded.geometries;
  if(loaded.geometries)for(const mat of Object.values(mats))if(mat.userData.floorFinish){mat.userData.blenderFloor=true;mat.onBeforeCompile=()=>{};mat.customProgramCacheKey=()=>'blender-floor-tile-v1'}
  for(const b of data.bodies){const node=new THREE.Group();node.name=b.name;node.userData=b;node.userData.initialBounds=b.bounds;for(const p of b.parts){let g=loaded.geometries?.get(b.name)?.clone()||new THREE.BufferGeometry();if(!loaded.geometries){g.setAttribute('position',new THREE.BufferAttribute(assetLoader.attribute(p,'position',buf),3));g.setAttribute('normal',new THREE.BufferAttribute(assetLoader.attribute(p,'normal',buf),3));g.setAttribute('uv',new THREE.BufferAttribute(assetLoader.attribute(p,'uv',buf),2));g.setIndex(new THREE.BufferAttribute(assetLoader.attribute(p,'index',buf),1));}g.computeBoundingSphere();let mesh=new THREE.Mesh(g,mats[p.material]);if(/PFS BOX23L/.test(b.path||'')&&/^ボディ/.test(b.name)){mesh.material=mesh.material.clone();mesh.material.color.set('#969594');mesh.material.metalness=0;mesh.material.roughness=.6;mesh.material.envMapIntensity=.35;}mesh.castShadow=key!=='vehicle'&&key!==TAILGATE&&key!==SLIDING_DOOR&&key!==FRONT_DOOR&&key!==BODY_COMPLETION&&key!==CEILING.key&&!isLight(key);mesh.receiveShadow=true;if(!assetLoader.isVehicle(key)){mesh.userData.originalPosition=g.attributes.position.array.slice();mesh.userData.originalNormal=g.attributes.normal.array.slice();}if(!loaded.geometries)visualMaterials.mesh(mesh,b.bounds);mesh.userData.blenderFloor=!!loaded.geometries;node.add(mesh)}countertopVisuals.apply(node,data.base_module||key);if(key===WALL.key)registerWallPanel(node);if(key===PANEL.key)registerColorPanel(node);if(key===CEILING.key)ceilingPanels.push(node);if(key===FLOOR.key)for(const mesh of node.children)if(mesh.material.userData.floorFinish)floorSurfaces.push(mesh);group.add(node)}scene.add(group);if(isLight(key))registerLightRig(key,data);loaded.finish();loadedModels.set(key,{group,materials:new Set([...Object.values(mats),...group.children.flatMap(n=>n.children.map(m=>m.material))])});return group}catch(error){loaded.fail();throw error}})();cache.set(key,promise);promise.catch(()=>{if(cache.get(key)===promise)cache.delete(key)});return promise;}
 
@@ -806,6 +826,7 @@ const opening=createOpening({
   renderer.render(scene,camera);
  },
  restore:async()=>{
+  await hydrateVehicleInterior();
   frameOpening=null;
   for(const {mat,opacity} of openingMaterials)mat.opacity=opacity;
   for(const group of openingGroups)scene.attach(group);
