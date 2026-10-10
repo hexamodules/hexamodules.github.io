@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {getLanguage,translate} from './language.js?v=20261010-places';
-import {STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=2';
+// Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
+import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {PIN_ANCHORS} from './base-configuration.js';
 export function createPinStudio(api){
  const {scene,camera,controls,renderer,getState,apply,getGroup,keys,palettes,choices,modules,moduleNames}=api;
