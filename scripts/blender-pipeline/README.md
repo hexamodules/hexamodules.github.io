@@ -121,7 +121,7 @@ mesh.jsonの元色を優先し、opaque_albedo→metal_f0→surface_albedoの順
 アルミだけ#d9d9d9/metalness0.9/roughness0.35、コンテナ本体だけ#969594/0/0.6を指定値へ統一。材質は種類＋色＋物性ごとに共有し、旧10材質制限を撤廃。
 合板は各ボディの全材質パートで共通の原点と軸を使用。同じ写真・物理縮尺・面内短辺方向を使い、REPEATで反転を防ぐ。面と小口はsRGB、AOはNon-Color。
 家具AOは64samples以上、margin32px、白で初期化してuse_clear=False、焼き後に0.85〜1.0へ圧縮。1家具1枚、UV1を維持する。
-圧縮後は2,500,000 bytes以下を検査。超過時も形状を自動で削らず停止し、結果と容量報告を残す。
+圧縮後の容量目標は既定4,000,000 bytes。compress.pyとrebuild_bounds.pyの`--max-bytes`で変更できる。超過時は形状を削らず警告のみ（終了コード0）、容量報告へ`target_met: false`を残す。
 
 4家具×birch/hexaの8本を新規フォルダへ再生成する（Blender実行はジョブズ）：
 
@@ -155,3 +155,9 @@ AOの白クリアやsRGB二重変換が扉の色差の原因ではない。
 再生成はジョブズが実行する。出力済みtagは拒否し、layoutsへのコピーは行わない。
 検査は `python3 -B -m unittest discover -s scripts/blender-pipeline -p 'test_*.py'`。
 Blenderを起動せず、色値・切替規則・木目統計・UV保持・コマンド伝達を検査できる。
+
+## 2026-10-10 容量上限と部分再生成
+
+`--parts active-side-cabinet,aluminum-front-kitchen,i-seat` で対象を絞れる（各birch/hexa）。省略時は全4家具。
+1本の生成・圧縮・寸法検査が失敗したら、その1本の後続処理を省き、次の仕上げ／部品へ進む。最後に部品・仕上げ・失敗段階をまとめ、失敗ありは終了コード1、すべて成功は0。容量超過の警告だけでは失敗扱いにしない。
+既存の出力フォルダがあるtagは、開始前に拒否する。新しいtagを使い、元ファイルは上書きしない。

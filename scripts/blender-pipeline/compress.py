@@ -1,10 +1,11 @@
-"""Compress GLB without overwriting. Furniture: shared AO, WebP 80, 2.5MB check.
+"""Compress GLB without overwriting. Furniture: shared AO, WebP 80, size warning.
 Floor defaults remain WebP 82 and Meshopt 16/12/14-bit quantization.
 """
 import argparse
 import json
 import struct
 import subprocess
+import sys
 from pathlib import Path
 
 
@@ -39,7 +40,9 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('input');p.add_argument('output')
     p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor')
+    p.add_argument('--max-bytes',type=int,default=4_000_000,help='Furniture size target in bytes (default: 4000000); excess only warns')
     a=p.parse_args()
+    if a.max_bytes<=0:p.error('--max-bytes must be positive')
     base=Path(__file__).resolve().parent
     node=Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node'
     cli=base/'dependencies/node_modules/@gltf-transform/cli/bin/cli.js'
@@ -56,10 +59,11 @@ def main():
     if furniture:
         result=atlas_info(out)
         if result['ao_mime_type']!='image/webp':raise ValueError('Atlas was not converted to WebP')
-        result.update(quality=quality,target_bytes=2_500_000,target_met=result['bytes']<=2_500_000)
+        result.update(quality=quality,target_bytes=a.max_bytes,target_met=result['bytes']<=a.max_bytes)
         report.write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result))
-        if not result['target_met']:raise SystemExit('Furniture exceeds 2.5MB; see compression report')
+        if not result['target_met']:
+            print(f"WARNING: Furniture exceeds {a.max_bytes} bytes ({result['bytes']} bytes); see {report}",file=sys.stderr)
 
 
 if __name__=='__main__':main()

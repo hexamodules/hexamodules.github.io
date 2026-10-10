@@ -77,14 +77,17 @@ class AtlasTests(unittest.TestCase):
    doc['materials'][1]={};write()
    with self.assertRaisesRegex(ValueError,'no AO'):compress.atlas_info(p)
 
- def test_compression_quality_floor_unchanged_furniture_80_and_size_failure(self):
+ def test_compression_quality_floor_unchanged_furniture_80_and_default_target(self):
   with tempfile.TemporaryDirectory(dir=TILES.parent) as temp:
    for mode,quality in [('floor','82'),('furniture-draft','80')]:
     argv=['compress.py','input.glb',str(Path(temp)/f'{mode}.glb'),'--mode',mode]
     with patch.object(sys,'argv',argv),patch.object(compress.subprocess,'run') as run,patch.object(compress,'atlas_info',return_value=dict(ao_images=1,ao_mime_type='image/webp',bytes=2_500_001)):
      if mode=='floor':compress.main()
      else:
-      with self.assertRaisesRegex(SystemExit,'exceeds 2.5MB'),redirect_stdout(io.StringIO()):compress.main()
+      with redirect_stdout(io.StringIO()):compress.main()
+      report=json.loads(Path(argv[2]).with_suffix('.compression.json').read_text())
+      self.assertEqual(report['target_bytes'],4_000_000)
+      self.assertTrue(report['target_met'])
      self.assertEqual(run.call_args_list[0].args[0][-1],quality)
      self.assertEqual(run.call_args_list[1].args[0][-6:],['--quantize-position','16','--quantize-normal','12','--quantize-texcoord','14'])
 
