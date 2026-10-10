@@ -1,7 +1,6 @@
 import {moduleNames} from './module-names.js?v=20261010';
 import {vehicleTranslations} from './vehicle-language.js?v=20261010-names';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
-// UI-only localization: the same model, configuration and camera stay in place.
 const pairs=[
 ['URLを共有','Share URL'],['URLをコピーしました','URL copied'],
 
@@ -69,13 +68,12 @@ pairs.push(...[["新車の仕様", "New vehicle preferences"], ["燃料（必須
 pairs.push(...[["床は必須です。柄を選ぶと次へ進めます。", "Flooring is required. Choose a finish to continue."], ["床を選ぶ", "Choose flooring"], ["最小構成は床のみ。家具やその他の内装・装備は必要に応じて追加できます。", "Start with flooring only. Furniture, other finishes and equipment are optional."], ["必須", "Required"]]);
 pairs.push(['床スライド','Floor slide'],['脱着式・追加あり','Removable · added'],['追加なし','Not added']);
 pairs.push(...vehicleTranslations);
-// Explain the manufacturer, studio and dealer roles in either language.
 pairs.push(...[["モジュール・パーツメーカー Hexa", "Hexa · modules & parts manufacturer"], ["Hexaは家具・内装のモジュールとパーツを設計・製作・販売しています。このスタジオで組み合わせを確認し、取扱店にご相談いただけます。", "Hexa designs, manufactures and supplies furniture modules and interior parts. Use this studio to explore combinations and discuss your layout with a dealer."], ["正式なお見積もりと販売は取扱店、車両への取付・施工は施工店が担当します。", "Dealers handle sales and formal quotes. Installers fit the modules and parts to your vehicle."]]);
 pairs.push(['天井ライト用開口','Ceiling light cutouts'],['バックドアライト用開口','Tailgate light cutouts'],['バックドアライト（取付希望）','Tailgate lights (fitting request)']);
 pairs.push(['車体へ →','Vehicle →'],['車体','Vehicle']);
 pairs.push(['架装パーツ参考価格は、家具モジュール（組み立て済み）と内装パーツの価格です。新車込みの場合は、合計に新車参考価格も含みます。取付・施工費は別途です。正式なお見積もりは取扱店よりご案内します。', 'The fit-out reference price covers assembled furniture modules and interior parts. When a new vehicle is selected, the total includes its reference price. Fitting and installation are extra. Your dealer will provide a formal quote.']);
 pairs.push(...Object.values(moduleNames).flatMap(m=>[[m.ja,m.en],...(m.noteJa?[[m.noteJa,m.noteEn]]:[])]));
-pairs.push(['マットレス','Mattress'],['テッフィ','Teffy'],['ボルカニックグレー','Volcanic grey'],['天井バーライト','Ceiling bar lights'],['間接照明','Indirect lighting'],['レイアウト','Layout'],['レイアウトを確定して次へ','Confirm layout and continue'],['レイアウトへ →','Layout →'],['ピンに触れると変えられます','Tap a pin to make changes'],['ピンに触れて選べます','Tap a pin to choose'],['前・シート','Front · seat'],['前・キッチン','Front · kitchen'],['後ろ左','Rear left'],['後ろ右','Rear right'],['ここに置く','Place here'],['現在の構成','Your configuration'],['パネルのみ','Panels only'],['色を変える','Change colour'],['あり','On']);
+pairs.push(['マットレス','Mattress'],['テッフィ','Teffy'],['ボルカニックグレー','Volcanic grey'],['天井バーライト','Ceiling bar lights'],['間接照明','Indirect lighting'],['レイアウト','Layout'],['レイアウトを確定して次へ','Confirm layout and continue'],['レイアウトへ →','Layout →'],['ピンに触れると変えられます','Tap a pin to make changes'],['前','Front'],['Hexa合板','Hexa plywood'],['マークをクリックすると仕様を変更できます','Click a marker to change the spec.'],['マークをタップすると仕様を変更できます','Click a marker to change the spec.'],['後ろ左','Rear left'],['後ろ右','Rear right'],['ここに置く','Place here'],['現在の構成','Your configuration'],['パネルのみ','Panels only'],['色を変える','Change colour'],['あり','On']);
 const dict=new Map(pairs),ordered=[...dict].sort((a,b)=>b[0].length-a[0].length);
 const LOCATIONS={jp:{id:'jp',country:'Japan',base:'Kanagawa',label:'神奈川県 / 日本',language:'ja'},au:{id:'au',country:'Australia',base:'Brisbane',label:'ブリスベン / オーストラリア',language:'en'}};
 const preferenceKey='hexa-studio-locale';
@@ -122,7 +120,6 @@ function commitLocale(){
  selectedLocation=resolveDealerLocation(selectedLocation);
  const url=new URL(location.href);
  url.searchParams.set('location',selectedLocation);
- // An explicit language also preserves Australia + Japanese in shared links.
  url.searchParams.set('lang',language);
  history.replaceState(null,'',url);
  try{localStorage.setItem(preferenceKey,JSON.stringify({location:selectedLocation,language}))}catch{}
