@@ -489,14 +489,14 @@ def run(a,source):
   if furniture:
    # Capture source material labels before replacing slots; source bounds include all parts.
    label=o.get('source_material',' '.join(slot.material.name for slot in o.material_slots if slot.material))
-   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''),model_key=meta.get('key',''))
+   source_body=meta.get('bodies',[])[o['source_body_index']] if 'source_body_index' in o and 'bodies' in meta else {}
+   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''),model_key=meta.get('key',''),bounds=source_body.get('bounds'))
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
    spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''),model_key=meta.get('key',''))
-   source_body=meta.get('bodies',[])[o['source_body_index']] if 'source_body_index' in o and 'bodies' in meta else {}
    policy=face_policy(label,meta.get('materials',{}),a.finish,
                       model_key=meta.get('key',''),body=source_body,kind=decision['kind'])
-   albero=countertop_candidate(meta.get('base_module') or meta.get('key',''),label,meta.get('materials',{}),countertop_definition)
+   albero=countertop_candidate(meta.get('base_module') or meta.get('key',''),label,meta.get('materials',{}),countertop_definition,body=source_body)
    decisions[-1]['albero_candidate']=albero
    preserve_face=a.face_source=='studio' and policy['finish']!='hexa'
    decisions[-1].update(face_policy=policy,face_source=a.face_source)

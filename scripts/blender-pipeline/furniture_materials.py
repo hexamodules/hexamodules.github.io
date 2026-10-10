@@ -1,5 +1,6 @@
 """Material decisions and physical planar coordinates; no Blender dependency."""
 import json
+import math
 import re
 from pathlib import Path
 
@@ -17,7 +18,24 @@ def load_rules(path=None, container_color_override=None):
     return rules
 
 
-def classify(name, material_key='', materials=None, rules=None, path='', role='', model_key=''):
+# Source bounds are in millimetres. Unknown coatings need geometry evidence;
+# named plywood retains its existing treatment even outside these limits.
+COATED = re.compile(r'パウダー[\s_]*コート|powder[\s_-]*coat|charcoal[\s_-]*satin', re.I)
+METAL_PART = re.compile(r'bracket|bolt|screw|hinge|rail|frame|rod|post|extrusion|ブラケット|金物|ねじ|蝶番|レール|支柱', re.I)
+
+
+def coated_board(name, material_name, bounds=None):
+    if not COATED.search(material_name) or METAL_PART.search(name) or not bounds:
+        return False
+    try:
+        t, w, h = sorted(float(bounds[1][i])-float(bounds[0][i]) for i in range(3))
+    except (TypeError, ValueError, IndexError):
+        return False
+    return (all(math.isfinite(v) for v in (t, w, h)) and
+            5-1e-6 <= t <= 30+1e-6 and w >= 60 and w >= 3*t and w*h >= 10000)
+
+
+def classify(name, material_key='', materials=None, rules=None, path='', role='', model_key='', bounds=None):
     if model_key == 'seat':
         return dict(kind='source_original', matched_by='stock_seat', fallback=False)
     rules = rules or load_rules()
@@ -47,6 +65,14 @@ def classify(name, material_key='', materials=None, rules=None, path='', role=''
     # Source aluminum/plastic takes precedence over generic slide/fridge names.
     if material and material['kind'] in ('aluminum', 'plastic'):
         return material
+    # Do not reinterpret explicitly identified appliances, fittings or containers.
+    if not guarded and not material and not contextual and COATED.search(material_name):
+        if body and body['kind'] != 'plywood':
+            return body
+        if coated_board(name, material_name, bounds):
+            return dict(kind='plywood', matched_by='coated_board_geometry', fallback=False)
+        if METAL_PART.search(name):
+            return dict(kind='hardware', matched_by='coated_hardware_name', fallback=False)
     if contextual and contextual['kind'] == 'container':
         return contextual
     if body and body['kind'] == 'container':
@@ -104,7 +130,7 @@ def project(point, normal, axes, mapping, finish='birch'):
 def audit_mesh(data, rules=None):
     rules = rules or load_rules()
     return [dict(body_index=i, body=b['name'], path=b.get('path',''), part=j,
-                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules,path=b.get('path',''),role=b.get('role',''),model_key=data.get('key','')))
+                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules,path=b.get('path',''),role=b.get('role',''),model_key=data.get('key',''),bounds=b.get('bounds')))
             for i,b in enumerate(data['bodies']) for j,p in enumerate(b['parts'])]
 
 
@@ -129,9 +155,11 @@ def bed_top_board(model_key, body, kind):
 
 
 def face_policy(material_key, materials, finish, model_key='', body=None, kind=''):
-    """Same material-name switch as app.js; a body name alone is not a switch."""
+    """Source material switch plus geometry-confirmed coated boards."""
     name = materials.get(str(material_key), {}).get('name', str(material_key))
     switchable = bool(re.search(r'SKY Hexa plywood|Hexa lightweight - charcoal', name))
+    if kind == 'plywood' and coated_board((body or {}).get('name',''), name, (body or {}).get('bounds')):
+        switchable = True
     if finish == 'hexa' and bed_top_board(model_key, body or {}, kind):
         switchable = False
     hexa = finish == 'hexa' and switchable
@@ -159,12 +187,22 @@ def studio_spec(kind, material_key, materials, rules, role='', model_key=''):
     return spec, source
 
 
-def countertop_candidate(model_key, material_key, materials, definition):
-    """countertops.js uses oak material tags, not generic body-name matches."""
+def countertop_candidate(model_key, material_key, materials, definition, body=None):
+    """ALBERO on the six worktop modules; beds and hardware remain excluded."""
     name = materials.get(str(material_key), {}).get('name', str(material_key))
-    return (model_key in definition['module_ids'] and
-            bool(re.search(r'oak|オーク材', name, re.I)) and
-            not bool(re.search('koguchi', name, re.I)))
+    if model_key not in definition['module_ids'] or re.search('koguchi', name, re.I):
+        return False
+    if re.search(r'oak|オーク材', name, re.I):
+        return True
+    body = body or {}
+    title = body.get('name', '')
+    # Match top as a worktop title, not 'panel with top tenons' or 'stop'.
+    pattern = r'^(?:countertop|天板|counter\b|top\b)|(?:^|[ _-])(?:countertop|counter|top)$'
+    named = re.search(pattern, title, re.I) or re.search(pattern, name, re.I)
+    if not named or METAL_PART.search(title):
+        return False
+    return classify(title, material_key, materials, path=body.get('path',''),
+                    model_key=model_key, bounds=body.get('bounds'))['kind'] == 'plywood'
 
 
 def countertop_uv(point_mm, bounds_mm, tile_mm):
