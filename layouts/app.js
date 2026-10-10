@@ -14,7 +14,7 @@ import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=20261010-five-colors';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-places';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261010-wall-return';
 import {constructionBadge} from './construction-badge.js?v=1';
 import {createOpening} from './opening.js?v=20261008-ga';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
@@ -647,7 +647,7 @@ let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
  const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261010-furniture';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261010-standard-lighting');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261010-wall-return');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   apply:patch=>{if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
   getGroup:key=>loadedModels.get(key)?.group,

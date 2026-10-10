@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {getLanguage,translate} from './language.js?v=20261010-places';
+import {getLanguage,translate} from './language.js?v=20261010-wall-return';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
 import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {PIN_ANCHORS} from './base-configuration.js';
@@ -39,7 +39,7 @@ export function createPinStudio(api){
    anchors.set(key,point);
   }
   const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleNames[k]?.en||modules[k]?.en||t(k)):(moduleNames[k]?.ja||modules[k]?.name||t(k));
-  for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(s.quarterPanels==='none'?'なし':'クォーターパネル'):paletteName('wall',s.wall==='none'?s.panel:s.wall)],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
+  for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(s.quarterPanels==='none'?'なし':'クォーターパネル'):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
   dirty=true;
  }
  function renderCard(s){
@@ -77,9 +77,14 @@ export function createPinStudio(api){
     if(key==='ceiling')for(const id of ['clear','walnut','none'])row(id==='none'?'なし':id==='clear'?'クリア':'ウォールナット','',s.twiCeiling===id,{twiCeiling:id},swatches[id]);
     else for(const [id,n] of [['left','助手席側（左）'],['right','運転席側（右）'],['both','両側'],['none','なし']])row(n,'',s.quarterPanels===id,{quarterPanels:id});
    }else{
+    if(key==='wall'){
+     const color=s.wall!=='none'?s.wall:s.panel!=='none'?s.panel:'white';
+     row('色を変える（壁面パネル）','',s.wall!=='none',{wall:color,panel:'auto'});
+     row('パネルのみ','',s.wall==='none'&&s.panel!=='none',{wall:'none',panel:color});
+     row('なし','',s.wall==='none'&&s.panel==='none',{wall:'none',panel:'none'});
+    }
     for(const c of [...palettes[key]].sort((a,b)=>{const order=key==='floor'?['teak','oak','walnut','light-canvas','dark-canvas']:key==='wall'?['white','teffy','volcanic-gray']:['white-ash','walnut','black-cherry'];return order.indexOf(a.value)-order.indexOf(b.value);}))row(key==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[c.value]:c.label||c.name,'',(key==='wall'&&s.wall==='none'?s.panel:s[key])===c.value,key==='wall'?(s.wall==='none'&&s.panel!=='none'?{panel:c.value}:{wall:c.value,panel:'auto'}):{[key]:c.value},swatches[c.value]);
-    if(key==='wall')row('パネルのみ','',s.wall==='none'&&s.panel!=='none',{wall:'none',panel:s.wall!=='none'?s.wall:s.panel!=='none'?s.panel:'white'});
-    if(key!=='floor')row('なし','',s[key]==='none'&&(key!=='wall'||s.panel==='none'),key==='wall'?{wall:'none',panel:'none'}:{[key]:'none'});
+    if(key!=='floor'&&key!=='wall')row('なし','',s[key]==='none'&&(key!=='wall'||s.panel==='none'),key==='wall'?{wall:'none',panel:'none'}:{[key]:'none'});
    }
   }else{
    const slot=key==='front'?'front':key==='left'?'cab':'bed';
