@@ -1,12 +1,15 @@
 // Shared order rules: independent of rendering and preview poses.
 export const MATTRESS_BEDS=['slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed'];
+// Add approved studio colours here; image is optional. Standard retains the current fabric.
+export const STUDIO_MATTRESS_COLORS=[{id:'light-green',ja:'標準',en:'Standard',hex:'#94977d',image:'assets/mattress-colors/light-green.jpg'}];
 export const MATTRESS_COLORS=[
  {id:'beige',ja:'ベージュ',en:'Beige',hex:'#c5b69e'},
  {id:'light-green',ja:'ライトグリーン',en:'Light green',hex:'#94977d'},
  {id:'light-brown',ja:'ライトブラウン',en:'Light brown',hex:'#9c8978'},
  {id:'dark-brown',ja:'ダークブラウン',en:'Dark brown',hex:'#524945'},
  {id:'black',ja:'ブラック',en:'Black',hex:'#323237'}
-].map(c=>({...c,image:`assets/mattress-colors/${c.id}.jpg`}));
+].map(c=>({...c,image:`assets/mattress-colors/${c.id}.jpg`,...(c.id==='light-green'?{hex:STUDIO_MATTRESS_COLORS[0].hex,image:STUDIO_MATTRESS_COLORS[0].image}:{})})).concat(STUDIO_MATTRESS_COLORS.filter(c=>c.id!=='light-green'));
+
 export const mattressColor=(s,slot)=>MATTRESS_COLORS.find(c=>c.id===s[slot+'MattressColor'])||MATTRESS_COLORS[1];
 export const mattressIncluded=s=>s.bed==='two-side-bed';
 export const bedMattressEnabled=s=>MATTRESS_BEDS.includes(s.bed)&&(s.bedMattress===true||(mattressIncluded(s)&&s.bedMattress===undefined));

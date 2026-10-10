@@ -1,29 +1,37 @@
 import * as THREE from 'three';
 import {getLanguage,translate} from './language.js?v=20261010-names';
+import {STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=2';
 import {PIN_ANCHORS} from './base-configuration.js';
 export function createPinStudio(api){
  const {scene,camera,controls,renderer,getState,apply,getGroup,keys,palettes,choices,modules,moduleNames}=api;
  const $=s=>document.querySelector(s),root=document.documentElement,stage=$('.stage');
  const t=s=>getLanguage()==='en'?translate(s):s;
- const names={floor:'床',ceiling:'天井',wall:'壁',front:'前',bed:'ベッド',left:'後ろ左',right:'後ろ右'};
+ const names={floor:'床',ceiling:'天井',wall:'壁',front:'フロントモジュール',bed:'ベッドモジュール',left:'サイドモジュール'};
  const layer=document.createElement('div');layer.className='pin-layer';layer.dataset.moduleI18n='';stage.append(layer);
  const backdrop=document.createElement('div');backdrop.className='pin-backdrop';backdrop.hidden=true;
  const popup=document.createElement('section');popup.className='pin-popup';popup.hidden=true;popup.dataset.moduleI18n='';popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');popup.setAttribute('aria-labelledby','pin-title');
  popup.innerHTML='<header><h2 id="pin-title"></h2><button type="button">×</button></header><div class="pin-options"></div>';
  document.body.append(backdrop,popup);const list=popup.querySelector('.pin-options');
  const card=document.createElement('div');card.className='pin-card-controls';card.dataset.moduleI18n='';$('#pane-interior').append(card);
+ $('#pane-interior').append($('#studio-vehicle-compatibility'));
+ const panel=$('.configuration'),cardToggle=document.createElement('button');cardToggle.className='pin-card-toggle';cardToggle.type='button';cardToggle.dataset.moduleI18n='';cardToggle.setAttribute('aria-expanded','false');panel.after(cardToggle);
+ cardToggle.onclick=()=>{const on=panel.classList.toggle('card-expanded');cardToggle.setAttribute('aria-expanded',String(on));};
+ const rotate=document.createElement('aside');rotate.className='landscape-prompt';rotate.dataset.moduleI18n='';
+ rotate.innerHTML='<span class="rotate-icon" aria-hidden="true">↻<i></i></span><p></p><button type="button">×</button>';stage.append(rotate);
+ const rotateText=rotate.querySelector('p'),rotateClose=rotate.querySelector('button');rotateClose.onclick=()=>{rotate.hidden=true;};
+ const orientation=matchMedia('(orientation:portrait)');orientation.addEventListener('change',()=>{rotate.hidden=false;});
  const hint=document.createElement('p');hint.className='pin-hint';hint.dataset.moduleI18n='';stage.append(hint);
  const hintText=()=>t(matchMedia('(pointer:coarse)').matches?'マークをタップすると仕様を変更できます':'マークをクリックすると仕様を変更できます');
- const summary=document.createElement('ul');summary.className='pin-summary';summary.dataset.moduleI18n='';$('#pane-interior').append(summary);
- let active=null,lastFocus=null,movingUntil=0,dragging=false,dirty=true,lastTick=0;
+ const summary=document.createElement('ul');summary.className='pin-summary';summary.dataset.moduleI18n='';$('#studio-vehicle-compatibility').before(summary);
+ let active=null,lastFocus=null,movingUntil=0,dragging=false,dirty=true,lastTick=0,hoverAfter=0;
  const anchors=new Map(),pins=new Map();
- for(const key of Object.keys(names)){const b=document.createElement('button');b.className='studio-pin';b.type='button';b.dataset.pin=key;b.setAttribute('aria-expanded','false');b.setAttribute('aria-haspopup','dialog');b.onclick=()=>open(key);layer.append(b);pins.set(key,b);}
+ for(const key of Object.keys(names)){const b=document.createElement('button');b.className='studio-pin';b.type='button';b.dataset.pin=key;b.setAttribute('aria-expanded','false');b.setAttribute('aria-haspopup','dialog');let hoverTimer;b.onclick=()=>{clearTimeout(hoverTimer);open(key);};b.onpointerenter=e=>{if(e.pointerType==='mouse'&&matchMedia('(hover:hover)').matches&&!active&&performance.now()>=hoverAfter)hoverTimer=setTimeout(()=>open(key),180);};b.onpointerleave=()=>clearTimeout(hoverTimer);layer.append(b);pins.set(key,b);}
  function occupied(key,s){return ({floor:s.floor!=='none',ceiling:s.vehicle==='super-gl'?s.twiCeiling!=='none':s.ceiling!=='none',wall:s.vehicle==='super-gl'?s.quarterPanels!=='none':s.wall!=='none'||s.panel!=='none',front:s.front!=='none',bed:s.bed!=='none',left:s.cab!=='none'||choices.FULL.includes(s.bed),right:s.bed!=='none',lights:s.ceilingLights||s.tailgateLights||s.twiCeiling!=='none',mattress:api.bedMattressEnabled(s)||api.frontMattressEnabled(s)})[key];}
  function model(key,s){return ({floor:keys.floor,ceiling:s.vehicle==='super-gl'?'twi-ceiling':keys.ceiling,wall:keys.wall,front:s.front,bed:s.bed,left:s.cab!=='none'?s.cab:choices.FULL.includes(s.bed)?s.bed:null,right:s.bed,mattress:s.bed})[key];}
  function refresh(){
-  const s=getState();summary.replaceChildren();renderCard(s);hint.textContent=hintText();stage.querySelector('.pin-tip')?.replaceChildren(hintText());
+  const s=getState();summary.replaceChildren();renderCard(s);hint.textContent=hintText();rotateText.textContent=t('横画面にしてください');rotateClose.setAttribute('aria-label',t('閉じる'));cardToggle.textContent=t('選択肢');
   for(const [key,b] of pins){
-   b.textContent=occupied(key,s)?'⇄':'+';b.dataset.label=t(names[key]);b.setAttribute('aria-label',t(names[key])+': '+t(occupied(key,s)?'色を変える':'ここに置く'));
+   b.textContent='';b.dataset.label=t(names[key]);b.setAttribute('aria-label',t(names[key])+': '+t(occupied(key,s)?'色を変える':'ここに置く'));
    const g=getGroup(model(key,s));let point=new THREE.Vector3(...(PIN_ANCHORS[key]||PIN_ANCHORS.seat));
    if(g?.visible&&g.userData.data?.bounds){const [lo,hi]=g.userData.data.bounds;point.set((lo[0]+hi[0])/2,lo[1]+(hi[1]-lo[1])*.82,(lo[2]+hi[2])/2);if(key==='mattress'){point.y=hi[1]+90;point.z=lo[2]+(hi[2]-lo[2])*.36;}if(key==='right'){point.x=lo[0]+(hi[0]-lo[0])*.15;point.z=lo[2]+(hi[2]-lo[2])*.25;}if(key==='left'&&choices.FULL.includes(s.bed))point.x=hi[0]-(hi[0]-lo[0])*.15;g.updateWorldMatrix(true,false);g.localToWorld(point);}
    anchors.set(key,point);
@@ -46,13 +54,20 @@ export function createPinStudio(api){
   const mattress=api.bedMattressEnabled(s)||api.frontMattressEnabled(s),available=api.bedMattressEnabled({...s,bedMattress:true})||s.front==='front-module';
   const toggle=(key,title,on,patch,disabled=false)=>group(key,title,[['on','あり',on,patch(true),null,disabled],['off','なし',!on,patch(false),null,disabled]]);
   toggle('mattress','マットレス',mattress,on=>({bedMattress:on,frontMattress:on,flat:on&&s.bed==='two-side-bed'}),!available);
+  if(mattress){
+   const label=document.createElement('label'),select=document.createElement('select'),caption=document.createElement('span');label.className='pin-mattress-color';caption.textContent=t('マットレスの色');select.dataset.cardChoice='mattress-color';
+   for(const c of STUDIO_MATTRESS_COLORS){const option=document.createElement('option');option.value=c.id;option.textContent=getLanguage()==='en'?c.en:t(c.ja);select.append(option);}
+   const current=s.bedMattress?s.bedMattressColor:s.frontMattressColor;
+   select.value=STUDIO_MATTRESS_COLORS.some(c=>c.id===current)?current:STUDIO_MATTRESS_COLORS[0].id;
+   select.onchange=()=>apply({bedMattressColor:select.value,frontMattressColor:select.value}).catch(console.error);label.append(caption,select);card.append(label);
+  }
   if(s.vehicle!=='super-gl')toggle('ceilingLights','天井ダウンライト',s.ceilingLights,on=>({ceilingLights:on,...(on&&s.ceiling==='none'?{ceiling:'white-ash'}:{})}));
   else if(s.twiCeiling!=='none')for(const [key,title] of [['twiBarLights','天井バーライト'],['twiIndirectLights','間接照明']])toggle(key,title,s[key],on=>({[key]:on}));
   toggle('tailgateLights','バックドアライト',s.tailgateLights,on=>({tailgateLights:on,...(on&&s.vehicle!=='super-gl'&&s.panel==='none'?{panel:'white'}:{})}));
   if(focused)card.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});
  }
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
- function close(){if(!active)return;pins.get(active).setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
+ function close(){if(!active)return;hoverAfter=performance.now()+500;pins.get(active).setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
  const swatches={teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
@@ -73,7 +88,7 @@ export function createPinStudio(api){
 
   }
  }
- function position(){if(!active)return;const r=pins.get(active).getBoundingClientRect();const w=popup.offsetWidth,h=popup.offsetHeight;let x=r.right+12;if(x+w>innerWidth-12)x=r.left-w-12;popup.style.left=Math.max(12,x)+'px';popup.style.top=Math.max(12,Math.min(innerHeight-h-12,r.top-24))+'px';}
+ function position(){if(!active)return;const r=pins.get(active).getBoundingClientRect();const w=popup.offsetWidth,h=popup.offsetHeight;let x=r.right+12;if(x+w>innerWidth-12)x=r.left-w-12;popup.style.left=Math.max(12,x)+'px';popup.style.top=Math.max(12,Math.min(innerHeight-h-12,r.bottom+h+12<=innerHeight?r.bottom+12:r.top-h-12))+'px';}
  function open(key){if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();active=key;lastFocus=pins.get(key);pins.get(key).setAttribute('aria-expanded','true');renderOptions(key);popup.hidden=false;backdrop.hidden=false;position();popup.querySelector('header button').focus({preventScroll:true});}
  backdrop.onclick=close;popup.querySelector('header button').onclick=close;
  document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
@@ -85,6 +100,5 @@ export function createPinStudio(api){
  }
  window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active)renderOptions(active);});new ResizeObserver(()=>{dirty=true;position();hint.textContent=hintText();}).observe(stage);
  refresh();requestAnimationFrame(frame);
- if(matchMedia('(max-width:850px) and (orientation:portrait)').matches){let shown=false;try{shown=sessionStorage.getItem('hexa-pin-hint')==='1';sessionStorage.setItem('hexa-pin-hint','1');}catch{}if(!shown){const tip=document.createElement('p');tip.className='pin-tip';tip.textContent=hintText();stage.append(tip);setTimeout(()=>tip.remove(),6500);}}
  return {refresh,open,openForModel(id){const s=getState();const key=id===keys.floor?'floor':id===keys.ceiling?'ceiling':id===keys.wall?'wall':id===s.front?'front':id===s.bed?'bed':'left';open(key);}};
 }

@@ -2,6 +2,7 @@ import {moduleNames} from './module-names.js?v=20261010';
 import {vehicleTranslations} from './vehicle-language.js?v=20261010-names';
 import {resolveDealerLocation} from './dealer-context.js?v=20261005';
 const pairs=[
+['サイドモジュール','Side module'],['ベッドモジュール','Bed module'],['横画面にしてください','Please rotate your phone to landscape.'],['マットレスの色','Mattress colour'],
 ['URLを共有','Share URL'],['URLをコピーしました','URL copied'],
 
 ['人の目安 170cm','Human scale 170cm'],['横にするとワイドで見られます','Rotate your phone for a wider view'],['幅 × 奥行 × 高さ:','Width × depth × height:'],['選択肢','Options'],['これと入れ替える','Replace this with'],['外す','Remove'],['色を変える','Change colour'],['パネルのみに変更','Use panels only'],

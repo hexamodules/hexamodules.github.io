@@ -35,10 +35,8 @@ export function installBaseVehicleControls({getState,getLanguage,onVehicle,onCha
  quarters.innerHTML='<p class="twi-maker">TWI craft</p><img class="twi-quarter-photo" loading="lazy" src="assets/twi/quarter-panel.jpg" alt="TWI製 クォーターパネルの取付例" width="1100" height="733"><p class="helper">片側1枚、両側2枚。写真は使用イメージです。</p><div class="twi-quantity" role="group" aria-label="クォーターパネルの枚数"><button type="button" data-quarter-choice="none">なし</button><button type="button" data-quarter-choice="single"><span>片側</span></button><button type="button" data-quarter-choice="both"><span>両側</span></button></div><div id="quarter-side-options" role="group" aria-label="取付側"><p class="helper">取付側</p><div class="twi-side-grid"><button type="button" data-quarter-side="left">助手席側（左）</button><button type="button" data-quarter-side="right">運転席側（右）</button></div></div><button type="button" class="wall-view" id="quarter-view">クォーターパネルを見る</button></div>';
  wallContent.append(quarters);
  const home=document.createElement('a');home.id='studio-home-link';home.className='studio-home-link';home.href='../';home.textContent='← トップページに戻る';$('.studio-heading').append(home);
- const vehicleSelect=document.createElement('select');vehicleSelect.id='studio-base-vehicle';vehicleSelect.setAttribute('aria-label','ベース車両');vehicleSelect.innerHTML='<option value="dx">トヨタ ハイエース バン DX</option><option value="super-gl">トヨタ ハイエース バン スーパーGL</option>';
- $('#studio-vehicle-compatibility strong').replaceWith(vehicleSelect);
+ const vehicleLabel=$('#studio-vehicle-compatibility strong');
  opening.addEventListener('click',e=>{const b=e.target.closest('[data-base-vehicle]');if(b)onVehicle(b.dataset.baseVehicle)});
- vehicleSelect.addEventListener('change',e=>onVehicle(e.target.value));
  ceiling.addEventListener('click',e=>{const b=e.target.closest('[data-twi-ceiling]');if(b)onChange({twiCeiling:b.dataset.twiCeiling})});
  let lastSide='left';
  quarters.addEventListener('click',e=>{
@@ -52,7 +50,7 @@ export function installBaseVehicleControls({getState,getLanguage,onVehicle,onCha
   twiAttribution.hidden=!sgl;
   twiAttribution.textContent=en?'Super GL uses TWI interior parts (ceiling and window panels).':'スーパーGLでは、TWI製の内装パーツ（天井・ウィンドウパネル）を使用しています。';
   for(const b of opening.querySelectorAll('[data-base-vehicle]'))b.setAttribute('aria-pressed',String(b.dataset.baseVehicle===s.vehicle));
-  vehicleSelect.value=s.vehicle;
+  vehicleLabel.textContent=en?vehicleNameEnglish(s):vehicleName(s);
   ceiling.hidden=!sgl;quarters.hidden=!sgl;dxWall.hidden=sgl;
   $('#ceiling-options').hidden=sgl;$('#ceiling-color-section').hidden=sgl||s.ceiling==='none';
   $('#ceiling-view').hidden=sgl?!twiCeilingEnabled(s):s.ceiling==='none';

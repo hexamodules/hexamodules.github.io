@@ -3,7 +3,6 @@ import * as THREE from 'three';
 import {MATTRESS_BEDS,MATTRESS_COLORS,mattressColor,mattressIncluded,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=2';
 
 export function createMattressControls({getState,getLanguage,onChange}){
- // Presentation-only answers: order booleans and shared URLs remain unchanged.
  const answers=new Map(), editing=new Set();
  let previous={};
  function syncAnswers(){const s=getState();for(const slot of ['bed','front']){if(previous[slot]!==s[slot]){answers.delete(slot);editing.delete(slot);}previous[slot]=s[slot];}}
@@ -21,7 +20,7 @@ export function createMattressControls({getState,getLanguage,onChange}){
   return `<section class="mattress-options" data-mattress-module="${key}" data-mattress-slot="${slot}" data-mattress-status="${choice}" data-mattress-label="${choice==='with'?text('あり','With')+'('+text(color.ja,color.en)+')':choice==='none'?text('なし','None'):text('未選択','Not selected')}" data-module-i18n>
    ${included?`<div class="mattress-included"><span aria-hidden="true">✓</span><strong>${text('専用マットレス付き','Fitted mattress included')}</strong><small>${text('標準付属','Included')}</small></div>`:collapsed?`<button type="button" class="mattress-edit" data-mattress-edit="${slot}">${text('マットレス: なし(変更)','Mattress: None (change)')}</button>`:`<fieldset class="mattress-order-options"><legend>${slot==='bed'?text('このベッドには、専用マットレスを付けられます。','You can add a fitted mattress to this bed.'):text('収納の上に、クッションを付けられます。','You can add a cushion on top of the storage.')}</legend><div class="mattress-actions">${['with','none'].map(value=>`<button type="button" data-mattress-order="${slot}" value="${value}" aria-pressed="${choice===value}">${value==='with'?text('付ける','Add'):text('付けない','Without')}</button>`).join('')}</div></fieldset>`}
    ${on?`${photo}<p class="mattress-spec">${text('ウレタン80mm · ファブリック','80 mm foam · Fabric')}</p>`:''}
-   ${on?`<fieldset class="mattress-colors"><legend>${text('カラー','Colour')} · ${text(color.ja,color.en)}</legend><div class="mattress-color-list">${MATTRESS_COLORS.map(c=>`<label class="mattress-color"><input type="radio" name="${slot}-mattress-color" data-mattress-color="${slot}" value="${c.id}" ${c.id===color.id?'checked':''}><img src="${c.image}" width="56" height="56" alt=""><span>${text(c.ja.replace(/^(ライト|ダーク)/,'$1<wbr>'),c.en)}</span></label>`).join('')}</div></fieldset>`:''}
+   ${on?`<fieldset class="mattress-colors"><legend>${text('カラー','Colour')} · ${text(color.ja,color.en)}</legend><div class="mattress-color-list">${MATTRESS_COLORS.map(c=>`<label class="mattress-color"><input type="radio" name="${slot}-mattress-color" data-mattress-color="${slot}" value="${c.id}" ${c.id===color.id?'checked':''}>${c.image?`<img src="${c.image}" width="56" height="56" alt="">`:`<span style="display:block;width:56px;height:56px;background:${c.hex}" aria-hidden="true"></span>`}<span>${text(c.ja.replace(/^(ライト|ダーク)/,'$1<wbr>'),c.en)}</span></label>`).join('')}</div></fieldset>`:''}
    ${on?`<small class="mattress-view-note">${text('構造が見えるよう、3Dでは半透明で表示します。','Shown translucent in 3D so you can see the structure.')}</small>`:''}
   </section>`;
  }
@@ -64,8 +63,6 @@ export function createMattressControls({getState,getLanguage,onChange}){
  }};
 }
 
-// Read the CAD top-face boundary rather than using a box around the entire module.
-// Hardware holes and the comb deck's finger joints are bridged by the cushion.
 const profiles=new WeakMap();
 function topOutline(node){
  if(profiles.has(node))return profiles.get(node);
@@ -95,7 +92,6 @@ function topOutline(node){
  profiles.set(node,loops[0]);return loops[0];
 }
 const rectangle=(x0,x1,z0,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
-// Join adjoining deck sections into one cushion, retaining any width changes.
 function continuousProfile(sections){
  const ordered=[...sections].sort((a,b)=>a.z0-b.z0);
  return [...ordered.flatMap(p=>[[p.x0,p.z0],[p.x0,p.z1]]),...ordered.reverse().flatMap(p=>[[p.x1,p.z1],[p.x1,p.z0]])];
@@ -138,7 +134,7 @@ export function createMattressVisuals({renderer,onTextureReady=()=>{}}){
   surface.userData.mattressColor=color.id;
   const seam=new THREE.LineBasicMaterial({color:new THREE.Color(color.hex).multiplyScalar(.65),transparent:true,opacity:.38});
   const pair={surface,seam};materials.set(id,pair);
-  loader.load(color.image,texture=>{
+  if(color.image)loader.load(color.image,texture=>{
    texture.colorSpace=THREE.SRGBColorSpace;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.anisotropy=weave.anisotropy;
    surface.map=texture;surface.color.set('#ffffff');surface.needsUpdate=true;onTextureReady();
   });
@@ -188,9 +184,6 @@ export function createMattressVisuals({renderer,onTextureReady=()=>{}}){
     if(motion&&travel>6)expandedSections.push({x0:right+3,x1:right+travel,z0,z1});
    }
    let fixedProfile=continuousProfile(fixedSections);
-   // The wall-side infill is a separate CAD body (not named "天板"). Join its
-   // outer contour to the cushion so the full fixed deck is covered, including
-   // its tapered rear corner, without introducing a lengthwise mattress seam.
    const left=Math.min(...fixedSections.map(p=>p.x0)),z0=Math.min(...fixedSections.map(p=>p.z0)),z1=Math.max(...fixedSections.map(p=>p.z1));
    const infill=nodes.find(n=>{const [lo,hi]=n.userData.bounds;return Math.abs(hi[0]-left)<.05&&Math.abs(hi[1]-y)<.05&&hi[0]-lo[0]>1&&hi[2]-lo[2]>(z1-z0)/2});
    if(infill){
@@ -204,7 +197,6 @@ export function createMattressVisuals({renderer,onTextureReady=()=>{}}){
    const fillers=allModels.find(g=>g.name==='lounge-fillers');
    for(const side of [-1,1]){
     const filler=fillers?.children.find(n=>n.userData.bounds&&(side<0?n.userData.bounds[0][0]<0:n.userData.bounds[0][0]>0));
-    // Follow the outer filler contour; small joinery slots stay below the cover.
     const contour=filler?topOutline(filler).filter(p=>side*p[0]>650):[];
     const wall=contour.sort((a,b)=>a[1]-b[1]).filter((p,i,a)=>!i||p[1]!==a[i-1][1]);
     const profile=wall.length?[[side*645,0],...wall,[side*645,length],[side*200,length],[side*200,0]]:rectangle(side<0?-645:200,side<0?-200:645,0,length);
@@ -223,7 +215,6 @@ export function createMattressVisuals({renderer,onTextureReady=()=>{}}){
  }
  return {update(models,s,fit,length){
   for(const group of models){
-   // Replace the old grey 60 mm/visual stored mattresses, avoiding duplicates.
    if(group.name==='two-side-bed'||group.name==='centre-mattresses')for(const node of group.children)if(node.userData.path?.startsWith('Mattress -'))node.visible=false;
    const slot=group.name===s.bed&&MATTRESS_BEDS.includes(s.bed)?'bed':group.name==='front-module'&&s.front==='front-module'?'front':null;
    if(!slot)continue;
