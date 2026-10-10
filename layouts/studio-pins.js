@@ -70,16 +70,16 @@ export function createPinStudio(api){
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
  function close(){if(!active)return;hoverAfter=performance.now()+500;pins.get(active).setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
- const swatches={teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
+ const swatches={clear:'#d8c7a3',teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
   list.replaceChildren();popup.querySelector('h2').textContent=t(names[key]);popup.querySelector('header button').setAttribute('aria-label',t('閉じる'));const s=getState();
   if(['floor','ceiling','wall'].includes(key)){
    if(s.vehicle==='super-gl'&&key!=='floor'){
-    if(key==='ceiling')for(const id of ['clear','walnut','none'])row(id==='none'?'なし':id==='clear'?'クリア':'ウォールナット',id==='none'?'':'照明付き',s.twiCeiling===id,{twiCeiling:id},swatches[id]);
-    else for(const [id,n] of [['left','助手席側（左）'],['right','運転席側（右）'],['both','両側'],['none','なし']])row(n,id==='none'?'':'クォーターパネル',s.quarterPanels===id,{quarterPanels:id});
+    if(key==='ceiling')for(const id of ['clear','walnut','none'])row(id==='none'?'なし':id==='clear'?'クリア':'ウォールナット','',s.twiCeiling===id,{twiCeiling:id},swatches[id]);
+    else for(const [id,n] of [['left','助手席側（左）'],['right','運転席側（右）'],['both','両側'],['none','なし']])row(n,'',s.quarterPanels===id,{quarterPanels:id});
    }else{
-    for(const c of [...palettes[key]].sort((a,b)=>{const order=key==='floor'?['teak','oak','walnut','light-canvas','dark-canvas']:key==='wall'?['white','teffy','volcanic-gray']:['white-ash','walnut','black-cherry'];return order.indexOf(a.value)-order.indexOf(b.value);}))row(key==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[c.value]:c.label||c.name,key==='ceiling'?'天然木突板':key==='floor'?'選んだ床柄＋黒い樹脂ステップ':'リア運転席側 · 100mmピッチ＋カラーパネル',(key==='wall'&&s.wall==='none'?s.panel:s[key])===c.value,key==='wall'?(s.wall==='none'&&s.panel!=='none'?{panel:c.value}:{wall:c.value,panel:'auto'}):{[key]:c.value},swatches[c.value]);
-    if(key==='wall')row('パネルのみ','窓下3枚・溝なし',s.wall==='none'&&s.panel!=='none',{wall:'none',panel:s.wall!=='none'?s.wall:s.panel!=='none'?s.panel:'white'});
+    for(const c of [...palettes[key]].sort((a,b)=>{const order=key==='floor'?['teak','oak','walnut','light-canvas','dark-canvas']:key==='wall'?['white','teffy','volcanic-gray']:['white-ash','walnut','black-cherry'];return order.indexOf(a.value)-order.indexOf(b.value);}))row(key==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[c.value]:c.label||c.name,'',(key==='wall'&&s.wall==='none'?s.panel:s[key])===c.value,key==='wall'?(s.wall==='none'&&s.panel!=='none'?{panel:c.value}:{wall:c.value,panel:'auto'}):{[key]:c.value},swatches[c.value]);
+    if(key==='wall')row('パネルのみ','',s.wall==='none'&&s.panel!=='none',{wall:'none',panel:s.wall!=='none'?s.wall:s.panel!=='none'?s.panel:'white'});
     if(key!=='floor')row('なし','',s[key]==='none'&&(key!=='wall'||s.panel==='none'),key==='wall'?{wall:'none',panel:'none'}:{[key]:'none'});
    }
   }else{
