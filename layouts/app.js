@@ -557,8 +557,8 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
  }
  if(key==='two-side-bed'&&state.flat&&path.includes('STORED'))n.visible=false;
  }}
-async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{[models]=await Promise.all([Promise.all(keys.map(loadModel)),ensureMaterials({...state})])}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
- if(models.some(g=>g.userData.blenderFloor)){try{await ensureBlenderFloorTexture(state.floor)}catch(error){if(ticket!==renderVersion)return;console.warn('Floor tile unavailable; using original filled floor.',error);blenderFloorDisabled=true;releaseFloorModel();return apply(state,{history,ui})}if(ticket!==renderVersion)return}
+async function apply(s=state,{history=true,ui=true,entryReveal=false}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));if(state.bed!=='two-side-bed')state.floorSlide=false;if(state.bed==='two-side-bed'&&!state.floorSlide)state.storage=false;if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');$('#loading').style.display='flex';$('#loading p').textContent='選んだ家具・内装を配置しています';let models;try{[models]=await Promise.all([Promise.all(keys.map(loadModel)),ensureMaterials({...state})])}catch(e){$('#loading p').textContent=e.message;throw e}if(ticket!==renderVersion)return;
+ if(models.some(g=>g.userData.blenderFloor)){try{await ensureBlenderFloorTexture(state.floor)}catch(error){if(ticket!==renderVersion)return;console.warn('Floor tile unavailable; using original filled floor.',error);blenderFloorDisabled=true;releaseFloorModel();return apply(state,{history,ui,entryReveal})}if(ticket!==renderVersion)return}
  for(const p of cache.values()){const g=await p;resetNodes(g)}for(const g of models)g.visible=true;iSeatVisuals.update(models.find(g=>g.name==='i-seat'),state);
  activeAirconMount=null;const airconModel=models.find(g=>g.name===AIRCON.key);if(airconModel&&isSuperGL(state)){activeAirconMount=twiVisuals.airconMount(airconModel.userData.data.bounds);airconModel.position.set(...activeAirconMount.translation_mm);airconModel.rotation.set(0,0,0);airconModel.userData.mount=activeAirconMount}else if(airconModel){delete airconModel.userData.mount}
  const floorModel=models.find(g=>g.name===FLOOR.key);if(floorModel){const replaced=new Set(floorModel.userData.data.source.replaces_vehicle_bodies);for(const node of models.find(g=>g.name==='vehicle').children)if(replaced.has(node.name))node.visible=false}
@@ -568,7 +568,25 @@ async function apply(s=state,{history=true,ui=true}={}){const ticket=++renderVer
  if(ui&&((!airconEnabled()&&activeView==='aircon')||(!panelEnabled()&&['panels','tailgate'].includes(activeView))||(!panelEnabled()&&!state.tailgateLights&&activeView==='tailgate-light')||(!ceilingEnabled()&&!twiCeilingEnabled(state)&&activeView==='ceiling')||(!floorEnabled()&&activeView==='floor')))setView('rear');
  updateInteriorPresentation();
  updateFitDisplay();
- if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');pinStudio?.refresh();studioScale.dimensions(models[0]?.userData.data?.bounds);renderer.render(scene,camera);return {keys,fit,bedLength:bedLength()}}
+ if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');pinStudio?.refresh();studioScale.dimensions(models[0]?.userData.data?.bounds);if(entryReveal)await revealEntry(models);renderer.render(scene,camera);return {keys,fit,bedLength:bedLength()}}
+// Keep the existing 560 ms exit transition, but present a painted vehicle frame
+// before the floor and a painted floor frame before the remaining configuration.
+async function revealEntry(models){
+ const interior=models.filter(g=>g.name!=='vehicle'&&g.name!==TAILGATE);
+ const floor=interior.find(g=>g.name===FLOOR.key);
+ for(const g of interior)g.visible=false;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const paint=()=>{renderer.render(scene,camera);return new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))};
+ const wait=ms=>reduced?Promise.resolve():new Promise(resolve=>setTimeout(resolve,ms));
+ const started=performance.now();
+ try{
+  await paint();await wait(160);
+  if(floor)floor.visible=true;
+  await paint();await wait(160);
+  for(const g of interior)g.visible=true;
+  await paint();await wait(Math.max(0,560-(performance.now()-started)));
+ }finally{for(const g of interior)g.visible=true;needsFrame=true;}
+}
 const checkMarkers=new THREE.Group();scene.add(checkMarkers);
 function updateFitDisplay(){
  if(state.front==='i-seat'){$('#geometry-check').hidden=false;$('#geometry-check').classList.remove('has-issues');$('#check-title').textContent=moduleName('i-seat',getLanguage())+(getLanguage()==='en'?' · installation':' の取り付けについて');$('#check-details').textContent=iSeatInstallationNote(getLanguage());$('#toggle-checks').hidden=true;checkMarkers.clear();updateReviewIndicator(false);return}
@@ -714,10 +732,15 @@ const opening=createOpening({
  prepare:async()=>{
   openingState={...state};openingView=activeView;controls.enabled=false;controls.maxDistance=28000;
   $('#motion-section').open=false;
-  await apply({...state,front:'none',bed:'none',cab:'none',twiCeiling:'none',quarterPanels:'none',wall:'none',panel:'none',ceiling:'none',floor:'none',ac:'none',heater:'none',insulation:'none',electrical:'none',batteryAh:100,inverterW:0,ceilingLights:false,tailgateLights:false,night:false,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false},{history:false});
+  state={...state,front:'none',bed:'none',cab:'none',twiCeiling:'none',quarterPanels:'none',wall:'none',panel:'none',ceiling:'none',floor:'none',ac:'none',heater:'none',insulation:'none',electrical:'none',batteryAh:100,inverterW:0,ceilingLights:false,tailgateLights:false,night:false,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false};
+  // Preparation must not normalize the empty floor back to the standard teak floor.
+  // Hide previous selections before any asynchronous vehicle load (also on replay).
+  for(const group of scene.children)if(group.userData.data)group.visible=false;
+  for(const {rig} of lightRigs.values())rig.visible=false;
+  needsFrame=true;
   $('#loading').style.display='flex';$('#loading p').textContent='車体を準備しています';
   [openingVehicle,openingTailgate,openingBody,openingSlider]=await Promise.all(['vehicle',TAILGATE,BODY_COMPLETION,SLIDING_DOOR].map(loadModel));
-  for(const g of [openingBody,openingSlider]){resetNodes(g);g.visible=true}
+  for(const g of [openingVehicle,openingTailgate,openingBody,openingSlider]){resetNodes(g);g.visible=true}
   for(const node of openingBody.children)node.visible=![26,41].includes(node.userData.source.index);
   for(const node of openingVehicle.children)if(['メッシュ ボディ3_編集済み','メッシュ ボディ1_編集済み','メッシュ ボディ1298'].includes(node.name))node.visible=false;
   openingGroups=[openingVehicle,openingTailgate,openingBody,openingSlider];
@@ -748,10 +771,9 @@ const opening=createOpening({
   for(const group of openingGroups)scene.attach(group);
   if(openingRig){scene.remove(openingRig);openingRig=null}openingGroups=[];
   if(basePending){openingState=startingConfiguration(openingState);basePending=false;}
-  await apply(openingState);
-  await ensurePins();
   setView(openingView);
-  if(!matchMedia('(prefers-reduced-motion: reduce)').matches)await new Promise(resolve=>setTimeout(resolve,560));
+  await apply(openingState,{entryReveal:true});
+  await ensurePins();
   setView(openingView);controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));
   controls.enabled=true;grid.visible=false;needsFrame=true;
  }
