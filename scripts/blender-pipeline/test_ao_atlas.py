@@ -47,7 +47,7 @@ class AtlasTests(unittest.TestCase):
   active=NS(active=None)
   def join():calls.append('join')
   bpy=NS(context=NS(view_layer=NS(objects=active)),ops=NS(object=NS(select_all=lambda **k:None,join=join,mode_set=lambda **k:calls.append(k['mode'])),mesh=NS(select_all=lambda **k:None),uv=NS(smart_project=lambda **k:calls.append(('uv',k)))))
-  ns.update(tag_atlas_parts=lambda objs:objs,restore_atlas_parts=lambda obj,ids:ids,bpy=bpy,geometry_stage=lambda *a:None,bake_ao=lambda *a:calls.append('bake'))
+  ns.update(tag_atlas_parts=lambda objs:objs,restore_atlas_parts=lambda obj,ids:ids,bpy=bpy,geometry_stage=lambda *a:None,bake_ao=lambda *a:calls.append('bake'),finish_ao_pixels=lambda ao:calls.append('finish AO'))
   with tempfile.TemporaryDirectory(dir=TILES.parent) as temp:
    def save():Path(ao.filepath_raw).write_bytes(b'\x89PNG\r\n\x1a\n'+struct.pack('>I4sIIBB',13,b'IHDR',2048,2048,8,2)+b'\0'*3)
    ao=NS(save=save,pack=lambda:calls.append('pack'))
@@ -81,10 +81,10 @@ class AtlasTests(unittest.TestCase):
   with tempfile.TemporaryDirectory(dir=TILES.parent) as temp:
    for mode,quality in [('floor','82'),('furniture-draft','80')]:
     argv=['compress.py','input.glb',str(Path(temp)/f'{mode}.glb'),'--mode',mode]
-    with patch.object(sys,'argv',argv),patch.object(compress.subprocess,'run') as run,patch.object(compress,'atlas_info',return_value=dict(ao_images=1,ao_mime_type='image/webp',bytes=2_000_001)):
+    with patch.object(sys,'argv',argv),patch.object(compress.subprocess,'run') as run,patch.object(compress,'atlas_info',return_value=dict(ao_images=1,ao_mime_type='image/webp',bytes=2_500_001)):
      if mode=='floor':compress.main()
      else:
-      with self.assertRaisesRegex(SystemExit,'exceeds 2MB'),redirect_stdout(io.StringIO()):compress.main()
+      with self.assertRaisesRegex(SystemExit,'exceeds 2.5MB'),redirect_stdout(io.StringIO()):compress.main()
      self.assertEqual(run.call_args_list[0].args[0][-1],quality)
      self.assertEqual(run.call_args_list[1].args[0][-6:],['--quantize-position','16','--quantize-normal','12','--quantize-texcoord','14'])
 

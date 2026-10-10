@@ -27,13 +27,13 @@ class FurnitureTests(unittest.TestCase):
   self.assertEqual(rules['hexa_face'],dict(color='#ffffff',metalness=0,roughness=.7))
 
  def test_collisions_and_source_materials(self):
-  cases=[('rail outer','aluminum','hardware'),('slide','アルミニウム - サテン','hardware'),
-         ('rail','クロム','aluminum'),('天板1','SKY Birch plywood - aluminum reference grain','plywood'),
+  cases=[('rail outer','aluminum','aluminum'),('slide','アルミニウム - サテン','aluminum'),
+         ('rail','クロム','hardware'),('天板1','SKY Birch plywood - aluminum reference grain','plywood'),
          ('ボディ105','SKY Birch plywood - aluminum reference grain','plywood'),
          ('ボディ82','アルミニウム - サテン','aluminum'),('corner','プラスチック - 光沢(黒)','plastic'),
-         ('mattress top','birch','mattress'),('eurobox side','birch','container')]
+         ('mattress top','birch','mattress'),('eurobox side','birch','plywood')]
   for body,material,kind in cases:self.assertEqual(classify(body,material)['kind'],kind)
-  self.assertEqual(classify('unknown','Opaque(165,158,150)'),dict(kind='plywood',matched_by='fallback',fallback=True))
+  self.assertEqual(classify('unknown','Opaque(165,158,150)'),dict(kind='plastic',matched_by='fallback',fallback=True))
   self.assertEqual(classify('unknown','m1',{'m1':{'name':'アルミニウム'}})['kind'],'aluminum')
 
  def test_appliance_seat_and_container_collisions(self):
@@ -43,13 +43,13 @@ class FurnitureTests(unittest.TestCase):
    ('Box bay post','aluminum','','aluminum'),('box rail','aluminum','','aluminum'),
    ('Seat hinge','steel','','hardware'),('ヘッドレスト支柱','ISeat steel','','hardware'),
    ('背面ステッチ','ISeat seam','','seat_fabric'),('左・下部成形面','ISeat frame','','hardware'),
-   ('seat cushion','birch','','seat_fabric'),('Oak top sink cutout','オーク材','','plywood'),
+   ('seat cushion','birch','','plywood'),('Oak top sink cutout','オーク材','','plywood'),
    ('Fridge support394x450','SKY Hexa plywood','','plywood'),
    ('Sink clearance - frame (26)','aluminum','','aluminum'),
    ('Sink cabinet tank support floor','SKY Hexa plywood','','plywood'),
    ('Stainless basin','SNG brushed stainless','11 Dometic SNG4237 sink:1','stainless'),
-   ('Chrome mixer base','AC539 polished chrome','11 Dometic SNG4237 sink:1','stainless'),
-   ('Rounded tank260','HDPE','','tank'),('aircon cube','','','appliance')]
+   ('Chrome mixer base','AC539 polished chrome','11 Dometic SNG4237 sink:1','hardware'),
+   ('Rounded tank260','HDPE','','plastic'),('aircon cube','','','appliance')]
   for body,mat,path,kind in cases:
    with self.subTest(body=body): self.assertEqual(classify(body,mat,path=path)['kind'],kind)
 

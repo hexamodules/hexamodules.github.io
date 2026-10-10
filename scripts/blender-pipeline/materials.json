@@ -1,6 +1,5 @@
 {
-  "fallback": "plywood",
-  "max_materials": 10,
+  "fallback": "plastic",
   "body_rules": [
     {
       "kind": "hardware",
@@ -58,6 +57,10 @@
     },
     {
       "kind": "plastic",
+      "pattern": "HDPE|printed|wordmark|logo|ink|temperature|\\bcap\\b|socket|seal|rubber|plastic|resin|樹脂|プラスチック|ABS|enamel glass"
+    },
+    {
+      "kind": "plastic",
       "pattern": "plastic|resin|プラスチック|樹脂|rubber|gasket|\\bABS\\b|enamel glass"
     },
     {
@@ -75,6 +78,10 @@
     {
       "kind": "mattress",
       "pattern": "mattress|マットレス|cushion"
+    },
+    {
+      "kind": "stainless",
+      "pattern": "stainless"
     }
   ],
   "materials": {

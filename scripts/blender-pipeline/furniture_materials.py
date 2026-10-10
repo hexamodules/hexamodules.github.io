@@ -17,27 +17,51 @@ def classify(name, material_key='', materials=None, rules=None, path='', role=''
             if re.search(rule['pattern'], text, re.IGNORECASE):
                 return dict(kind=rule['kind'], matched_by=source, fallback=False)
 
-    # Explicit source wood protects sink cutouts/supports; ISeat roles protect metal.
     guarded = match(material_name, 'source_guards', 'material_guard')
     body = match(name, 'body_rules', 'body')
+    contextual = match(path, 'path_rules', 'path')
+    material = match(material_name, 'material_rules', 'material')
     if guarded and guarded['kind'] != 'plywood':
         return guarded
-    # Named fasteners and containers remain authoritative even on stale wood labels.
-    if body and body['kind'] in ('hardware', 'container', 'mattress', 'aluminum', 'seat_fabric'):
-        return body
+    # Preserve explicit board labels, including Eurobox floor/backing panels.
     if guarded:
+        if body and body['kind'] == 'mattress':
+            return body
         return guarded
-    # Component paths identify anonymous appliance and PFS bodies. Do not combine
-    # generic parent words ("rear fridge", "Eurocontainer tray") with body names.
-    contextual = match(path, 'path_rules', 'path')
+    # Source aluminum/plastic takes precedence over generic slide/fridge names.
+    if material and material['kind'] in ('aluminum', 'plastic'):
+        return material
+    if contextual and contextual['kind'] == 'container':
+        return contextual
+    if body and body['kind'] == 'container':
+        return body
+    if material:
+        return material
     if contextual:
         return contextual
     if body:
         return body
-    material = match(material_name, 'material_rules', 'material')
-    if material:
-        return material
     return dict(kind=rules['fallback'], matched_by='fallback', fallback=True)
+
+
+def source_color(definition):
+    colors = definition.get('colors', {})
+    for key in ('opaque_albedo', 'metal_f0', 'surface_albedo'):
+        if key in colors:
+            values = colors[key]
+            if len(values) < 3 or any(not 0 <= v <= 255 for v in values[:3]):
+                raise ValueError('Invalid source RGB: ' + repr(values))
+            return '#' + ''.join(f'{round(v):02x}' for v in values[:3]), key
+    raise ValueError('Missing source color: ' + repr(definition))
+
+
+def resolved_spec(kind, material_key, materials, rules):
+    spec = dict(rules['materials'][kind])
+    if kind in ('plywood', 'aluminum', 'container'):
+        return spec, 'specified_' + kind
+    color, field = source_color(materials.get(str(material_key), {}))
+    spec['color'] = color
+    return spec, 'materials.colors.' + field
 
 
 def board_axes(bounds):

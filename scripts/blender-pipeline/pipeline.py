@@ -7,9 +7,9 @@ from contextlib import contextmanager
 import bpy
 import bmesh
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color
+from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec
 from mathutils import Vector, Matrix
-from bounds_policy import transform_rows, bounds_changed, SMALL_TRIANGLE_COUNT
+from bounds_policy import transform_rows, bounds_changed, keep_geometry
 
 @contextmanager
 def stage(name, objects=None):
@@ -130,7 +130,7 @@ def load_texture(path):
  return im
 
 def args():
- p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.2);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=16);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
+ p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.6);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=64);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
  p.add_argument('--finish',choices=['birch','hexa'],default='birch')
  p.add_argument('--hexa-source')
  p.add_argument('--ao-atlas-size',type=int,choices=[2048,4096],default=2048)
@@ -216,14 +216,14 @@ def material(o, texture, ao, resin=False, spec=None):
  return mat
 
 
-def furniture_uv(o, axes, rules, finish, plywood):
+def furniture_uv(o, axes, rules, finish, plywood, origin=(0,0,0)):
  mesh=o.data;mesh.update()
  uv=[0.0]*(2*len(mesh.loops));indices=[]
  # Local axes follow each body, including rotated imported objects. Scale was applied.
  for face in mesh.polygons:
   index=0
   for loop in face.loop_indices:
-   point=tuple(mesh.vertices[mesh.loops[loop].vertex_index].co)
+   point=tuple(mesh.vertices[mesh.loops[loop].vertex_index].co[i]-origin[i] for i in range(3))
    index,value=project(point,tuple(face.normal),axes,rules['mapping'],finish) if plywood else (0,(0,0))
    uv[2*loop:2*loop+2]=value
   indices.append(index)
@@ -236,7 +236,8 @@ def ao_settings(a):
  mode='none' if a.skip_ao else a.ao_mode
  size=getattr(a,'ao_atlas_size',2048) if getattr(a,'mode','floor')=='furniture-draft' else (512 if mode=='lowres' else 1024)
  return {'mode':mode,'size':size,
-         'samples':4 if mode=='lowres' else a.samples,'margin':2 if mode=='lowres' else 8}
+         'samples':max(64,a.samples) if getattr(a,'mode','floor')=='furniture-draft' else (4 if mode=='lowres' else a.samples),
+         'margin':32 if getattr(a,'mode','floor')=='furniture-draft' else (2 if mode=='lowres' else 8)}
 
 def plain_material(ao=None):
  mat=bpy.data.materials.new('AO temporary white');mat.use_nodes=True
@@ -289,7 +290,7 @@ def bake_ao(o,ao,settings):
     with stage('AO mode packed image '+im.name):im.pack()
  def bake():
   with stage('AO bake '+o.name+' mode='+mode):
-   bpy.ops.object.bake(type='AO',margin=settings['margin'],use_clear=True)
+   bpy.ops.object.bake(type='AO',margin=settings['margin'],use_clear=not settings.get('white_background',False))
  if mode=='plain':
   with plain_bake_materials(o,ao):bake()
  else:bake()
@@ -322,6 +323,34 @@ def restore_atlas_parts(o,identities):
  bpy.data.objects.remove(o,do_unlink=True)
  return result
 
+def finish_ao_pixels(ao):
+ # AO is Non-Color; remap once after baking, before PNG packing/export.
+ import numpy as np
+ pixels=np.empty(len(ao.pixels),dtype=np.float32)
+ ao.pixels.foreach_get(pixels)
+ rgba=pixels.reshape((-1,4))
+ rgba[:,:3]=.85+.15*np.clip(rgba[:,:3],0,1)
+ rgba[:,3]=1
+ ao.pixels.foreach_set(pixels);ao.update()
+
+
+def body_projection_frames(objects):
+ # Aggregate all material parts of each body. Coordinates are local metres after
+ # scale application, so rotations and material-slot splitting cannot shift grain.
+ groups={}
+ for o in objects:
+  key=o.get('source_body_index',o.name)
+  scale=o.matrix_world.to_scale()
+  points=[tuple(v.co[i]*scale[i] for i in range(3)) for v in o.data.vertices]
+  groups.setdefault(key,[]).extend(points)
+ frames={}
+ for key,points in groups.items():
+  bounds=[[min(v[i] for v in points) for i in range(3)],
+          [max(v[i] for v in points) for i in range(3)]]
+  frames[key]=(board_axes(bounds),tuple(bounds[0]),bounds)
+ return frames
+
+
 def furniture_atlas(objects,ao,settings,out):
  # One source file is one furniture item. Join only after per-body reduction
  # and UV0/material assignment, retaining material slots and world positions.
@@ -346,7 +375,9 @@ def furniture_atlas(objects,ao,settings,out):
                             island_margin=(2*settings['margin']+2)/settings['size'])
   finally:bpy.ops.object.mode_set(mode='OBJECT')
  if ao is not None:
+  settings=dict(settings,white_background=True)
   bake_ao(o,ao,settings)
+  finish_ao_pixels(ao)
   with stage('furniture atlas PNG save'):
    ao.filepath_raw=str(out/'furniture-ao.png');ao.file_format='PNG'
    ao.save()
@@ -404,6 +435,10 @@ def run(a,source):
  face_texture=load_texture(a.face_texture) if furniture else None
  edge_texture=load_texture(a.edge_texture) if furniture else None
  rules=load_rules();shared={};decisions=[]
+ frames=body_projection_frames(objects) if furniture else {}
+ if furniture:
+  face_texture.colorspace_settings.name='sRGB'
+  edge_texture.colorspace_settings.name='sRGB'
  if furniture and a.finish=='hexa':
   # Prepared studio tile: preserve encoded RGB; no float-pixel crop conversion.
   face_texture=load_texture(a.hexa_source)
@@ -413,25 +448,29 @@ def run(a,source):
   with stage('furniture atlas image create'):
    atlas=bpy.data.images.new('Furniture AO',settings['size'],settings['size'],alpha=False,float_buffer=False)
    atlas.colorspace_settings.name='Non-Color';atlas.generated_color=(1,1,1,1)
+   import numpy as np
+   atlas.pixels.foreach_set(np.ones(len(atlas.pixels),dtype=np.float32));atlas.update()
  for o in objects:
   if furniture:
    # Capture source material labels before replacing slots; source bounds include all parts.
    label=o.get('source_material',' '.join(slot.material.name for slot in o.material_slots if slot.material))
    decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''))
    decisions.append(dict(object=o.name,source_material=label,**decision))
-   if 'source_bounds_mm' in o:bounds=json.loads(o['source_bounds_mm'])
-   else:
-    coords=[v.co for v in o.data.vertices]
-    bounds=[[min(v[i] for v in coords) for i in range(3)],[max(v[i] for v in coords) for i in range(3)]]
-   axes=board_axes(bounds)
+   axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
+   spec,color_source=resolved_spec(decision['kind'],label,meta.get('materials',{}),rules)
+   decisions[-1].update(source_body_index=o.get('source_body_index'),source_part_index=o.get('source_part_index'),source_path=o.get('source_path',''),spec=spec,color_source=color_source,projection_origin_m=origin,projection_axes=axes)
   with stage('apply scale '+o.name,[o]):
    bpy.ops.object.select_all(action='DESELECT')
    bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
   original=o.data.copy()
   original_bounds=object_bounds_mm(o)
   try:
-   if furniture and len(o.data.polygons)<=SMALL_TRIANGLE_COUNT:
-    print('STAGE: small part kept unchanged '+o.name,flush=True)
+   o.data.calc_loop_triangles()
+   body_triangles=sum(p['index'][1]//3 for p in meta['bodies'][o['source_body_index']]['parts']) if furniture and 'source_body_index' in o else len(o.data.loop_triangles)
+   protected=furniture and keep_geometry(body_triangles,[[c*1000 for c in row] for row in local_bounds])
+   if furniture:decisions[-1].update(geometry_preserved=protected,body_triangles=body_triangles)
+   if protected:
+    print('STAGE: small/thin body kept unchanged '+o.name,flush=True)
    else:
     with stage('validate and degenerate cleanup before weld '+o.name,[o]):
      clean_degenerate(o)
@@ -464,11 +503,12 @@ def run(a,source):
   geometry_stage('bounds guarded', [o])
   with stage('UV0 planar projection '+o.name,[o]):
    if not o.data.uv_layers:o.data.uv_layers.new(name='UVMap0')
-   o.data.update();o.data.validate()
+   o.data.update()
+   if not furniture:o.data.validate()
    grain=o.data.uv_layers[0];grain.name='UVMap0'
    for name in [layer.name for layer in o.data.uv_layers][1:]:o.data.uv_layers.remove(o.data.uv_layers[name])
    # UV0 is world XY planar projection. UV1 alone receives Smart UV.
-   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood') if furniture else planar_uv(o,a.tile_mm)
+   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood',origin) if furniture else planar_uv(o,a.tile_mm)
    o.data.uv_layers['UVMap0'].active_render=True
   if not furniture:
    with stage('UV1 Smart UV '+o.name,[o]):
@@ -488,16 +528,19 @@ def run(a,source):
     kind=decision['kind']
     keys=['plywood-face','plywood-edge'] if kind=='plywood' else [kind]
     for key in keys:
-     if key not in shared:
+     slot_spec=dict(spec)
+     if kind=='plywood':slot_spec['repeat']=True
+     if key=='plywood-face' and a.finish=='hexa':slot_spec=dict(rules['hexa_face'],repeat=True)
+     # Do not merge distinct source colors just because their kinds match.
+     cache_key=key+':'+json.dumps(slot_spec,sort_keys=True)
+     if cache_key not in shared:
       image=face_texture if key=='plywood-face' else edge_texture if key=='plywood-edge' else None
-      spec=rules['materials'][kind]
-      if key=='plywood-face' and a.finish=='hexa':spec=dict(rules['hexa_face'],repeat=True)
-      shared[key]=material(type('Name',(),{'name':key})(),image,atlas,spec=spec)
-     o.data.materials.append(shared[key])
+      shared[cache_key]=material(type('Name',(),{'name':cache_key})(),image,atlas,spec=slot_spec)
+     o.data.materials.append(shared[cache_key])
    else:o.data.materials.append(material(o,texture,ao,resin))
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name,[o]):
-   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood') if furniture else planar_uv(o,a.tile_mm)
+   furniture_uv(o,axes,rules,a.finish,decision['kind']=='plywood',origin) if furniture else planar_uv(o,a.tile_mm)
   if furniture:
    o.select_set(False)
    continue
@@ -513,7 +556,6 @@ def run(a,source):
     ao.save()
   grain=o.data.uv_layers['UVMap0'];o.data.uv_layers.active=grain;grain.active_render=True;o.select_set(False)
  if furniture:
-  if len(shared)>rules['max_materials']:raise RuntimeError('Too many furniture materials')
   (out/'material-report.json').write_text(json.dumps({'finish':a.finish,'shared_materials':list(shared),'decisions':decisions,'unclassified':[d for d in decisions if d['fallback']], 'source_parts':audit_mesh(meta,rules) if 'bodies' in meta else []},ensure_ascii=False,indent=2))
   objects=furniture_atlas(objects,atlas,settings,out)
  points=[o.matrix_world@Vector(c) for o in objects for c in o.bound_box]

@@ -20,7 +20,8 @@ def main():
     p.add_argument('--texture', type=Path)
     p.add_argument('--tile-mm', type=float, nargs=2)
     p.add_argument('--blender', default='/Applications/Blender.app/Contents/MacOS/Blender')
-    p.add_argument('--ratio', type=float, default=.2)
+    p.add_argument('--ratio', type=float, default=.6)
+    p.add_argument('--samples', type=int, default=64)
     p.add_argument('--units', choices=['mm','m'], default='mm')
     p.add_argument('--mode', choices=['floor','furniture-draft'], default='floor')
     p.add_argument('--ao-atlas-size', type=int, choices=[2048,4096], default=2048)
@@ -40,14 +41,14 @@ def main():
         if a.finish not in finishes: p.error('--finish must be one of: '+', '.join(finishes))
         texture = a.texture or a.tiles/f'floor-{a.finish}.png'
         tile_mm = a.tile_mm or finishes[a.finish]['mapping']['tile_mm']
-    if not 0 < a.ratio <= 1 or any(not math.isfinite(n) or n <= 0 for n in tile_mm):
+    if a.samples < 1 or not 0 < a.ratio <= 1 or any(not math.isfinite(n) or n <= 0 for n in tile_mm):
         p.error('ratio must be >0 and <=1; tile dimensions must be positive')
     if not a.input.exists() or not texture.is_file():
         p.error('Input or tile missing; run extract_tile.py first')
     cmd = [a.blender, '--background', '--factory-startup', '--python-exit-code', '1', '--python',
            str(Path(__file__).with_name('pipeline.py')), '--', '--input', str(a.input.resolve()),
            '--output', str(a.output.resolve()), '--texture', str(texture.resolve()),
-           '--ratio', str(a.ratio), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode, '--ao-mode', a.ao_mode]
+           '--ratio', str(a.ratio), '--samples', str(a.samples), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode, '--ao-mode', a.ao_mode]
     for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':

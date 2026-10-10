@@ -2,7 +2,7 @@
 import math
 
 REDUCTION_TOLERANCE_MM = 0.5  # Reserve ample room for export/16-bit quantization.
-SMALL_TRIANGLE_COUNT = 100
+SMALL_TRIANGLE_COUNT = 3000
 
 
 def transform_rows(transform):
@@ -27,3 +27,9 @@ def transform_rows(transform):
 def bounds_changed(before, after, tolerance=REDUCTION_TOLERANCE_MM):
     return after is None or any(abs(before[j][i]-after[j][i]) > tolerance
                                 for j in range(2) for i in range(3))
+
+
+def keep_geometry(triangles, bounds_mm):
+    """Any local width/thickness under 20mm is protected, as are small bodies."""
+    return triangles < SMALL_TRIANGLE_COUNT or min(
+        bounds_mm[1][i] - bounds_mm[0][i] for i in range(3)) < 20

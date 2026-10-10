@@ -1,4 +1,4 @@
-"""Compress GLB without overwriting. Furniture: shared AO, WebP 80, 2MB check.
+"""Compress GLB without overwriting. Furniture: shared AO, WebP 80, 2.5MB check.
 Floor defaults remain WebP 82 and Meshopt 16/12/14-bit quantization.
 """
 import argparse
@@ -17,7 +17,6 @@ def atlas_info(path):
     if kind!=b'JSON':raise ValueError('Missing GLB JSON')
     doc=json.loads(raw[20:20+size])
     used={p['material'] for mesh in doc.get('meshes',[]) for p in mesh['primitives']}
-    if len(doc.get('materials',[]))>10:raise ValueError('Furniture exceeds 10 materials')
     images=set()
     for index in used:
         occlusion=doc['materials'][index].get('occlusionTexture')
@@ -57,10 +56,10 @@ def main():
     if furniture:
         result=atlas_info(out)
         if result['ao_mime_type']!='image/webp':raise ValueError('Atlas was not converted to WebP')
-        result.update(quality=quality,target_bytes=2_000_000,target_met=result['bytes']<=2_000_000)
+        result.update(quality=quality,target_bytes=2_500_000,target_met=result['bytes']<=2_500_000)
         report.write_text(json.dumps(result,indent=2)+'\n')
         print(json.dumps(result))
-        if not result['target_met']:raise SystemExit('Furniture exceeds 2MB; see compression report')
+        if not result['target_met']:raise SystemExit('Furniture exceeds 2.5MB; see compression report')
 
 
 if __name__=='__main__':main()

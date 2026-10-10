@@ -112,3 +112,22 @@ Hexaはvisual-materials.jsの六角模様とsRGB色をPillowで生成し、新�
 手順は作業場のexports/hexa-studio-blender-20261010/報告-Hexa柄-2026-10-10.md。
 詳細・未判定32ボディ・実行1行は作業場のexports/hexa-studio-blender-20261010/報告-材質の貼り分け-2026-10-10.md。
 実Blender出力は未検証。Python検査は上のunittest discoverで実行する。
+
+
+## 忠実さ優先（2026-10-10、上記の旧設定より優先）
+
+既定比率0.6。家具はボディ全体で3,000三角形未満、またはローカル外接寸法の最短辺が20mm未満なら、間引き・溶接・退化面削除を全て省略する。
+mesh.jsonの元色を優先し、opaque_albedo→metal_f0→surface_albedoの順にsRGBを取得する。元色がない場合は停止。未判定は合板へ塗らず元色の非金属として記録する。
+アルミだけ#d9d9d9/metalness0.9/roughness0.35、コンテナ本体だけ#969594/0/0.6を指定値へ統一。材質は種類＋色＋物性ごとに共有し、旧10材質制限を撤廃。
+合板は各ボディの全材質パートで共通の原点と軸を使用。同じ写真・物理縮尺・面内短辺方向を使い、REPEATで反転を防ぐ。面と小口はsRGB、AOはNon-Color。
+家具AOは64samples以上、margin32px、白で初期化してuse_clear=False、焼き後に0.85〜1.0へ圧縮。1家具1枚、UV1を維持する。
+圧縮後は2,500,000 bytes以下を検査。超過時も形状を自動で削らず停止し、結果と容量報告を残す。
+
+4家具×birch/hexaの8本を新規フォルダへ再生成する（Blender実行はジョブズ）：
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --tag reality-20261010-1
+```
+
+`--execute`なしなら24コマンドを表示するだけ。再実行時は未使用のtagを指定。旧GLB・layoutsへの書込や採用処理は含まない。
+今回のBlender実生成・実容量・見た目は未検証。元色・AO・保護境界のBlenderなし検査はtest_reality.pyに追加。
