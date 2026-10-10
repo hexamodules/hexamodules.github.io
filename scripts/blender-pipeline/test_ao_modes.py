@@ -8,6 +8,7 @@ import math
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 from types import SimpleNamespace as NS
 import unittest
 
@@ -81,9 +82,11 @@ class AOModes(unittest.TestCase):
  def test_runner_dry_run_filled_all_modes(self):
   root=HERE.resolve().parents[1]
   if root.name=='hexa-public':root=root.parent.parent
+  self.temp=tempfile.TemporaryDirectory(dir=root/'exports/hexa-studio-blender-20261010')
+  self.addCleanup(self.temp.cleanup)
   source=root/'exports/hexa-public/layouts/assets/interior-floor-oak-filled.mesh.json'
   for mode in ['plain','packed','lowres','gpu-off','none']:
-   cmd=[sys.executable,'-B',str(HERE/'run.py'),str(source),str(root/f'exports/hexa-studio-blender-20261010/out-ao-{mode}-20261010'),'--finish','oak','--ao-mode',mode,'--dry-run','--blender','DO_NOT_START_BLENDER']
+   cmd=[sys.executable,'-B',str(HERE/'run.py'),str(source),str(Path(self.temp.name)/f'out-{mode}'),'--finish','oak','--ao-mode',mode,'--dry-run','--blender','DO_NOT_START_BLENDER']
    result=subprocess.run(cmd,capture_output=True,text=True)
    self.assertEqual(result.returncode,0,result.stderr)
    record=json.loads(result.stdout);self.assertFalse(record['blender_started'])

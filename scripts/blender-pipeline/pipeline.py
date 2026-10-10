@@ -119,6 +119,7 @@ def load_texture(path):
 
 def args():
  p=argparse.ArgumentParser();p.add_argument('--input',required=True);p.add_argument('--output',required=True);p.add_argument('--texture',required=True);p.add_argument('--ratio',type=float,default=.2);p.add_argument('--units',choices=['mm','m'],default='mm');p.add_argument('--samples',type=int,default=16);p.add_argument('--tile-mm',type=float,nargs=2,default=[300,900]);p.add_argument('--mode',choices=['floor','furniture-draft'],default='floor');p.add_argument('--face-texture');p.add_argument('--edge-texture')
+ p.add_argument('--ao-atlas-size',type=int,choices=[2048,4096],default=2048)
  p.add_argument('--ao-mode',choices=['plain','packed','lowres','gpu-off','none'],default='plain')
  p.add_argument('--skip-ao',action='store_true');p.add_argument('--skip-export',action='store_true')
  a=p.parse_args(sys.argv[sys.argv.index('--')+1:])
@@ -196,7 +197,8 @@ def material(o, texture, ao, resin=False):
 
 def ao_settings(a):
  mode='none' if a.skip_ao else a.ao_mode
- return {'mode':mode,'size':512 if mode=='lowres' else 1024,
+ size=getattr(a,'ao_atlas_size',2048) if getattr(a,'mode','floor')=='furniture-draft' else (512 if mode=='lowres' else 1024)
+ return {'mode':mode,'size':size,
          'samples':4 if mode=='lowres' else a.samples,'margin':2 if mode=='lowres' else 8}
 
 def plain_material(ao=None):
@@ -256,6 +258,47 @@ def bake_ao(o,ao,settings):
  else:bake()
 
 
+def furniture_atlas(objects,ao,settings,out):
+ # One source file is one furniture item. Join only after per-body reduction
+ # and UV0/material assignment, retaining material slots and world positions.
+ if not objects:raise ValueError('Furniture input contains no meshes')
+ with stage('furniture atlas join'):
+  bpy.ops.object.select_all(action='DESELECT')
+  for o in objects:o.select_set(True)
+  bpy.context.view_layer.objects.active=objects[0]
+  if len(objects)>1:bpy.ops.object.join()
+  o=bpy.context.view_layer.objects.active
+  o.name='Furniture AO atlas'
+ with stage('furniture atlas UV1 Smart UV', [o]):
+  o.data.uv_layers.new(name='AO')
+  o.data.uv_layers.active=o.data.uv_layers['AO']
+  o.data.uv_layers['AO'].active_render=True
+  bpy.ops.object.mode_set(mode='EDIT')
+  try:
+   bpy.ops.mesh.select_all(action='SELECT')
+   # FRACTION gives a pixel-derived gap after packing all bodies together.
+   bpy.ops.uv.smart_project(angle_limit=math.radians(66),margin_method='FRACTION',
+                            island_margin=(2*settings['margin']+2)/settings['size'])
+  finally:bpy.ops.object.mode_set(mode='OBJECT')
+ if ao is not None:
+  bake_ao(o,ao,settings)
+  with stage('furniture atlas PNG save'):
+   ao.filepath_raw=str(out/'furniture-ao.png');ao.file_format='PNG'
+   ao.save()
+   # Generated non-float, alpha-free image must stay 8-bit RGB/grayscale.
+   import struct
+   header=Path(ao.filepath_raw).read_bytes()[:29]
+   width,height,depth,kind=struct.unpack('>IIBB',header[16:26])
+   if header[:8]!=b'\x89PNG\r\n\x1a\n' or depth!=8 or kind not in (0,2):
+    raise RuntimeError('Atlas must be an 8-bit grayscale or RGB PNG')
+   if (width,height)!=(settings['size'],settings['size']):raise RuntimeError('Wrong atlas size')
+   ao.pack()
+ else:print('STAGE: furniture atlas AO bake/save SKIP',flush=True)
+ grain=o.data.uv_layers['UVMap0'];o.data.uv_layers.active=grain;grain.active_render=True
+ o.select_set(False)
+ return [o]
+
+
 def run(a,source):
  STAGE_METRICS.clear();LAST_METRICS.clear()
  settings=ao_settings(a)
@@ -284,6 +327,11 @@ def run(a,source):
  furniture=a.mode=='furniture-draft'
  face_texture=load_texture(a.face_texture) if furniture else None
  edge_texture=load_texture(a.edge_texture) if furniture else None
+ atlas=None
+ if furniture and settings['mode']!='none':
+  with stage('furniture atlas image create'):
+   atlas=bpy.data.images.new('Furniture AO',settings['size'],settings['size'],alpha=False,float_buffer=False)
+   atlas.colorspace_settings.name='Non-Color';atlas.generated_color=(1,1,1,1)
  for o in objects:
   with stage('apply scale '+o.name,[o]):
    bpy.context.view_layer.objects.active=o;o.select_set(True);bpy.ops.object.transform_apply(location=False,rotation=False,scale=True)
@@ -311,15 +359,16 @@ def run(a,source):
    # UV0 is world XY planar projection. UV1 alone receives Smart UV.
    planar_uv(o,a.tile_mm,furniture)
    o.data.uv_layers['UVMap0'].active_render=True
-  with stage('UV1 Smart UV '+o.name,[o]):
-   aoUV=o.data.uv_layers.new(name='AO')
-   o.data.update();o.data.validate()
-   grain=o.data.uv_layers['UVMap0'];aoUV=o.data.uv_layers['AO']
-   o.data.uv_layers.active=aoUV;aoUV.active_render=True
-   bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.02);bpy.ops.object.mode_set(mode='OBJECT')
+  if not furniture:
+   with stage('UV1 Smart UV '+o.name,[o]):
+    aoUV=o.data.uv_layers.new(name='AO')
+    o.data.update();o.data.validate()
+    grain=o.data.uv_layers['UVMap0'];aoUV=o.data.uv_layers['AO']
+    o.data.uv_layers.active=aoUV;aoUV.active_render=True
+    bpy.ops.object.mode_set(mode='EDIT');bpy.ops.mesh.select_all(action='SELECT');bpy.ops.uv.smart_project(angle_limit=math.radians(66),island_margin=.02);bpy.ops.object.mode_set(mode='OBJECT')
   resin='step' in o.get('source_role','') or 'resin' in o.get('source_material','').lower()
-  ao=None
-  if settings['mode']!='none':
+  ao=atlas if furniture else None
+  if not furniture and settings['mode']!='none':
    with stage('AO image create '+o.name):
     ao=bpy.data.images.new(o.name+' AO',settings['size'],settings['size']);ao.colorspace_settings.name='Non-Color'
   with stage('materials '+o.name):
@@ -329,6 +378,9 @@ def run(a,source):
   # Set indices after installing slots: clearing slots may reset polygon indices.
   with stage('UV0 planar projection after materials '+o.name,[o]):
    planar_uv(o,a.tile_mm,furniture)
+  if furniture:
+   o.select_set(False)
+   continue
   if settings['mode']=='none':
    print('STAGE: AO mode none bake SKIP '+o.name,flush=True)
    print('STAGE: AO mode none save SKIP '+o.name,flush=True)
@@ -340,6 +392,7 @@ def run(a,source):
      ao.pack()
     ao.save()
   grain=o.data.uv_layers['UVMap0'];o.data.uv_layers.active=grain;grain.active_render=True;o.select_set(False)
+ if furniture:objects=furniture_atlas(objects,atlas,settings,out)
  points=[o.matrix_world@Vector(c) for o in objects for c in o.bound_box]
  bounds=[[min(p[i] for p in points) for i in range(3)],[max(p[i] for p in points) for i in range(3)]]
  after=0
@@ -350,7 +403,7 @@ def run(a,source):
  else:
   with stage('GLB export',objects):
    bpy.ops.export_scene.gltf(filepath=str(target),export_format='GLB',export_extras=True,export_yup=True)
- (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':settings['mode']=='none','ao_settings':settings,'ao_mode_requested':a.ao_mode,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
+ (out/'metrics.json').write_text(json.dumps({'source':str(source),'triangles_before':meta.get('triangles',before),'triangles_after':after,'bounds_metres_blender_z_up':bounds,'tile_mm':a.tile_mm,'grain_uv':'world XY metres * 1000 / tile_mm; MIRROR','mode':a.mode,'scale_applied':scale,'skip_ao':settings['mode']=='none','ao_settings':settings,'ao_atlas_images':(1 if atlas is not None else 0) if furniture else None,'ao_mode_requested':a.ao_mode,'skip_export':a.skip_export,'bytes':None if a.skip_export else target.stat().st_size,'visual_approval':False,'stage_metrics':STAGE_METRICS},indent=2))
 
 if __name__=='__main__':
  a=args();src=Path(a.input).resolve();sources=[src] if src.is_file() else sorted(p for p in src.iterdir() if p.name.endswith('.mesh.json') or p.suffix.lower() in ['.fbx','.glb','.obj'])

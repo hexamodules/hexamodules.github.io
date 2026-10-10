@@ -21,6 +21,7 @@ def main():
     p.add_argument('--ratio', type=float, default=.2)
     p.add_argument('--units', choices=['mm','m'], default='mm')
     p.add_argument('--mode', choices=['floor','furniture-draft'], default='floor')
+    p.add_argument('--ao-atlas-size', type=int, choices=[2048,4096], default=2048)
     p.add_argument('--ao-mode', choices=['plain','packed','lowres','gpu-off','none'], default='plain')
     p.add_argument('--skip-ao', action='store_true')
     p.add_argument('--skip-export', action='store_true')
@@ -42,6 +43,7 @@ def main():
     for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':
+        cmd.extend(['--ao-atlas-size', str(a.ao_atlas_size)])
         for flag,name in [('--face-texture','birch-face.png'),('--edge-texture','birch-edge-15mm.png')]:
             if not (a.tiles/name).is_file():
                 p.error('Furniture tiles missing; extract with --furniture-source')

@@ -82,3 +82,20 @@ noneは--skip-aoと同じ。--skip-ao併用はnone優先。各モードのSTAGE�
 BlenderでのSIGBUS回避成功は未確認。filled床・oakの5本の実行コマンドは作業場の
 `exports/hexa-studio-blender-20261010/報告-AOモード-2026-10-10.md` に記載。
 Python検査は `python3 -B -m unittest discover -s scripts/blender-pipeline -p 'test_*.py'`（Blender起動なし）。
+
+
+## 家具AOアトラス（2026-10-10）
+
+家具モードは入力1ファイルを1部品とし、全ボディの間引き・UV0・材質割当て後に結合する。
+結合後のUV1にSmart UV Projectを1回実行し、全材質が共有するAO画像へ1回焼く。
+既定2048px、`--ao-atlas-size 4096` も選択可能。家具のlowresも画像サイズはこの指定を使い、サンプル4・余白2のみ軽くする。
+小さいボディも今回は全て含める。none/skip-aoでは画像と焼きを省略する。
+生成画像は非float・アルファなしの8bit PNGで、保存後にPNGヘッダーを検査する。
+床のUV・AO・圧縮の既定品質82は維持する。
+
+家具の圧縮には `python3 -B scripts/blender-pipeline/compress.py 入力.glb 新出力.glb --mode furniture-draft`。
+WebP品質80、Meshopt圧縮。使用する全材質がUV1・同じ1枚のAO画像を参照することを圧縮前後に検査する。
+`新出力.compression.json` に容量と2,000,000 bytes以下の判定を残し、超過は非ゼロ終了する（出力は調査用に残る）。
+Blenderでの実焼き・画質・アルミベッド2MB達成はジョブズの実行待ち。
+木の面／小口の既存の仮分類は継続し、アルミ材質の数値化・板の姿勢判定は今回変更しない。
+実行1行と制限の詳細は作業場の `exports/hexa-studio-blender-20261010/報告-AOアトラス-2026-10-10.md`。
