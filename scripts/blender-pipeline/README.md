@@ -188,3 +188,28 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --tag albero-202
 aluminum-bed / active-side-cabinet / aluminum-front-kitchen / i-seat ×2仕上げを維持。
 
 コンテナ本体・蓋の既定色は `#858585`（roughness 0.6 / metalness 0）。`rebuild_bounds.py` または `run.py` に `--container-color '#777777'` を付けるとその実行だけ色を変更できます。`check_material_report.py` にも同じ指定が使え、`rebuild_bounds.py` は変換と検査の両方へ渡します。
+
+
+### 2026-10-10 フロント後端と純正シート
+
+`--parts all` は13モジュール＋付属6種類、各birch/hexaの38本。
+`--parts front-module` は後端20/114/130/140も含む。後端だけの直接指定も可能。
+後端は元データのbase_module=front-moduleを使用し、合板表面・小口・Hexa・天板の既存規則を共用する。
+表示条件はconfigurations.jsonのplacements.front-module.asset_keyに従う。
+現行保存構成ではslide-bed/lounge-slide-bedがrear-130、lounge-bed/two-side-bed/aluminum-bedがrear-140。
+rear-20/114も変換対象だが現行保存構成に使用なし。layouts側のGLB採用は別作業。
+
+純正seatはsource_originalに分類し、生地・木・指定アルミ色を適用しない。
+元meshのmetal_f0=[160,160,160]を、元表示app.js＋visual-materials.jsと同じ
+sRGB→線形RGB×0.85、metalness=0.9、roughness=0.35で渡す。
+JSON自体にはroughnessがないため元表示側の解釈を保持する。黒への固定着色はしない。
+I-Seatの布・縫目は従来どおり。生成後のmaterial-reportも全seat部品を検査する。
+
+作業場直下から再生成（この行はBlenderを起動する。今回未実行）：
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts front-module-rear-20,front-module-rear-114,front-module-rear-130,front-module-rear-140,seat --tag rear-seat-20261010-1 --face-source tetsuya --max-bytes 4000000
+```
+
+`--execute`を外すと実行せず40コマンドを表示する。5種類×2仕上げ=10本。
+出力はexports/hexa-studio-blender-20261010/、既存出力は拒否。layouts/への書込なし。

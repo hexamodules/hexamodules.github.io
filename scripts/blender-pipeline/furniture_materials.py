@@ -17,7 +17,9 @@ def load_rules(path=None, container_color_override=None):
     return rules
 
 
-def classify(name, material_key='', materials=None, rules=None, path='', role=''):
+def classify(name, material_key='', materials=None, rules=None, path='', role='', model_key=''):
+    if model_key == 'seat':
+        return dict(kind='source_original', matched_by='stock_seat', fallback=False)
     rules = rules or load_rules()
     definition = (materials or {}).get(str(material_key), {})
     material_name = str(material_key) + ' ' + str(definition.get('name', ''))
@@ -102,7 +104,7 @@ def project(point, normal, axes, mapping, finish='birch'):
 def audit_mesh(data, rules=None):
     rules = rules or load_rules()
     return [dict(body_index=i, body=b['name'], path=b.get('path',''), part=j,
-                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules,path=b.get('path',''),role=b.get('role','')))
+                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules,path=b.get('path',''),role=b.get('role',''),model_key=data.get('key','')))
             for i,b in enumerate(data['bodies']) for j,p in enumerate(b['parts'])]
 
 
@@ -139,6 +141,8 @@ def face_policy(material_key, materials, finish, model_key='', body=None, kind='
 
 
 def studio_spec(kind, material_key, materials, rules, role='', model_key=''):
+    if model_key == 'seat':
+        return stock_seat_spec(material_key, materials)
     spec, source = resolved_spec(kind, material_key, materials, rules)
     name = materials.get(str(material_key), {}).get('name', str(material_key))
     if re.search('graphite satin metallic', name, re.I):
@@ -169,3 +173,18 @@ def countertop_uv(point_mm, bounds_mm, tile_mm):
     cross_axis = 2 if long_axis == 0 else 0
     return ((point_mm[cross_axis]-lo[cross_axis])/tile_mm[0],
             (point_mm[long_axis]-lo[long_axis])/tile_mm[1])
+
+
+def stock_seat_spec(material_key, materials):
+    """Preserve the source seat via app.js + visual-materials.js PBR mapping.
+
+    Source JSON has color fields, not roughness: metal_f0 selects the original
+    reflective material. Never replace this with the upholstery preset.
+    """
+    definition = materials[str(material_key)]
+    color, field = source_color(definition)
+    metal = 'metal_f0' in definition.get('colors', {})
+    linear = linear_color(color)
+    return dict(color=color, color_linear=[v * (.85 if metal else 1) for v in linear[:3]] + [1],
+                metalness=.9 if metal else 0,
+                roughness=(.20 if re.search(r'クロム|chrome', definition.get('name',''), re.I) else .35) if metal else .75), 'source seat materials.colors.' + field + '; original viewer PBR'

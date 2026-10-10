@@ -40,7 +40,7 @@ class AllModulesTests(unittest.TestCase):
     def test_all_sources_and_stock_seat_colors(self):
         definition = json.loads((ASSETS / 'countertop-material.json').read_text())
         self.assertEqual(len(PARTS), 13)
-        self.assertEqual(len(selected_parts('all')), 15)
+        self.assertEqual(len(selected_parts('all')), 19)
         for model in selected_parts('all'):
             data = json.loads((ASSETS / (model + '.mesh.json')).read_text())
             albero = 0
@@ -48,14 +48,14 @@ class AllModulesTests(unittest.TestCase):
                 spec, _ = studio_spec(row['kind'], row['material'], data['materials'], load_rules(), model_key=model)
                 if model == 'seat':
                     self.assertEqual(spec['color'], source_color(data['materials'][row['material']])[0])
-                albero += countertop_candidate(model, row['material'], data['materials'], definition)
-            self.assertEqual(bool(albero), model in definition['module_ids'], model)
+                albero += countertop_candidate(data.get('base_module') or model, row['material'], data['materials'], definition)
+            self.assertEqual(bool(albero), (data.get('base_module') or model) in definition['module_ids'], model)
 
     def test_all_commands_and_accessories(self):
         r = subprocess.run([sys.executable, '-B', str(HERE / 'rebuild_bounds.py'), '--parts', 'all', '--face-source', 'tetsuya', '--max-bytes', '4000000', '--tag', 'all-test-dry'], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
         commands = [shlex.split(line) for line in r.stdout.splitlines()]
-        self.assertEqual(len(commands), 120) # 15 models x 2 finishes x 4 stages
+        self.assertEqual(len(commands), 152) # 19 models x 2 finishes x 4 stages
         for offset in range(0, len(commands), 4):
             run, report, compress, bounds = commands[offset:offset+4]
             self.assertTrue(run[2].endswith('run.py'))

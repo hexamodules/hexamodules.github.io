@@ -11,11 +11,12 @@ import sys
 import tempfile
 from types import SimpleNamespace as NS
 import unittest
+from furniture_materials import container_color
 
 HERE=Path(__file__).parent
 names={'args','stage','ao_settings','plain_material','plain_bake_materials','bake_ao'}
 fns=[n for n in ast.parse((HERE/'pipeline.py').read_text()).body if isinstance(n,ast.FunctionDef) and n.name in names]
-ns=dict(contextmanager=contextmanager,json=json,argparse=argparse,sys=sys,math=math)
+ns=dict(container_color=container_color,contextmanager=contextmanager,json=json,argparse=argparse,sys=sys,math=math)
 exec(compile(ast.Module(body=fns,type_ignores=[]),'<AO functions>','exec'),ns)
 
 class Nodes(list):

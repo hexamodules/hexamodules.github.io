@@ -1,4 +1,4 @@
-"""Furniture rebuild (13 modules plus bed accessories). Defaults to dry-run; --execute starts Blender."""
+"""Furniture rebuild (13 modules plus bed/front accessories). Defaults to dry-run; --execute starts Blender."""
 import argparse
 import subprocess
 import sys
@@ -13,7 +13,8 @@ DEFAULT_PARTS=['aluminum-bed','active-side-cabinet','aluminum-front-kitchen','i-
 PARTS=['front-module','aluminum-front-kitchen','i-seat','seat','side-cabinet',
        'simple-side-cabinet','aluminum-side-cabinet','active-side-cabinet',
        'slide-bed','lounge-slide-bed','aluminum-bed','lounge-bed','two-side-bed']
-ACCESSORIES={'two-side-bed':['centre-mattresses'], 'lounge-bed':['lounge-fillers']}
+FRONT_REARS=[f'front-module-rear-{n}' for n in (20,114,130,140)]
+ACCESSORIES={'front-module':FRONT_REARS, 'two-side-bed':['centre-mattresses'], 'lounge-bed':['lounge-fillers']}
 
 def selected_parts(value):
     parts=PARTS.copy() if value.strip()=='all' else list(dict.fromkeys(p.strip() for p in value.split(',')))

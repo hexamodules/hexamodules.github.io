@@ -205,7 +205,7 @@ def material(o, texture, ao, resin=False, spec=None):
  if spec:
   bsdf.inputs['Roughness'].default_value=spec['roughness']
   bsdf.inputs['Metallic'].default_value=spec['metalness']
-  bsdf.inputs['Base Color'].default_value=linear_color(spec['color'])
+  bsdf.inputs['Base Color'].default_value=spec.get('color_linear',linear_color(spec['color']))
  if not resin and texture is not None:
   tex=nodes.new('ShaderNodeTexImage');tex.image=texture;tex.extension='REPEAT' if spec and spec.get('repeat') else 'MIRROR'
   uv=nodes.new('ShaderNodeUVMap');uv.uv_map='UVMap0'
@@ -489,7 +489,7 @@ def run(a,source):
   if furniture:
    # Capture source material labels before replacing slots; source bounds include all parts.
    label=o.get('source_material',' '.join(slot.material.name for slot in o.material_slots if slot.material))
-   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''))
+   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''),model_key=meta.get('key',''))
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
    spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''),model_key=meta.get('key',''))

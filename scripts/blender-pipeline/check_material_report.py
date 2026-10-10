@@ -2,7 +2,7 @@
 import argparse
 import json
 from pathlib import Path
-from furniture_materials import audit_mesh, container_color, load_rules
+from furniture_materials import audit_mesh, container_color, load_rules, stock_seat_spec
 
 
 def validate(data, report, container_color_override=None):
@@ -18,6 +18,14 @@ def validate(data, report, container_color_override=None):
         row = actual.get(key, {})
         if row.get('kind') != 'container' or row.get('spec', {}).get('color') != color:
             raise ValueError('Container kind/color missing or wrong: ' + str(key))
+    if data.get('key') == 'seat':
+        for source in audit_mesh(data):
+            key = (source['body_index'], source['part'])
+            row = actual.get(key, {})
+            spec, _ = stock_seat_spec(source['material'], data['materials'])
+            if row.get('kind') != 'source_original' or row.get('spec') != spec:
+                raise ValueError('Stock seat source material missing or wrong: ' + str(key))
+        return len(audit_mesh(data))
     return len(expected)
 
 
@@ -28,7 +36,7 @@ def main():
     p.add_argument('--container-color', type=container_color, help='Expected container and lid colour: #RRGGBB')
     a = p.parse_args()
     count = validate(json.loads(a.source.read_text()), json.loads(a.report.read_text()), a.container_color)
-    print(f'Container material report: {count} source parts passed')
+    print(f'Source material report: {count} source parts passed')
 
 
 if __name__ == '__main__':
