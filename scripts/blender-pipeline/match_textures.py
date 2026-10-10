@@ -53,7 +53,7 @@ def prepare(assets, tiles, output, face_source='studio'):
     brightness=[]
     bright,adjustment=brighten_face(raw,reference) if face_source == 'tetsuya' else (None,None)
     for variant, birch, toned in [('toned',True,True),('natural',True,False),('raw',False,False)]:
-        face=bright if bright is not None else studio_face(raw,birch,toned)
+        face=bright if bright is not None else brighten_studio(reference)
         if face_source == 'tetsuya':
             brightness.append(dict(variant=variant,**adjustment))
         save_new(face, output/f'face-{variant}.png')
@@ -61,13 +61,18 @@ def prepare(assets, tiles, output, face_source='studio'):
         with Image.open(tiles/'birch-edge-15mm.png') as im:
             edge, _ = brighten_face(im, reference)
         save_new(edge, output/'edge-birch.png')
+    else:
+        with Image.open(tiles/'birch-edge-15mm.png') as im:
+            edge = studio_edge(im, brighten_studio(reference))
+        save_new(edge, output/'edge-birch.png')
+        brightness.append(dict(gain=1.06, saturation=1., contrast=1.))
     # Actual I-Seat default texture: retain the source image's weave and tint.
     with Image.open(assets/'mattress-colors/light-green.jpg') as im:
         save_new(im.convert('RGB'), output/'seat-fabric.png')
     report = dict(face_source=face_source, studio_image=str(assets/'wood-grain.jpg'),
                   reference=stats(reference), matched=stats(raw), brightness=brightness,
                   fabric_image=str(assets/'mattress-colors/light-green.jpg'),
-                  tone=('birch #dccbb0, original photo colour variation, grain contrast +15%; no dark display multiplier' if face_source == 'tetsuya' else 'legacy studio linear tone'))
+                  tone=('birch #dccbb0, original photo colour variation, grain contrast +15%; no dark display multiplier' if face_source == 'tetsuya' else 'original studio image, brightness +6% only; edge luminance matched to face'))
     with (output/'texture-match.json').open('x') as f: json.dump(report,f,indent=2)
     return report
 
@@ -126,3 +131,18 @@ def brighten_face(image, reference):
                     photo_rgb_scale=scale,highlight_scale=safe,
                     previous_grain_std=old_spread,
                     grain_std=float((np.asarray(out,dtype=float)@weights).std()))
+
+
+def brighten_studio(image):
+    """Original studio pixels with a common sRGB brightness gain only."""
+    rgb = np.asarray(image.convert('RGB'), dtype=np.float64)
+    return Image.fromarray(np.rint(np.clip(rgb * 1.06, 0, 255)).astype('uint8'))
+
+
+def studio_edge(image, face):
+    """Retain birch edge layers/chroma; match mean luminance to the face."""
+    weights = np.array([.2126, .7152, .0722])
+    rgb = np.asarray(image.convert('RGB'), dtype=np.float64)
+    target = float((np.asarray(face, dtype=np.float64) @ weights).mean())
+    gain = target / max(float((rgb @ weights).mean()), 1e-6)
+    return Image.fromarray(np.rint(np.clip(rgb * gain, 0, 255)).astype('uint8'))

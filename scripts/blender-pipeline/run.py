@@ -61,7 +61,7 @@ def main():
         for flag,name in [('--edge-texture','birch-edge-15mm.png')]:
             if not (a.tiles/name).is_file():
                 p.error('Furniture tiles missing; extract with --furniture-source')
-            edge_path = a.output/'edge-birch.png' if a.face_source == 'tetsuya' else a.tiles/name
+            edge_path = a.output/'edge-birch.png'
             cmd.extend([flag,str(edge_path.resolve())])
         for name in ['wood-grain.jpg','mattress-colors/light-green.jpg']:
             if not (a.assets/name).is_file(): p.error('Studio texture missing: '+name)

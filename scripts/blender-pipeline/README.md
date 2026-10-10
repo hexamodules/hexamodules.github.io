@@ -234,3 +234,16 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts all --fi
 `--execute`なしで152段階のdry-run。layoutsへは書き込まない。
 `bright_samples.py`はBlenderを起動せず、tiles/へ561×768の前後画像と比較画像を新規保存する。
 同名がある場合は上書きせず停止する。小さい見本と本番解像度では統計に軽微な差がある。
+
+### 2026-10-10 バーチは元の木目＋6%（最新）
+
+既定は `--face-source studio`。元wood-grain.jpgの画素へ共通1.06倍のみ。
+旧toned/natural/rawの混色・彩度・コントラスト補正を通さず、3種とも同じ画像。
+小口は元バーチ小口の積層を保持し、共通RGB倍率で面の平均明度へ合わせる。
+面AOなし・roughness .45、ALBERO・Hexa天板バーチ・コンテナ#858585は維持。
+
+```sh
+python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --parts all --finishes birch,hexa --tag studio-20261010-1 --face-source studio --max-bytes 4000000
+```
+
+38本。`--execute`を外せばBlenderを起動せず152段階を表示。layoutsへのコピーなし。
