@@ -143,7 +143,7 @@ def custom(source):
   for i,part in enumerate(body['parts']):
    mesh=bpy.data.meshes.new(body['name']);mesh.from_pydata(read(part,'position',3),[],read(part,'index',3));mesh.update()
    obj=bpy.data.objects.new(body['name']+'_'+str(i),mesh);bpy.context.collection.objects.link(obj)
-   obj['source_body_name']=body['name'];obj['source_material']=part['material'];obj['source_role']=body.get('role','');obj['source_bounds_mm']=json.dumps(body['bounds'])
+   obj['source_path']=body.get('path','');obj['source_body_name']=body['name'];obj['source_material']=part['material'];obj['source_role']=body.get('role','');obj['source_bounds_mm']=json.dumps(body['bounds'])
    uv=read(part,'uv',2);layer=mesh.uv_layers.new(name='UVMap0')
    for loop in mesh.loops:layer.data[loop.index].uv=uv[loop.vertex_index]
    normals=read(part,'normal',3);mesh.normals_split_custom_set_from_vertices(normals)
@@ -371,7 +371,7 @@ def run(a,source):
   if furniture:
    # Capture source material labels before replacing slots; source bounds include all parts.
    label=o.get('source_material',' '.join(slot.material.name for slot in o.material_slots if slot.material))
-   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules)
+   decision=classify(o.get('source_body_name',o.name),label,meta.get('materials',{}),rules,path=o.get('source_path',''),role=o.get('source_role',''))
    decisions.append(dict(object=o.name,source_material=label,**decision))
    if 'source_bounds_mm' in o:bounds=json.loads(o['source_bounds_mm'])
    else:

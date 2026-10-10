@@ -8,14 +8,35 @@ def load_rules(path=None):
     return json.loads(Path(path or Path(__file__).with_name('materials.json')).read_text())
 
 
-def classify(name, material_key='', materials=None, rules=None):
+def classify(name, material_key='', materials=None, rules=None, path='', role=''):
     rules = rules or load_rules()
     definition = (materials or {}).get(str(material_key), {})
     material_name = str(material_key) + ' ' + str(definition.get('name', ''))
-    for source, text, table in [('body', name, 'body_rules'), ('material', material_name, 'material_rules')]:
-        for rule in rules[table]:
+    def match(text, table, source):
+        for rule in rules.get(table, []):
             if re.search(rule['pattern'], text, re.IGNORECASE):
                 return dict(kind=rule['kind'], matched_by=source, fallback=False)
+
+    # Explicit source wood protects sink cutouts/supports; ISeat roles protect metal.
+    guarded = match(material_name, 'source_guards', 'material_guard')
+    body = match(name, 'body_rules', 'body')
+    if guarded and guarded['kind'] != 'plywood':
+        return guarded
+    # Named fasteners and containers remain authoritative even on stale wood labels.
+    if body and body['kind'] in ('hardware', 'container', 'mattress', 'aluminum', 'seat_fabric'):
+        return body
+    if guarded:
+        return guarded
+    # Component paths identify anonymous appliance and PFS bodies. Do not combine
+    # generic parent words ("rear fridge", "Eurocontainer tray") with body names.
+    contextual = match(path, 'path_rules', 'path')
+    if contextual:
+        return contextual
+    if body:
+        return body
+    material = match(material_name, 'material_rules', 'material')
+    if material:
+        return material
     return dict(kind=rules['fallback'], matched_by='fallback', fallback=True)
 
 
@@ -39,7 +60,7 @@ def project(point, normal, axes, mapping, finish='birch'):
 def audit_mesh(data, rules=None):
     rules = rules or load_rules()
     return [dict(body_index=i, body=b['name'], path=b.get('path',''), part=j,
-                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules))
+                 material=p['material'], **classify(b['name'],p['material'],data.get('materials',{}),rules,path=b.get('path',''),role=b.get('role','')))
             for i,b in enumerate(data['bodies']) for j,p in enumerate(b['parts'])]
 
 
