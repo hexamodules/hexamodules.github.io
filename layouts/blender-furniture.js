@@ -34,8 +34,9 @@ export async function loadBlenderFurniture(transport,key,finish){
     geometry.computeBoundingBox();box.union(geometry.boundingBox);mesh.userData.mmGeometry=geometry;
     if(!geometry.attributes.uv||!geometry.attributes.uv1)throw Error('Missing UV0/UV1');
     for(const mat of [].concat(mesh.material)){
-     if(!mat.aoMap)throw Error('Missing occlusion map');
-     mat.aoMap.channel=1;mat.aoMapIntensity=.35;mat.side=THREE.DoubleSide;
+     // Occlusion is optional: bright plywood faces intentionally omit it.
+     if(mat.aoMap){mat.aoMap.channel=1;mat.aoMapIntensity=.35}
+     mat.side=THREE.DoubleSide;
      // Lift plywood indirect light without changing the metal, fabric or global exposure.
      if(/^plywood-(?:face|edge)(?::|$)/.test(mat.name)){
       mat.envMapIntensity=1.3;
