@@ -118,7 +118,7 @@ Hexaはvisual-materials.jsの六角模様とsRGB色をPillowで生成し、新�
 
 既定比率0.6。家具はボディ全体で3,000三角形未満、またはローカル外接寸法の最短辺が20mm未満なら、間引き・溶接・退化面削除を全て省略する。
 mesh.jsonの元色を優先し、opaque_albedo→metal_f0→surface_albedoの順にsRGBを取得する。元色がない場合は停止。未判定は合板へ塗らず元色の非金属として記録する。
-アルミだけ#d9d9d9/metalness0.9/roughness0.35、コンテナ本体だけ#969594/0/0.6を指定値へ統一。材質は種類＋色＋物性ごとに共有し、旧10材質制限を撤廃。
+アルミだけ#d9d9d9/metalness0.9/roughness0.35、コンテナ本体・蓋#858585/0/0.6を指定値へ統一。材質は種類＋色＋物性ごとに共有し、旧10材質制限を撤廃。
 合板は各ボディの全材質パートで共通の原点と軸を使用。同じ写真・物理縮尺・面内短辺方向を使い、REPEATで反転を防ぐ。面と小口はsRGB、AOはNon-Color。
 家具AOは64samples以上、margin32px、白で初期化してuse_clear=False、焼き後に0.85〜1.0へ圧縮。1家具1枚、UV1を維持する。
 圧縮後の容量目標は既定4,000,000 bytes。compress.pyとrebuild_bounds.pyの`--max-bytes`で変更できる。超過時は形状を削らず警告のみ（終了コード0）、容量報告へ`target_met: false`を残す。
@@ -186,3 +186,5 @@ python3 -B scripts/blender-pipeline/rebuild_bounds.py --execute --tag albero-202
 `--execute`を外すとdry-run。既存出力拒否、layoutsへの書込なし。
 シンク付きaluminum-side-cabinetも共通変換で対応するが、既存8本セットは
 aluminum-bed / active-side-cabinet / aluminum-front-kitchen / i-seat ×2仕上げを維持。
+
+コンテナ本体・蓋の既定色は `#858585`（roughness 0.6 / metalness 0）。`rebuild_bounds.py` または `run.py` に `--container-color '#777777'` を付けるとその実行だけ色を変更できます。`check_material_report.py` にも同じ指定が使え、`rebuild_bounds.py` は変換と検査の両方へ渡します。

@@ -7,7 +7,7 @@ from contextlib import contextmanager
 import bpy
 import bmesh
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from furniture_materials import load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec, face_policy, studio_spec, countertop_candidate, countertop_uv
+from furniture_materials import container_color, load_rules, classify, board_axes, project, audit_mesh, linear_color, resolved_spec, face_policy, studio_spec, countertop_candidate, countertop_uv
 from mathutils import Vector, Matrix
 from bounds_policy import transform_rows, bounds_changed, keep_geometry
 
@@ -134,6 +134,7 @@ def args():
  p.add_argument('--finish',choices=['birch','hexa'],default='birch')
  p.add_argument('--hexa-source')
  p.add_argument('--countertop-definition')
+ p.add_argument('--container-color', type=container_color, help='Container and lid colour: #RRGGBB')
  p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
  p.add_argument('--natural-face-texture');p.add_argument('--raw-face-texture');p.add_argument('--fabric-texture')
  p.add_argument('--ao-atlas-size',type=int,choices=[2048,4096],default=2048)
@@ -468,7 +469,7 @@ def run(a,source):
   countertop_texture.colorspace_settings.name='sRGB'
   for image in [*face_textures.values(),fabric_texture]:image.colorspace_settings.name='sRGB'
  edge_texture=load_texture(a.edge_texture) if furniture else None
- rules=load_rules();shared={};decisions=[]
+ rules=load_rules(container_color_override=a.container_color);shared={};decisions=[]
  frames=body_projection_frames(objects) if furniture else {}
  if furniture:
   face_texture.colorspace_settings.name='sRGB'

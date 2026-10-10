@@ -6,7 +6,7 @@ import subprocess
 import sys
 from pathlib import Path
 from extract_tile import defaults
-from furniture_materials import load_rules
+from furniture_materials import container_color, load_rules
 from hexa_texture import studio_hexa_tile
 from match_textures import prepare
 
@@ -18,6 +18,7 @@ def main():
     p.add_argument('--assets', type=Path, default=assets)
     p.add_argument('--tiles', type=Path, default=tiles)
     p.add_argument('--finish')
+    p.add_argument('--container-color', type=container_color, help='Container and lid colour: #RRGGBB')
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
     p.add_argument('--texture', type=Path)
     p.add_argument('--tile-mm', type=float, nargs=2)
@@ -51,6 +52,8 @@ def main():
            str(Path(__file__).with_name('pipeline.py')), '--', '--input', str(a.input.resolve()),
            '--output', str(a.output.resolve()), '--texture', str(texture.resolve()),
            '--ratio', str(a.ratio), '--samples', str(a.samples), '--tile-mm', *map(str,tile_mm), '--units', a.units, '--mode', a.mode, '--ao-mode', a.ao_mode]
+    if a.container_color is not None:
+        cmd.extend(['--container-color', a.container_color])
     for flag,enabled in [('--skip-ao',a.skip_ao),('--skip-export',a.skip_export)]:
         if enabled: cmd.append(flag)
     if a.mode == 'furniture-draft':

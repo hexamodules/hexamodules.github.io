@@ -27,7 +27,7 @@ class AllModulesTests(unittest.TestCase):
             data = json.loads((ASSETS / (model + '.mesh.json')).read_text())
             containers = [r for r in audit_mesh(data) if r['kind'] == 'container']
             self.assertTrue(containers, model)
-            report = {'decisions': [dict(source_body_index=r['body_index'], source_part_index=r['part'], kind=r['kind'], spec={'color':'#969594'}) for r in containers]}
+            report = {'decisions': [dict(source_body_index=r['body_index'], source_part_index=r['part'], kind=r['kind'], spec={'color':'#858585'}) for r in containers]}
             self.assertEqual(validate(data, report), len(containers))
             report['decisions'][0]['kind'] = 'hardware'
             with self.assertRaises(ValueError): validate(data, report)

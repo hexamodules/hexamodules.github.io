@@ -4,6 +4,7 @@ import subprocess
 import sys
 from pathlib import Path
 import shlex
+from furniture_materials import container_color
 
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
@@ -27,6 +28,7 @@ def selected_parts(value):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--container-color',type=container_color,help='Container and lid colour: #RRGGBB')
     p.add_argument('--execute',action='store_true')
     p.add_argument('--tag',default='match-20261010-1')
     p.add_argument('--face-source',choices=['studio','tetsuya'],default='studio')
@@ -55,6 +57,10 @@ def main():
                 [sys.executable,'-B',str(HERE/'check_material_report.py'),str(source),str(folder/'material-report.json')],
                 [sys.executable,'-B',str(HERE/'compress.py'),str(folder/'trial.glb'),str(folder/'trial-meshopt.glb'),'--mode','furniture-draft','--max-bytes',str(a.max_bytes)],
                 [sys.executable,'-B',str(HERE/'compare_bounds.py'),str(source),str(folder/'trial-meshopt.glb'),'--json',str(folder/'bounds-compressed.json'),'--require-pass']]))
+    if a.container_color is not None:
+        for _, commands in jobs:
+            for cmd in commands[:2]:
+                cmd.extend(['--container-color', a.container_color])
     failures=[]
     for label,commands in jobs:
         for cmd in commands:

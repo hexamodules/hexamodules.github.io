@@ -4,8 +4,17 @@ import re
 from pathlib import Path
 
 
-def load_rules(path=None):
-    return json.loads(Path(path or Path(__file__).with_name('materials.json')).read_text())
+def container_color(value):
+    if not re.fullmatch(r'#[0-9a-fA-F]{6}', value):
+        raise ValueError('Container color must be #RRGGBB')
+    return value.lower()
+
+
+def load_rules(path=None, container_color_override=None):
+    rules = json.loads(Path(path or Path(__file__).with_name('materials.json')).read_text())
+    if container_color_override is not None:
+        rules['materials']['container']['color'] = container_color(container_color_override)
+    return rules
 
 
 def classify(name, material_key='', materials=None, rules=None, path='', role=''):

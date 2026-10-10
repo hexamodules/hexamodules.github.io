@@ -28,7 +28,7 @@ class RealityTests(unittest.TestCase):
     if row['kind']=='aluminum':self.assertEqual(spec,dict(color='#d9d9d9',metalness=.9,roughness=.35))
     elif row['kind']=='container':
      container_count+=1
-     self.assertEqual(spec,dict(color='#969594',metalness=0,roughness=.6))
+     self.assertEqual(spec,dict(color='#858585',metalness=0,roughness=.6))
      if part=='aluminum-bed':self.assertRegex(row['body'],r'h235|lid 300x400')
      else:self.assertIn('PFS',row['path']);self.assertTrue(row['body'].startswith('ボディ1'))
     elif row['kind']!='plywood':
