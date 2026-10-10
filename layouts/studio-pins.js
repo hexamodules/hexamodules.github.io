@@ -62,9 +62,6 @@ export function createPinStudio(api){
     button.onclick=()=>apply({bedMattressColor:c.id,frontMattressColor:c.id}).catch(console.error);colors.append(button);
    }card.append(colors);
   }
-  if(s.vehicle!=='super-gl')toggle('ceilingLights','天井ダウンライト',s.ceilingLights,on=>({ceilingLights:on,...(on&&s.ceiling==='none'?{ceiling:'white-ash'}:{})}));
-  else if(s.twiCeiling!=='none')for(const [key,title] of [['twiBarLights','天井バーライト'],['twiIndirectLights','間接照明']])toggle(key,title,s[key],on=>({[key]:on}));
-  toggle('tailgateLights','バックドアライト',s.tailgateLights,on=>({tailgateLights:on,...(on&&s.vehicle!=='super-gl'&&s.panel==='none'?{panel:'white'}:{})}));
   if(focused)card.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});
  }
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}

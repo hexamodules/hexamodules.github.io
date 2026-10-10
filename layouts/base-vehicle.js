@@ -11,8 +11,10 @@ export function normalizeBaseVehicle(s) {
   next.ceiling='none';next.wall='none';next.panel='none';next.ceilingLights=false;
   next.twiCeiling=['clear','walnut'].includes(s.twiCeiling)?s.twiCeiling:'none';
   next.quarterPanels=['left','right','both'].includes(s.quarterPanels)?s.quarterPanels:'none';
-  next.twiBarLights=s.twiBarLights!==false;next.twiIndirectLights=s.twiIndirectLights!==false;
+  next.twiBarLights=true;next.twiIndirectLights=true;
  } else { next.twiCeiling='none';next.quarterPanels='none';next.twiBarLights=true;next.twiIndirectLights=true; }
+ // Lighting is standard equipment; old saved choices cannot remove it.
+ next.ceilingLights=!isSuperGL(next);next.tailgateLights=true;
  return next;
 }
 export function installBaseVehicleControls({getState,getLanguage,onVehicle,onChange}) {
