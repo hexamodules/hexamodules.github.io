@@ -18,7 +18,7 @@ import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=202610
 import {constructionBadge} from './construction-badge.js?v=1';
 import {createOpening} from './opening.js?v=20261008-ga';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
-import {framePortrait} from './portrait-camera.js?v=20261011';
+import {framePortrait,centerPortraitBody} from './portrait-camera.js?v=20261011-body';
 import * as THREE from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 (async()=>{
@@ -119,6 +119,7 @@ const studioShadow=contactShadow(scene);
 const studioScale={dimensions(){}}; // Scale UI remains in studio-scale.js, unused by the pin layout.
 const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);const portraitView=matchMedia('(max-width:850px) and (orientation:portrait)');
 controls.enablePan=!portraitView.matches;controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
+ centerPortraitBody(camera,()=>portraitView.matches&&!document.documentElement.classList.contains('intro-active')&&(document.documentElement.classList.contains('outro-active')?outroPreset!=='inside':activeView==='home'));
  needsFrame=true;
  // Publish only the currently visible camera so a chosen view can be reused accurately.
  $('#viewport').dataset.cameraView=JSON.stringify({eye:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),fov:camera.fov,viewport:[renderer.domElement.clientWidth,renderer.domElement.clientHeight]});
