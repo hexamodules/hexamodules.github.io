@@ -8,7 +8,7 @@ export async function loadBlenderFurniture(transport,key,finish){
  const response=await fetch(`assets/${key}.mesh.json`);
  if(!response.ok)return null;
  const data=await response.json();
- for(const variant of finish==='black'?['hexa','birch']:['birch']){
+ for(const variant of finish==='black'?['hexa']:['birch']){
   const url=`assets/blender/${key}-${variant}.glb`;
   if(unavailable.has(url))continue;
   let job,gltf;const geometries=new Set(),materials=new Set(),textures=new Set();
@@ -59,51 +59,21 @@ export async function loadBlenderFurniture(transport,key,finish){
    const moduleId=data.base_module||key;
    const group=new THREE.Group();group.name=moduleId;group.visible=false;
    group.userData={data,moduleId:key==='centre-mattresses'?'two-side-bed':key==='lounge-fillers'?'lounge-bed':moduleId,blenderFurniture:true,blenderVariant:variant,blenderBounds:bounds,blenderBoundsDelta:delta};
-   // Preserve body identity if present. A merged I-Seat cannot select poses or
-   // separate fixed rails from sliding upholstery; keep the original in that case.
+   // CAD body metadata drives the same node transforms and cushion visibility in both formats.
    const identified=new Map();let complete=true;
    for(const mesh of meshes){
     let n=mesh,tag;while(n&&!tag){if(n.userData.source_body_index!==undefined)tag=n.userData;n=n.parent}
     const index=Number(tag?.source_body_index);
-    if(!Number.isInteger(index)||!data.bodies[index]){complete=false;break}
+    if(!Number.isInteger(index)||!data.bodies[index]||tag.source_body_name!==data.bodies[index].name){complete=false;break}
     if(!identified.has(index))identified.set(index,[]);identified.get(index).push(mesh);
    }
    complete=complete&&identified.size===data.bodies.length;
-   if(key!=='aluminum-bed'&&!complete)throw Error('Furniture requires source_body_index for all cushions, poses and sliding parts');
+   if(!complete)throw Error('Furniture requires source_body_index for all cushions, poses and sliding parts');
    group.userData.blenderMerged=!complete;
    const add=(body,sources)=>{const node=new THREE.Group();node.name=body.name;node.userData={...body,initialBounds:body.bounds};
     for(const source of sources){const geometry=source.userData.mmGeometry;const mesh=new THREE.Mesh(geometry,source.material);mesh.castShadow=true;mesh.receiveShadow=true;
      mesh.userData={originalPosition:geometry.attributes.position.array.slice(),originalNormal:geometry.attributes.normal.array.slice(),blenderFurniture:true};node.add(mesh)}group.add(node)};
-   if(complete){for(const [index,sources] of identified)add(data.bodies[index],sources)}
-   else {
-    add({name:key+' GLB',path:'',bounds:data.bounds},meshes);
-    if(key==='aluminum-bed'){
-     // Empty original body nodes preserve mattress dimensions. Only the small
-     // CAD wall-infill contour is needed to build the same fitted cushion.
-     for(const body of data.bodies)add(body,[]);
-     const response=await fetch('assets/blender/aluminum-bed-mattress.json');
-     if(!response.ok)throw Error('Missing mattress contour');
-     for(const item of await response.json())for(const part of item.parts){
-      const geometry=new THREE.BufferGeometry();geometries.add(geometry);
-      geometry.setAttribute('position',new THREE.Float32BufferAttribute(part.position,3));geometry.setIndex(part.index);
-      const mesh=new THREE.Mesh(geometry,meshes[0].material);mesh.visible=false;
-      group.children[item.body+1].add(mesh);
-     }
-    }
-   }
-   if(finish==='black'&&variant==='birch'){
-    // patterns/*-black* are whole-van renders, not surface textures. Reuse the
-    // established Hexa swatch crop, matching the furniture export pipeline.
-    const surface=[...materials].filter(m=>m.name==='plywood-face');
-    if(surface.length){
-     const image=await new THREE.ImageLoader().loadAsync('assets/furniture-finish-hexa.webp');
-     const canvas=document.createElement('canvas');canvas.width=360;canvas.height=280;
-     canvas.getContext('2d').drawImage(image,120,20,360,280,0,0,360,280);
-     const texture=new THREE.CanvasTexture(canvas);textures.add(texture);texture.colorSpace=THREE.SRGBColorSpace;
-     texture.flipY=false;texture.wrapS=texture.wrapT=THREE.RepeatWrapping;texture.repeat.set(5,10);
-     for(const mat of surface){mat.map=texture;mat.color.set('#ffffff');mat.roughness=.76;mat.needsUpdate=true}
-    }
-   }
+   for(const [index,sources] of identified)add(data.bodies[index],sources);
    // Source geometries are no longer needed; transformed copies belong to group.
    for(const source of meshes){source.geometry.dispose();geometries.delete(source.geometry)}
    return {group,materials,textures,finish(){job.done=job.total;job.finished=true},fail(){dispose();job.finished=true}};
