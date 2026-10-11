@@ -1,5 +1,5 @@
 import {moduleNames,moduleName} from './module-names.js?v=20261010';
-import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js';
+import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js?v=20261011-super-gl-base';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
@@ -665,7 +665,7 @@ let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
  const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-pc-spec';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-pc-spec');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-super-gl-base');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -680,7 +680,15 @@ function openReplacement(id){if(document.documentElement.dataset.studioStep==='i
 
 
 function updated(next){if(next.bed!==undefined&&next.bed!==state.bed)next.bedMattress=next.bed!=='none';if(next.front!==undefined&&next.front!==state.front)next.frontMattress=next.front==='front-module';state={...state,...next,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false};apply().catch(console.error)}
-$('#front-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({front:b.dataset.key})}});$('#bed-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({bed:b.dataset.key,cab:FULL.includes(b.dataset.key)?'none':state.cab})}});$('#cabinet-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({cab:b.dataset.key})}});$('#rear-types').addEventListener('click',e=>{let b=e.target.closest('[data-type]');if(b){rearType=b.dataset.type;configureUI()}});$('#clear-rear').onclick=()=>updated({bed:'none',cab:'none'});$$('[data-finish]').forEach(b=>b.onclick=()=>{apply({...state,finish:b.dataset.finish}).catch(console.error)});$('#motion-controls').addEventListener('click',e=>{let b=e.target.closest('[data-motion]');if(b)apply({...state,[b.dataset.motion]:!state[b.dataset.motion]}).catch(console.error)});$$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('#reset-view').onclick=()=>setView(DEFAULT_VIEW);
+$('#front-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({front:b.dataset.key})}});$('#bed-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({bed:b.dataset.key,cab:FULL.includes(b.dataset.key)?'none':state.cab})}});$('#cabinet-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({cab:b.dataset.key})}});$('#rear-types').addEventListener('click',e=>{let b=e.target.closest('[data-type]');if(b){rearType=b.dataset.type;configureUI()}});$('#clear-rear').onclick=()=>updated({bed:'none',cab:'none'});$$('[data-finish]').forEach(b=>b.onclick=()=>{apply({...state,finish:b.dataset.finish}).catch(console.error)});$('#motion-controls').addEventListener('click',e=>{let b=e.target.closest('[data-motion]');if(b)apply({...state,[b.dataset.motion]:!state[b.dataset.motion]}).catch(console.error)});$$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('#reset-view').onclick=async()=>{
+ try{
+  if(isSuperGL(state)){
+   const base=startingConfiguration({...state,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false});
+   clearMotionBaseline(base);rearType='single';await apply(base);
+  }
+  setView(DEFAULT_VIEW);
+ }catch(error){console.error(error)}
+};
 
 $('#remove-floor').onclick=()=>apply({...state,floor:'none'}).catch(console.error);
 $$('[data-night-toggle]').forEach(b=>b.onclick=()=>apply({...state,night:!state.night}).catch(console.error));

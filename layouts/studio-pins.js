@@ -3,7 +3,7 @@ import {getLanguage,translate} from './language.js?v=20261010-wall-return';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
 import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {I_SEAT_POSES,iSeatDefaultSlide} from './i-seat-state.js?v=6';
-import {PIN_ANCHORS} from './base-configuration.js';
+import {PIN_ANCHORS} from './base-configuration.js?v=20261011-super-gl-base';
 export function createPinStudio(api){
  const {scene,camera,controls,renderer,getState,apply,getGroup,keys,palettes,choices,modules,moduleNames}=api;
  const $=s=>document.querySelector(s),root=document.documentElement,stage=$('.stage');
@@ -71,8 +71,9 @@ export function createPinStudio(api){
    anchors.set(key,point);
   }
   const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleNames[k]?.en||modules[k]?.en||t(k)):(moduleNames[k]?.ja||modules[k]?.name||t(k));
-  for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(s.quarterPanels==='none'?'なし':'クォーターパネル'):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
+  for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?(s.quarterPanels==='none'?t('なし'):t('クォーターパネル')+' · '+t(({left:'助手席側（左）',right:'運転席側（右）',both:'両側'})[s.quarterPanels])):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
   summaryTitle.textContent=getLanguage()==='en'?'Selected specification':'選択された仕様';
+  if(s.vehicle==='super-gl'){const label=getLanguage()==='en'?'Reset to base configuration':'ベース構成に戻す';reset.title=label;reset.setAttribute('aria-label',label);}
   for(const key of ['finish','mattress'])placeButtons.get(key).textContent=placeTitle(key);
   if(desktop.matches){
    const color=STUDIO_MATTRESS_COLORS.find(c=>c.id===(s.bedMattress?s.bedMattressColor:s.frontMattressColor));
