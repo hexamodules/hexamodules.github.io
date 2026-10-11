@@ -156,6 +156,12 @@ export function createPinStudio(api){
   else if(key==='motion'){const empty=document.createElement('p');empty.textContent=text('動かせる家具を選ぶと、ここに操作が出ます。','Select movable furniture to see its controls here.');region.append(empty);popup.append(region);}
  }
  function position(){if(!active||portrait.matches)return;
+  if(innerWidth>850&&root.dataset.studioStep==='interior'){
+   const rect=stage.getBoundingClientRect(),bar=stage.querySelector('.place-toolbar').getBoundingClientRect();
+   const top=rect.top+12;
+   popup.style.left=(rect.left+12)+'px';popup.style.top=top+'px';
+   popup.style.maxHeight=Math.max(0,bar.top-top-32)+'px';return;
+  }
   if(lastFocus===motionButton||lastFocus?.matches('[data-place]')){
    const r=lastFocus.getBoundingClientRect(),bar=stage.querySelector('.place-toolbar').getBoundingClientRect();
    popup.style.maxHeight=Math.max(0,bar.top-24)+'px';
@@ -180,7 +186,7 @@ export function createPinStudio(api){
  document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'&&!portrait.matches){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
  controls.addEventListener('start',()=>{dragging=true;if(!portrait.matches)close();});controls.addEventListener('end',()=>{dragging=false;movingUntil=performance.now()+220;dirty=true;});controls.addEventListener('change',()=>{movingUntil=performance.now()+180;dirty=true;});
  const ray=new THREE.Raycaster(),direction=new THREE.Vector3();
- function frame(now){requestAnimationFrame(frame);const hide=portrait.matches||dragging||now<movingUntil||root.dataset.studioStep!=='interior'||root.classList.contains('intro-active')||root.classList.contains('outro-active');layer.hidden=hide;if(hide||document.hidden)return;if(!dirty)return;lastTick=now;dirty=false;camera.updateMatrixWorld();scene.updateMatrixWorld();const rect=stage.getBoundingClientRect();const blockers=scene.children.filter(g=>g.visible&&g.userData.data);const placed=[];
+ function frame(now){requestAnimationFrame(frame);const hide=portrait.matches||dragging||now<movingUntil||root.dataset.studioStep!=='interior'||root.classList.contains('intro-active')||root.classList.contains('outro-active');layer.hidden=hide;if(hide||document.hidden)return;if(!dirty)return;lastTick=now;dirty=false;camera.updateMatrixWorld();scene.updateMatrixWorld();const rect=layer.getBoundingClientRect();const blockers=scene.children.filter(g=>g.visible&&g.userData.data);const placed=[];
   for(const [key,b] of pins){const point=anchors.get(key),v=point.clone().project(camera);b.hidden=v.z< -1||v.z>1||Math.abs(v.x)>1||Math.abs(v.y)>1;if(b.hidden)continue;const ax=(v.x+1)*rect.width/2,ay=(1-v.y)*rect.height/2;let x=Math.max(24,Math.min(rect.width-24,ax)),y=Math.max(28,Math.min(rect.height-70,ay));const candidates=[];for(let dx=-5;dx<=5;dx++)for(let dy=-5;dy<=5;dy++)candidates.push({x:x+dx*44,y:y+dy*44,d:dx*dx+dy*dy});candidates.sort((a,b)=>a.d-b.d);const free=candidates.find(q=>q.x>=24&&q.x<=rect.width-24&&q.y>=28&&q.y<=rect.height-70&&!placed.some(p=>Math.hypot(q.x-p.x,q.y-p.y)<43));if(free){x=free.x;y=free.y;}placed.push({x,y});b.style.left=x+'px';b.style.top=y+'px';direction.copy(point).sub(camera.position);const distance=direction.length();ray.set(camera.position,direction.normalize());ray.far=distance-45;const occluded=ray.intersectObjects(blockers,true).some(hit=>{for(let n=hit.object;n;n=n.parent)if(!n.visible)return false;return true;});b.style.opacity=occluded?'.38':'1';}
   position();
  }

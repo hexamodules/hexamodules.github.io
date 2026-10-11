@@ -657,15 +657,15 @@ function updateInteriorPresentation(){
 }
 controls.addEventListener('change',updateInteriorPresentation);
 let viewFitScale=1,frameOpening=null;
-function responsiveViewScale(v){const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(matchMedia('(max-width:850px) and (orientation:portrait)').matches&&v==='home'?1.25:1)}
+function responsiveViewScale(v){const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(matchMedia('(max-width:850px) and (orientation:portrait)').matches&&v==='home'?1.25:1)*(innerWidth>850&&v==='home'&&document.documentElement.matches('[data-studio-step=interior]:not(.intro-active):not(.outro-active)')?1.15:1)}
 function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
 const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();renderer.render(scene,camera)});observer.observe($('#viewport'));
 function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hidden){controls.update();if(needsFrame){renderer.render(scene,camera);needsFrame=false}}}animate();setView(DEFAULT_VIEW);
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-portrait';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-portrait');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-pc-places';document.head.append(css);
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-pc-places');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},

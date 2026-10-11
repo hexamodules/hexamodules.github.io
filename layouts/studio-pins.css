@@ -132,3 +132,13 @@ html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!
  .portrait-controls .pin-summary{display:block;padding:6px 0 12px}.portrait-controls .pin-summary li{padding:7px 0;font-size:11px}.portrait-controls .pin-summary span{white-space:normal;overflow:visible}
  .portrait-controls .pin-motion-controls{overflow:visible;flex:none}
 }
+
+/* PC editing reserves a left lane for every place dialog. */
+@media(min-width:851px){
+ html[data-studio-step=interior]:not(.intro-active):not(.outro-active) #viewport,
+ html[data-studio-step=interior]:not(.intro-active):not(.outro-active) .pin-layer{left:304px}
+ html[data-studio-step=interior] .view-toolbar.place-toolbar{left:140px;transform:none;bottom:71px;max-width:calc(100% - 154px)}
+ html[data-studio-step=interior] .pin-hint{bottom:74px;max-width:112px}
+ html[data-studio-step=interior] .pin-hint>span{position:absolute;left:0;bottom:calc(100% + 10px);width:300px}
+ html[data-studio-step=interior] .pin-popup{width:280px}
+}
