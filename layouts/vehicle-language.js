@@ -1,4 +1,5 @@
 export const vehicleTranslations = [
+ ['TWI製 天井ウッド','Ceiling wood by TWI craft'],['TWI製 クォーターパネル','Quarter panels by TWI craft'],
  ['標準ボディ（ナロー）・標準ルーフ・5ドア共通','Both: LWB · Narrow body · Standard roof · 5-door'],
  ['トヨタ ハイエース バン スーパーGL','Toyota HiAce 200 Series Super GL'],
  ['ベース車両','Base vehicle'],['← トップページに戻る','← Back to home'],

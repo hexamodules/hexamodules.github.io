@@ -3,8 +3,8 @@ export const twiCeilingEnabled = s => isSuperGL(s) && ['clear','walnut'].include
 export const quarterCount = s => isSuperGL(s) ? (s.quarterPanels === 'both' ? 2 : ['left','right'].includes(s.quarterPanels) ? 1 : 0) : 0;
 export const vehicleName = s => isSuperGL(s) ? 'トヨタ ハイエース バン スーパーGL' : 'トヨタ ハイエース バン DX';
 export const vehicleNameEnglish = s => 'Toyota HiAce 200 Series ' + (isSuperGL(s) ? 'Super GL' : 'DX') + ' · LWB · Narrow body · Standard roof · 5-door';
-export const twiCeilingLabel = s => twiCeilingEnabled(s) ? 'TWI 檜天井 · ' + (s.twiCeiling === 'walnut' ? 'ウォールナット' : 'クリア') + '（照明付き）' : 'なし';
-export const quarterLabel = s => ({left:'TWI クォーターパネル · 助手席側',right:'TWI クォーターパネル · 運転席側',both:'TWI クォーターパネル · 両側'})[s.quarterPanels] || 'なし';
+export const twiCeilingLabel = s => twiCeilingEnabled(s) ? 'TWI製 天井ウッド · ' + (s.twiCeiling === 'walnut' ? 'ウォールナット' : 'クリア') : 'なし';
+export const quarterLabel = s => ({left:'TWI製 クォーターパネル · 助手席側',right:'TWI製 クォーターパネル · 運転席側',both:'TWI製 クォーターパネル · 両側'})[s.quarterPanels] || 'なし';
 export function normalizeBaseVehicle(s) {
  const next={...s,vehicle:isSuperGL(s)?'super-gl':'dx',floor:['teak','oak','walnut','light-canvas','dark-canvas'].includes(s.floor)?s.floor:'teak'};
  if(isSuperGL(next)) {

@@ -10,11 +10,11 @@ import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cuto
 import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261011-wood-hint';
 import {selectedDealer} from './dealer-preview.js?v=20261011-wood-hint';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
-import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261010-light';
+import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261011-twi-credit';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=20261010-five-colors';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-wood-hint';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-twi-credit';
 import {constructionBadge} from './construction-badge.js?v=20261011-wood-hint';
 import {createOpening} from './opening.js?v=20261011-wood-hint';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
@@ -822,7 +822,7 @@ new MutationObserver(()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-hover-photos');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-twi-credit');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},

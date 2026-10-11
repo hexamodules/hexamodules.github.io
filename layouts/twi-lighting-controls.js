@@ -1,4 +1,4 @@
-import {twiCeilingEnabled} from './base-vehicle.js?v=2';
+import {twiCeilingEnabled} from './base-vehicle.js?v=20261011-twi-credit';
 
 export function createTwiLightingControls({getState,onChange}) {
  const controls=[];

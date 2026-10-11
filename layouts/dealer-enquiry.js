@@ -1,3 +1,5 @@
+import {twiCeilingLabel,quarterLabel} from './base-vehicle.js?v=20261011-twi-credit';
+import {translate} from './language.js?v=20261011-twi-credit';
 import {moduleName} from './module-names.js?v=20261011-wood-hint';
 import {normalizeNewVehicle,selectedNewVehicle,VEHICLE_GRADES,VEHICLE_POWERTRAINS} from './new-vehicle.js?v=1';
 import {studioEvent} from './analytics.js?v=20261010-events';
@@ -34,7 +36,8 @@ export function enquirySelections(catalogue,state,lang){
   const source=entries.get(item.key);
   if(source?.number==null)throw Error('Selection number unavailable');
   // One row per item, including two quarter panels. No quantity or price fields.
-  const label=(item.key==='two-side-bed:floor-slide'?(en?item.name_en:item.name):moduleName(source.module_id,lang)||(en?(source.name_en||source.name):item.name.replace(/ × \d+$/,'')))+(source.module_id?' / '+finish:'')+(item.key==='module:two-side-bed'?(en?' · Rear slide (Included)':' · 後部スライド（付属）'):'');
+  const twiLabel=state.vehicle==='super-gl'?(item.key.startsWith('twi-ceiling:')?twiCeilingLabel(state):item.key==='twi-quarter'?quarterLabel(state):null):null;
+  const label=twiLabel?(en?translate(twiLabel):twiLabel):(item.key==='two-side-bed:floor-slide'?(en?item.name_en:item.name):moduleName(source.module_id,lang)||(en?(source.name_en||source.name):item.name.replace(/ × \d+$/,'')))+(source.module_id?' / '+finish:'')+(item.key==='module:two-side-bed'?(en?' · Rear slide (Included)':' · 後部スライド（付属）'):'');
   return Array.from({length:item.quantity||1},()=>({key:source.key,number:source.number,label}));
  });
 }

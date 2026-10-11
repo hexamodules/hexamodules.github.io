@@ -1,5 +1,5 @@
 import {moduleNames} from './module-names.js?v=20261011-wood-hint';
-import {vehicleTranslations} from './vehicle-language.js?v=20261011-slide-set';
+import {vehicleTranslations} from './vehicle-language.js?v=20261011-twi-credit';
 import {resolveDealerLocation} from './dealer-context.js?v=20261011-wood-hint';
 const pairs=[
 ['マークを押すか、下のボタンから変更できます','Click a marker or use the buttons below.'],['マークをタップするか、下のボタンから変更できます','Tap a marker or use the buttons below.'],
