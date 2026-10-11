@@ -18,6 +18,7 @@ import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=202610
 import {constructionBadge} from './construction-badge.js?v=1';
 import {createOpening} from './opening.js?v=20261008-ga';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
+import {framePortrait} from './portrait-camera.js?v=20261011';
 import * as THREE from 'three';
 import {OrbitControls} from './vendor/OrbitControls.js';
 (async()=>{
@@ -116,7 +117,8 @@ const visualMaterials=createVisualMaterials(renderer,scene);
 const studioEnvironment=scheduleStudioEnvironment(renderer,scene,()=>{needsFrame=true});
 const studioShadow=contactShadow(scene);
 const studioScale={dimensions(){}}; // Scale UI remains in studio-scale.js, unused by the pin layout.
-const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
+const camera=new THREE.PerspectiveCamera(39,1,10,30000);const controls=new OrbitControls(camera,renderer.domElement);const portraitView=matchMedia('(max-width:850px) and (orientation:portrait)');
+controls.enablePan=!portraitView.matches;controls.enableDamping=true;controls.dampingFactor=.12;controls.minDistance=450;controls.maxDistance=12000;controls.maxPolarAngle=THREE.MathUtils.degToRad(110);controls.addEventListener('change',()=>{
  needsFrame=true;
  // Publish only the currently visible camera so a chosen view can be reused accurately.
  $('#viewport').dataset.cameraView=JSON.stringify({eye:camera.position.toArray(),target:controls.target.toArray(),up:camera.up.toArray(),fov:camera.fov,viewport:[renderer.domElement.clientWidth,renderer.domElement.clientHeight]});
@@ -657,9 +659,17 @@ function updateInteriorPresentation(){
 }
 controls.addEventListener('change',updateInteriorPresentation);
 let viewFitScale=1,frameOpening=null;
-function responsiveViewScale(v){const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(matchMedia('(max-width:850px) and (orientation:portrait)').matches&&v==='home'?1.25:1)*(innerWidth>850&&v==='home'&&document.documentElement.matches('[data-studio-step=interior]:not(.intro-active):not(.outro-active)')?1.15:1)}
-function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
-const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();renderer.render(scene,camera)});observer.observe($('#viewport'));
+portraitView.addEventListener('change',()=>{
+ controls.enablePan=!portraitView.matches;
+ requestAnimationFrame(()=>{if(frameOpening)frameOpening();else setView(activeView)});
+});
+function responsiveViewScale(v){const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(matchMedia('(max-width:850px) and (orientation:portrait)').matches&&v==='home'?1.25/1.3:1)*(innerWidth>850&&v==='home'&&document.documentElement.matches('[data-studio-step=interior]:not(.intro-active):not(.outro-active)')?1.15:1)}
+function centerPortraitEditor(){
+ if(!portraitView.matches||activeView!=='home'||document.documentElement.matches('.intro-active,.outro-active'))return;
+ framePortrait(camera,controls,[...loadedModels.values()].map(entry=>entry.group),{left:.04,right:.96,top:.08,bottom:.92});
+}
+function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();centerPortraitEditor();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
+const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();else centerPortraitEditor();renderer.render(scene,camera)});observer.observe($('#viewport'));
 function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hidden){controls.update();if(needsFrame){renderer.render(scene,camera);needsFrame=false}}}animate();setView(DEFAULT_VIEW);
 let pinStudio=null;
 async function ensurePins(){
@@ -825,6 +835,15 @@ function frameOutro(v='rear'){
  if(v==='inside'){frameOpening=null;setView('inside')}
  else{
   frameOpening=openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],copySelector:'.outro-copy',actionSelector:'.outro-action',direction:directions[v],up:v==='top'?[1,0,0]:[0,1,0],fitArea:stage=>innerWidth>850?{left:Math.min(270,stage.width*.2),right:stage.width-24,top:125,bottom:stage.height-135}:innerWidth>innerHeight?{left:Math.min(190,stage.width*.22),right:stage.width-12,top:62,bottom:stage.height-80}:{left:12,right:stage.width-12,top:95,bottom:stage.height-200}});
+  const fitOutro=frameOpening;
+  frameOpening=()=>{
+   fitOutro();
+   if(portraitView.matches){
+    camera.position.sub(controls.target).multiplyScalar(1/1.3).add(controls.target);
+    const height=renderer.domElement.clientHeight;
+    framePortrait(camera,controls,outroGroups,{left:.04,right:.96,top:95/height,bottom:1-200/height});
+   }
+  };
   frameOpening();updateInteriorPresentation();renderer.render(scene,camera);
  }
 
