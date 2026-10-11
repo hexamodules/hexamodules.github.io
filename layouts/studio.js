@@ -16,7 +16,7 @@ export function initStudio({getLocation=()=> 'jp',hasRequiredFloor=()=>true,hasE
   $('#studio-next').disabled=missing||(tabs[active]==='vehicle'&&!hasVehicleSelection());
   $('#floor-required-notice').hidden=!missing;
   $('#floor-step').classList.toggle('floor-missing',missing);
-  for(const id of ['review-enquiry'])$('#'+id).disabled=missing||!hasVehicleSelection();
+  for(const button of $$('.review-enquiry'))button.disabled=missing||!hasVehicleSelection();
   if(missing&&tabs[active]!=='interior')select(tabs.indexOf('interior'));
  };
  const select=(index,focus=false)=>{

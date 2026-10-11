@@ -113,8 +113,10 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
  function updateEnquiryRoute(){
   const en=root.lang==='en';
   $('#outro-contact span:first-child').textContent=en?'Talk to a dealer':enquiryDealerId()==='hexa-direct'?'取扱店に相談する':'取扱店に相談する';
-  $('#review-enquiry').setAttribute('data-module-i18n','');
-  $('#review-enquiry').textContent=en?'View your completed van':'完成車を確認する';
+  for(const button of document.querySelectorAll('.review-enquiry')){
+   button.setAttribute('data-module-i18n','');
+   button.textContent=en?'View your completed van':'完成車を確認する';
+  }
   $('#outro-specification').textContent=en?'Download specification':'仕様書をダウンロード';
  }
  window.addEventListener('studio-locale-change',updateEnquiryRoute);updateEnquiryRoute();

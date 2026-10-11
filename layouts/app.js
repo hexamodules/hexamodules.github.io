@@ -995,7 +995,7 @@ function enquiryPreviews(options){
 let outro={active:false,ready:false};
 // Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
 window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>renderer.render(scene,camera),capturePhoto:(options={})=>capturePhoto({...options,renderer,scene,camera,models:outroGroups,bodyModels:[outroVehicle,outroBody],portrait:innerWidth<=850&&innerHeight>innerWidth}),get layoutNumber(){return pricing.quote(outroState||state).number}});
-$('#review-enquiry').onclick=()=>{if(!readyForReview())return;outro.play()};
+for(const button of $$('.review-enquiry'))button.onclick=()=>{if(!readyForReview())return;outro.play()};
 
 
 $('#outro-night-toggle').onclick=()=>{
@@ -1049,7 +1049,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-ios-pdf');
+  const features=await import('./studio-features.js?v=20261011-review-top');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
