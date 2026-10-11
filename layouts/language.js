@@ -1,6 +1,6 @@
-import {moduleNames} from './module-names.js?v=20261010';
+import {moduleNames} from './module-names.js?v=20261011-rear-slide';
 import {vehicleTranslations} from './vehicle-language.js?v=20261010-names';
-import {resolveDealerLocation} from './dealer-context.js?v=20261005';
+import {resolveDealerLocation} from './dealer-context.js?v=20261011-rear-slide';
 const pairs=[
 ['マークを押すか、下のボタンから変更できます','Click a marker or use the buttons below.'],['マークをタップするか、下のボタンから変更できます','Tap a marker or use the buttons below.'],
 ['サイドモジュール','Side module'],['ベッドモジュール','Bed module'],['横画面にしてください','Please rotate your phone to landscape.'],['マットレスの色','Mattress colour'],
@@ -68,7 +68,7 @@ pairs.push(...[["7桁でご入力ください。分かる範囲の住所を自�
 pairs.push(...[["車両のご用意（必須）", "Base vehicle (required)"], ["新車の手配から依頼する", "Arrange a new vehicle"], ["新車をベースに内装を製作", "Build the interior in a new van"], ["車両を持ち込む", "Bring my own vehicle"], ["お持ちの車両をベースに内装を製作", "Build the interior in your existing van"], ["車両のご用意・お名前・メールアドレス・電話番号・郵便番号は必須です。", "Please choose your vehicle option and enter your name, email address, phone number and postcode."]]);
 pairs.push(...[["新車の仕様", "New vehicle preferences"], ["燃料（必須）", "Fuel (required)"], ["ガソリン", "Petrol"], ["ディーゼル", "Diesel"], ["駆動方式（必須）", "Drivetrain (required)"], ["2WD（二輪駆動）", "2WD"], ["4WD（四輪駆動）", "4WD"], ["燃料を選ぶと、駆動方式を選べます。", "Choose a fuel type to see the drivetrain options."], ["ガソリン車は2WDのみです。", "Petrol vehicles are available in 2WD only."], ["ディーゼル車は2WD・4WDから選べます。", "Diesel vehicles can be configured with 2WD or 4WD."]]);
 pairs.push(...[["床は必須です。柄を選ぶと次へ進めます。", "Flooring is required. Choose a finish to continue."], ["床を選ぶ", "Choose flooring"], ["最小構成は床のみ。家具やその他の内装・装備は必要に応じて追加できます。", "Start with flooring only. Furniture, other finishes and equipment are optional."], ["必須", "Required"]]);
-pairs.push(['床スライド','Floor slide'],['脱着式・追加あり','Removable · added'],['追加なし','Not added']);
+pairs.push(['後部スライド','Rear slide'],['付属','Included']);
 pairs.push(...vehicleTranslations);
 pairs.push(...[["モジュール・パーツメーカー Hexa", "Hexa · modules & parts manufacturer"], ["Hexaは家具・内装のモジュールとパーツを設計・製作・販売しています。このスタジオで組み合わせを確認し、取扱店にご相談いただけます。", "Hexa designs, manufactures and supplies furniture modules and interior parts. Use this studio to explore combinations and discuss your layout with a dealer."], ["正式なお見積もりと販売は取扱店、車両への取付・施工は施工店が担当します。", "Dealers handle sales and formal quotes. Installers fit the modules and parts to your vehicle."]]);
 pairs.push(['天井ライト用開口','Ceiling light cutouts'],['バックドアライト用開口','Tailgate light cutouts'],['バックドアライト（取付希望）','Tailgate lights (fitting request)']);

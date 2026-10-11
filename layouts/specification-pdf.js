@@ -1,5 +1,5 @@
 import {studioEvent} from './analytics.js?v=20261010-events';
-import {enquirySelections} from './dealer-enquiry.js?v=20261010-names';
+import {enquirySelections} from './dealer-enquiry.js?v=20261011-rear-slide';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';

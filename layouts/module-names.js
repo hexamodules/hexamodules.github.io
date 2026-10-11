@@ -73,10 +73,10 @@ export const moduleNames={
     "noteEn": "Facing sofa; big rear storage"
   },
   "two-side-bed": {
-    "ja": "両サイドベッド(合板)",
-    "noteJa": "中央が通路",
-    "en": "Twin side beds (Plywood)",
-    "noteEn": "Centre aisle"
+    "ja": "スライド付き両サイドベッド(合板)",
+    "noteJa": "中央が通路・後部に引き出し",
+    "en": "Twin side beds with rear slide (Plywood)",
+    "noteEn": "Centre aisle; rear pull-out slide"
   },
   "aircon-cube-air460b": {
     "ja": "後付けエアコン CUBE AIR460B",

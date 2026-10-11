@@ -1,5 +1,6 @@
+import {moduleName,moduleNames} from './module-names.js?v=20261011-rear-slide';
 import {constructionBadge} from './construction-badge.js?v=1';
-import {featuredViews} from './module-details-content.js?v=2';
+import {featuredViews} from './module-details-content.js?v=20261011-rear-slide';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
@@ -9,9 +10,9 @@ export function createModuleDetails({modules,getState,getLanguage}){
  let popupKey=null,returnFocus=null,lastLanguage=getLanguage();
  const text=(ja,en)=>getLanguage()==='en'?en:ja;
  const gallery=k=>Object.keys(featuredViews[k]||{}).map(key=>modules[k].scenes.find(s=>s.key===key)).filter(Boolean);
- const title=k=>getLanguage()==='en'?(/[a-z]/.test(modules[k].en)?modules[k].en:modules[k].en.toLowerCase().replace(/(^|[ -])\w/g,c=>c.toUpperCase())):modules[k].name;
+ const title=k=>k==='two-side-bed'?moduleName(k,getLanguage()):(getLanguage()==='en'?(/[a-z]/.test(modules[k].en)?modules[k].en:modules[k].en.toLowerCase().replace(/(^|[ -])\w/g,c=>c.toUpperCase())):modules[k].name);
  const src=(k,s)=>`../assets/${modules[k].prefix.replace('{finish}',getState().finish)}-${s.key}.webp`;
- const caption=(k,s)=>getLanguage()==='en'?featuredViews[k][s.key]:[s.title,s.body,s.note];
+ const caption=(k,s)=>getLanguage()==='en'?featuredViews[k][s.key]:k==='two-side-bed'&&s.key==='slide-open'?['後部スライド（付属）',moduleNames[k].noteJa,s.note]:[s.title,s.body,s.note];
  const popup=document.createElement('aside');
  popup.id='module-popup';popup.className='module-popup';popup.hidden=true;
  popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','false');

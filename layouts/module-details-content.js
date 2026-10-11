@@ -14,7 +14,7 @@ export const featuredViews={
  'two-side-bed':{
   aisle:['Keep a central aisle','The side mattresses normally stay in place and can be removed when needed.'],
   flat:['Five cushions make a flat bed','Five equal centre cushions join the side mattresses at the same height.'],
-  'slide-open':['Rear slide-out · optional','The board in the central aisle slides out behind the bed. This is an optional addition.','The extension shown illustrates the movement.'],
+  'slide-open':['Rear slide (Included)','Centre aisle; rear pull-out slide','The extension shown illustrates the movement.'],
   stored:['Store three cushions on one side, two on the other','The centre cushions stand in the middle bays, one compartment behind the front storage.','Upper cushions and some top boards are hidden to show the interior. Cushion dimensions are adjusted for this storage illustration.']
  },
  'front-module':{

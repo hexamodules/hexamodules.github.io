@@ -1,4 +1,4 @@
-import {moduleName} from './module-names.js?v=20261010';
+import {moduleName} from './module-names.js?v=20261011-rear-slide';
 import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261005';
 // Public selection labels only. Pricing is unavailable.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;
@@ -17,13 +17,13 @@ export const RETAILER_PRICES=[
   ['lounge-slide-bed','収納付きスライドアウトベッド（プライウッド）','Storage slide-out bed · Plywood'],
   ['aluminum-bed','スライドアウトベッド（アルミ）','Slide-out bed · Aluminium'],
   ['lounge-bed','ラウンジベッド（プライウッド）','Lounge bed · Plywood'],
-  ['two-side-bed','床スライド付きラウンジベッド（プライウッド）','Lounge bed with floor slide · Plywood'],
+  ['two-side-bed','スライド付き両サイドベッド(合板)','Twin side beds with rear slide (Plywood)'],
   ['side-cabinet','フリップアップテーブル付きサイドキャビネット（プライウッド）','Flip-up side cabinet · Plywood'],
   ['aluminum-side-cabinet','シンク付きサイドキャビネット（アルミ）','Sink side cabinet · Aluminium'],
   ['simple-side-cabinet','サイドキャビネット（アルミ）','Side cabinet · Aluminium'],
   ['active-side-cabinet','冷蔵庫付きサイドキャビネット（アルミ）','Fridge side cabinet · Aluminium'],
  ].map(([key,ja,en])=>install('fit-'+key,moduleName(key)||ja,moduleName(key,'en')||en,['module:'+key])),
- install('fit-floor-slide','脱着式の床スライド（追加分）','Removable centre floor slide',['two-side-bed:floor-slide']),
+ install('fit-floor-slide','後部スライド（付属）','Rear slide (Included)',['two-side-bed:floor-slide']),
  ...[
   ['ceiling-lights','天井ダウンライト（6灯）','Ceiling downlights · six',null,null],
   ['tailgate-lights-dx','DX バックドアライト（2灯）','DX tailgate lights · two',null,null],

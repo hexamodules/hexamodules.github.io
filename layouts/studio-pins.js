@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {getLanguage,translate} from './language.js?v=20261010-wall-return';
+import {getLanguage,translate} from './language.js?v=20261011-rear-slide';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
 import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {I_SEAT_POSES,iSeatDefaultSlide} from './i-seat-state.js?v=6';
@@ -80,6 +80,7 @@ export function createPinStudio(api){
    if(color&&(api.bedMattressEnabled(s)||api.frontMattressEnabled(s)))summary.lastElementChild.querySelector('span').textContent+=' · '+(getLanguage()==='en'?color.en:color.ja);
    renderDesktopControls();
   }
+  if(s.bed==='two-side-bed'){const li=document.createElement('li'),label=document.createElement('strong'),value=document.createElement('span');label.textContent=t('後部スライド');value.textContent=t('付属');li.append(label,value);summary.append(li);}
   refreshPortrait();
   if(active){renderMotion(active);position();}
   dirty=true;
@@ -170,7 +171,7 @@ export function createPinStudio(api){
     toggle('bed-front',t('前側のベッド'),'frontExpanded','広げる','Extend');
     toggle('bed-rear',t('後側のベッド'),'rearExpanded','広げる','Extend');
    }else if(['slide-bed','lounge-slide-bed'].includes(s.bed))toggle('bed',t(names.bed),'expanded','広げる','Extend');
-   if(['lounge-bed','lounge-slide-bed','aluminum-bed'].includes(s.bed)||s.bed==='two-side-bed'&&s.floorSlide)toggle('bed-storage',t('後部収納を引き出す'),'storage','引き出しを出す','Pull out storage');
+   if(['lounge-bed','lounge-slide-bed','aluminum-bed','two-side-bed'].includes(s.bed))toggle('bed-storage',t('後部収納を引き出す'),'storage','引き出しを出す','Pull out storage');
   }
   if(region.querySelector('button')){popup.append(region);if(focus)region.querySelector(`[data-preview-motion="${focus}"]`)?.focus({preventScroll:true});}
   else if(key==='motion'){const empty=document.createElement('p');empty.textContent=text('動かせる家具を選ぶと、ここに操作が出ます。','Select movable furniture to see its controls here.');region.append(empty);popup.append(region);}

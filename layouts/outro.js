@@ -1,8 +1,8 @@
 import {studioEvent} from './analytics.js?v=20261010-events';
-import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261010-names';
-import {downloadSpecification} from './specification-pdf.js?v=vehicle-20261009';
+import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261011-rear-slide';
+import {downloadSpecification} from './specification-pdf.js?v=20261011-rear-slide';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
-import {dealerContext} from './dealer-context.js?v=20261005';
+import {dealerContext} from './dealer-context.js?v=20261011-rear-slide';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {initQuoteDemo} from './quote-demo.js?v=20261005';
 // Save first, then present the selected van. Contact wording follows the quote request flow.
