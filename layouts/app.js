@@ -816,7 +816,7 @@ function frameOutro(v='rear'){
  outroPreset=v;
  if(v==='inside'){frameOpening=null;setView('inside')}
  else{
-  frameOpening=openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],copySelector:'.outro-copy',actionSelector:'.outro-action',direction:directions[v],up:v==='top'?[1,0,0]:[0,1,0],fitArea:stage=>innerWidth>850?{left:Math.min(270,stage.width*.2),right:stage.width-24,top:125,bottom:stage.height-135}:{left:12,right:stage.width-12,top:95,bottom:stage.height-200}});
+  frameOpening=openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],copySelector:'.outro-copy',actionSelector:'.outro-action',direction:directions[v],up:v==='top'?[1,0,0]:[0,1,0],fitArea:stage=>innerWidth>850?{left:Math.min(270,stage.width*.2),right:stage.width-24,top:125,bottom:stage.height-135}:innerWidth>innerHeight?{left:Math.min(190,stage.width*.22),right:stage.width-12,top:62,bottom:stage.height-80}:{left:12,right:stage.width-12,top:95,bottom:stage.height-200}});
   frameOpening();updateInteriorPresentation();renderer.render(scene,camera);
  }
 

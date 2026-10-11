@@ -45,36 +45,59 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
  const canvas=document.createElement('canvas');canvas.width=1190;canvas.height=1684;
  const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#fff';ctx.fillRect(0,0,595,842);
  const font=(size,bold=false)=>{ctx.font=`${bold?'600':'400'} ${size}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif`;ctx.fillStyle=ink;};
- ctx.drawImage(logo,34,32,82,30.75);font(9);ctx.textAlign='right';
- ctx.fillText((en?'Layout number: ':'レイアウト番号：')+data.layoutNumber,561,43);
- const date=new Date().toLocaleDateString(en?'en-GB':'ja-JP');ctx.fillText((en?'Date: ':'日付：')+date,561,59);ctx.textAlign='left';
- font(23,true);ctx.fillText(en?'Specification':'仕様書',34,94);
- const box={x:34,y:110,w:527,h:272};ctx.fillStyle='#f1f2eb';ctx.fillRect(box.x,box.y,box.w,box.h);
- const scale=Math.min(box.w/photo.width,box.h/photo.height),w=photo.width*scale,h=photo.height*scale;
- ctx.drawImage(photo,box.x+(box.w-w)/2,box.y+(box.h-h)/2,w,h);
- ctx.fillStyle='#e5eddd';ctx.fillRect(34,392,527,57);font(16,true);
- const message=en?'Discuss this layout with your dealer.':'このレイアウトで、取扱店にご相談いただけます';
- ctx.fillText(message,46,426);font(17);ctx.fillText(en?'Your selected specification':'お選びいただいた仕様',34,480);
  // Reserve the complete URL before fitting the specification rows.
  font(7);
  const linkText=(data.layoutNumber?(en?'Layout ':'レイアウト番号 ')+data.layoutNumber+(en?' · ':' ・ '):'')+layoutUrl.href;
  const linkLines=wrap(ctx,linkText,503),linkHeight=58+linkLines.length*9,linkTop=812-linkHeight;
- const rowSpace=linkTop-27-494;
  // Measure first, then fit the complete list into one page. Never truncate rows.
- let size=9,measured,total;
- do{
-  font(size);measured=rows.map(row=>({...row,lines:wrap(ctx,row.value,245)}));total=0;
-  for(let i=0;i<measured.length;i+=2)total+=Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
-  if(total<=rowSpace)break;size-=.25;
- }while(size>=6.5);
+ // Japanese keeps the original two-row-stacked layout. English values are longer, so each cell
+ // puts the label beside its value, and the photo shrinks only if even 6.5pt text cannot fit.
+ let size=9,measured,total,rowSpace,cellHeight,dy=0;
+ const labelWidth=92,valueWidth=256-labelWidth-8;
+ if(en){
+  const heightOf=(row,s)=>row?Math.max(row.lines.length,row.labelLines.length)*(s+2.5)+s*.6+2:0;
+  cellHeight=heightOf;
+  fit:for(dy=0;dy>=-150;dy-=10){
+   rowSpace=linkTop-27-(494+dy);
+   for(size=9;size>=6.5;size-=.25){
+    font(size);measured=rows.map(row=>({...row,labelLines:wrap(ctx,row.label,labelWidth),lines:wrap(ctx,row.value,valueWidth)}));
+    total=0;for(let i=0;i<measured.length;i+=2)total+=Math.max(heightOf(measured[i],size),heightOf(measured[i+1],size));
+    if(total<=rowSpace)break fit;
+   }
+  }
+ }else{
+  rowSpace=linkTop-27-494;
+  do{
+   font(size);measured=rows.map(row=>({...row,lines:wrap(ctx,row.value,245)}));total=0;
+   for(let i=0;i<measured.length;i+=2)total+=Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
+   if(total<=rowSpace)break;size-=.25;
+  }while(size>=6.5);
+ }
  if(total>rowSpace)throw Error('Specification exceeds one page');
- let y=494;
+ ctx.drawImage(logo,34,32,82,30.75);font(9);ctx.textAlign='right';
+ ctx.fillText((en?'Layout number: ':'レイアウト番号：')+data.layoutNumber,561,43);
+ const date=new Date().toLocaleDateString(en?'en-GB':'ja-JP');ctx.fillText((en?'Date: ':'日付：')+date,561,59);ctx.textAlign='left';
+ font(23,true);ctx.fillText(en?'Specification':'仕様書',34,94);
+ const box={x:34,y:110,w:527,h:272+dy};ctx.fillStyle='#f1f2eb';ctx.fillRect(box.x,box.y,box.w,box.h);
+ const scale=Math.min(box.w/photo.width,box.h/photo.height),w=photo.width*scale,h=photo.height*scale;
+ ctx.drawImage(photo,box.x+(box.w-w)/2,box.y+(box.h-h)/2,w,h);
+ ctx.fillStyle='#e5eddd';ctx.fillRect(34,392+dy,527,57);font(16,true);
+ const message=en?'Discuss this layout with your dealer.':'このレイアウトで、取扱店にご相談いただけます';
+ ctx.fillText(message,46,426+dy);font(17);ctx.fillText(en?'Your selected specification':'お選びいただいた仕様',34,480+dy);
+ let y=494+dy;
  for(let i=0;i<measured.length;i+=2){
-  const rowHeight=Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
+  const rowHeight=en?Math.max(cellHeight(measured[i],size),cellHeight(measured[i+1],size)):Math.max(measured[i].lines.length,measured[i+1]?.lines.length||0)*(size+3)+size+12;
   for(let column=0;column<2;column++){
    const row=measured[i+column];if(!row)continue;const x=34+column*271;
-   font(size);ctx.fillStyle=muted;ctx.fillText(row.label,x+4,y+size);
-   font(size);row.lines.forEach((line,n)=>ctx.fillText(line,x+4,y+size+5+(n+1)*(size+3)));
+   font(size);ctx.fillStyle=muted;
+   if(en){
+    const pad=size*.3+1,leading=size+2.5;
+    row.labelLines.forEach((line,n)=>ctx.fillText(line,x+4,y+pad+size+n*leading));
+    font(size);row.lines.forEach((line,n)=>ctx.fillText(line,x+4+labelWidth+4,y+pad+size+n*leading));
+   }else{
+    ctx.fillText(row.label,x+4,y+size);
+    font(size);row.lines.forEach((line,n)=>ctx.fillText(line,x+4,y+size+5+(n+1)*(size+3)));
+   }
    ctx.strokeStyle='#d7ded0';ctx.lineWidth=.5;ctx.beginPath();ctx.moveTo(x,y+rowHeight);ctx.lineTo(x+256,y+rowHeight);ctx.stroke();
   }
   y+=rowHeight;
