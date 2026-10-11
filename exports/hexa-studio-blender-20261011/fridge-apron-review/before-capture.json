@@ -1,0 +1,405 @@
+{
+  "errors": [],
+  "shots": [
+    {
+      "key": "front-module",
+      "view": "whole",
+      "camera": {
+        "position": [
+          1.27,
+          1.48,
+          1.0999999999999999
+        ],
+        "target": [
+          -0.33,
+          0.38,
+          2.4
+        ]
+      }
+    },
+    {
+      "key": "front-module",
+      "view": "aisle",
+      "camera": {
+        "position": [
+          0.71,
+          0.365,
+          1.91
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module",
+      "view": "below",
+      "camera": {
+        "position": [
+          0.46,
+          -0.10500000000000001,
+          1.8299999999999998
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module",
+      "view": "front",
+      "camera": {
+        "position": [
+          0.76,
+          0.065,
+          2.13
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module",
+      "view": "low",
+      "camera": {
+        "position": [
+          0.71,
+          0.03,
+          2.29
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-20",
+      "view": "whole",
+      "camera": {
+        "position": [
+          1.27,
+          1.48,
+          1.0999999999999999
+        ],
+        "target": [
+          -0.33,
+          0.38,
+          2.4
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-20",
+      "view": "aisle",
+      "camera": {
+        "position": [
+          0.71,
+          0.365,
+          1.91
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-20",
+      "view": "below",
+      "camera": {
+        "position": [
+          0.46,
+          -0.10500000000000001,
+          1.8299999999999998
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-20",
+      "view": "front",
+      "camera": {
+        "position": [
+          0.76,
+          0.065,
+          2.13
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-20",
+      "view": "low",
+      "camera": {
+        "position": [
+          0.71,
+          0.03,
+          2.29
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-114",
+      "view": "whole",
+      "camera": {
+        "position": [
+          1.27,
+          1.48,
+          1.0999999999999999
+        ],
+        "target": [
+          -0.33,
+          0.38,
+          2.4
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-114",
+      "view": "aisle",
+      "camera": {
+        "position": [
+          0.71,
+          0.365,
+          1.91
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-114",
+      "view": "below",
+      "camera": {
+        "position": [
+          0.46,
+          -0.10500000000000001,
+          1.8299999999999998
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-114",
+      "view": "front",
+      "camera": {
+        "position": [
+          0.76,
+          0.065,
+          2.13
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-114",
+      "view": "low",
+      "camera": {
+        "position": [
+          0.71,
+          0.03,
+          2.29
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-130",
+      "view": "whole",
+      "camera": {
+        "position": [
+          1.27,
+          1.48,
+          1.0999999999999999
+        ],
+        "target": [
+          -0.33,
+          0.38,
+          2.4
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-130",
+      "view": "aisle",
+      "camera": {
+        "position": [
+          0.71,
+          0.365,
+          1.91
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-130",
+      "view": "below",
+      "camera": {
+        "position": [
+          0.46,
+          -0.10500000000000001,
+          1.8299999999999998
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-130",
+      "view": "front",
+      "camera": {
+        "position": [
+          0.76,
+          0.065,
+          2.13
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-130",
+      "view": "low",
+      "camera": {
+        "position": [
+          0.71,
+          0.03,
+          2.29
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-140",
+      "view": "whole",
+      "camera": {
+        "position": [
+          1.27,
+          1.48,
+          1.0999999999999999
+        ],
+        "target": [
+          -0.33,
+          0.38,
+          2.4
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-140",
+      "view": "aisle",
+      "camera": {
+        "position": [
+          0.71,
+          0.365,
+          1.91
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-140",
+      "view": "below",
+      "camera": {
+        "position": [
+          0.46,
+          -0.10500000000000001,
+          1.8299999999999998
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-140",
+      "view": "front",
+      "camera": {
+        "position": [
+          0.76,
+          0.065,
+          2.13
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    },
+    {
+      "key": "front-module-rear-140",
+      "view": "low",
+      "camera": {
+        "position": [
+          0.71,
+          0.03,
+          2.29
+        ],
+        "target": [
+          -0.19,
+          0.065,
+          2.13
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,2512 @@
+[
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Back panel - 15mm with tenons_0.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 0,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1925.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1925
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 23398.376115179166,
+      "X-": 23398.376115179166
+    },
+    "vertices": 72
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Back panel - 15mm with tenons_1.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 1,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1925.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1925
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 2,
+    "signedAreas": {
+      "Y-": 5848.655958241377
+    },
+    "vertices": 144
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Bottom centre latch APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 19,
+      "source_part_index": 0,
+      "source_path": "02_Door_closed:1",
+      "source_body_name": "Bottom centre latch APPROX",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-154.0, 54.0, 2104.0], [-130.0, 62.0, 2156.0]]"
+    },
+    "bounds": [
+      [
+        -154,
+        54,
+        2104
+      ],
+      [
+        -130,
+        62,
+        2156
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1247.9833213607544,
+      "X+": 415.9944963461266,
+      "Z+": 191.99450431774463,
+      "X-": 415.99449634612665,
+      "Z-": 191.99450431774463
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 6,
+    "signedAreas": {
+      "Y-": 110200.0989559142,
+      "Z+": 149930.5199505248,
+      "Z-": 149930.51995052476
+    },
+    "vertices": 16
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 1,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 196459.58257064462,
+      "X-": 196459.58257064462
+    },
+    "vertices": 8
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Foot APPROX (1)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 12,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (1)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 2290.0], [-450.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        2290
+      ],
+      [
+        -450,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988017,
+      "Y-": 600.0061843988017,
+      "X+": 200.00844629007122,
+      "Z+": 192.01223333249405,
+      "X-": 200.00844629007122,
+      "Z-": 192.01223333249405
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Foot APPROX (2)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 13,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (2)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 1945.0], [-155.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        1945
+      ],
+      [
+        -155,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545121027,
+      "Y-": 599.9985545121027,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678124,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678124
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Foot APPROX (3)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 14,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (3)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 1945.0], [-450.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        1945
+      ],
+      [
+        -450,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545120999,
+      "Y-": 599.9985545120999,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678033,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678033
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Foot APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 11,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 2290.0], [-155.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        2290
+      ],
+      [
+        -155,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988002,
+      "Y-": 600.0061843988002,
+      "X+": 200.00844629007122,
+      "Z+": 192.0122333324936,
+      "X-": 200.00844629007122,
+      "Z-": 192.0122333324936
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "Front frame_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 9,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Front frame",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-190.0, 58.0, 1940.0], [-186.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -190,
+        58,
+        1940
+      ],
+      [
+        -186,
+        575,
+        2320
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1522.895817997946,
+      "X+": 196459.58257064462,
+      "Z+": 2071.9451614490395,
+      "X-": 196459.58257064462,
+      "Z-": 2071.945161449039
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "ボディ51_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 0,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1935.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1935
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 193046.89212591285,
+      "Y+": 193046.8921259126
+    },
+    "vertices": 20
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "node": "ボディ51_1",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 1,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1935.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1935
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "X+": 29251.318344222833,
+      "X-": 29251.318344222826
+    },
+    "vertices": 40
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Back panel - 15mm with tenons_0.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 0,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1811.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1811
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 30238.8597654953,
+      "X-": 30238.8597654953
+    },
+    "vertices": 72
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Back panel - 15mm with tenons_1.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 1,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1811.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1811
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 2,
+    "signedAreas": {
+      "Y-": 7558.502627161285
+    },
+    "vertices": 144
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Bottom centre latch APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 19,
+      "source_part_index": 0,
+      "source_path": "02_Door_closed:1",
+      "source_body_name": "Bottom centre latch APPROX",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-154.0, 54.0, 2104.0], [-130.0, 62.0, 2156.0]]"
+    },
+    "bounds": [
+      [
+        -154,
+        54,
+        2104
+      ],
+      [
+        -130,
+        62,
+        2156
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1247.9833213607544,
+      "X+": 415.9944963461266,
+      "Z+": 191.99450431774463,
+      "X-": 415.99449634612665,
+      "Z-": 191.99450431774463
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 6,
+    "signedAreas": {
+      "Y-": 110200.0989559142,
+      "Z+": 149930.5199505248,
+      "Z-": 149930.51995052476
+    },
+    "vertices": 16
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 1,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 196459.58257064462,
+      "X-": 196459.58257064462
+    },
+    "vertices": 8
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Foot APPROX (1)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 12,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (1)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 2290.0], [-450.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        2290
+      ],
+      [
+        -450,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988017,
+      "Y-": 600.0061843988017,
+      "X+": 200.00844629007122,
+      "Z+": 192.01223333249405,
+      "X-": 200.00844629007122,
+      "Z-": 192.01223333249405
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Foot APPROX (2)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 13,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (2)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 1945.0], [-155.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        1945
+      ],
+      [
+        -155,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545121027,
+      "Y-": 599.9985545121027,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678124,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678124
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Foot APPROX (3)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 14,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (3)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 1945.0], [-450.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        1945
+      ],
+      [
+        -450,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545120999,
+      "Y-": 599.9985545120999,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678033,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678033
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Foot APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 11,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 2290.0], [-155.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        2290
+      ],
+      [
+        -155,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988002,
+      "Y-": 600.0061843988002,
+      "X+": 200.00844629007122,
+      "Z+": 192.0122333324936,
+      "X-": 200.00844629007122,
+      "Z-": 192.0122333324936
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "Front frame_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 9,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Front frame",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-190.0, 58.0, 1940.0], [-186.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -190,
+        58,
+        1940
+      ],
+      [
+        -186,
+        575,
+        2320
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1522.895817997946,
+      "X+": 196459.58257064462,
+      "Z+": 2071.9451614490395,
+      "X-": 196459.58257064462,
+      "Z-": 2071.945161449039
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "ボディ51_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 0,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1821.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1821
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 249480.95156006163,
+      "Y+": 249480.95156006172
+    },
+    "vertices": 20
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "node": "ボディ51_1",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 1,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1821.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1821
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "X+": 37803.5555199432,
+      "X-": 37803.55551994321
+    },
+    "vertices": 40
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Back panel - 15mm with tenons_0.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 0,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1795.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1795
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 31198.60384594438,
+      "X-": 31198.60384594438
+    },
+    "vertices": 72
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Back panel - 15mm with tenons_1.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 1,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1795.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1795
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 2,
+    "signedAreas": {
+      "Y-": 7798.400169916992
+    },
+    "vertices": 144
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Bottom centre latch APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 19,
+      "source_part_index": 0,
+      "source_path": "02_Door_closed:1",
+      "source_body_name": "Bottom centre latch APPROX",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-154.0, 54.0, 2104.0], [-130.0, 62.0, 2156.0]]"
+    },
+    "bounds": [
+      [
+        -154,
+        54,
+        2104
+      ],
+      [
+        -130,
+        62,
+        2156
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1247.9833213607544,
+      "X+": 415.9944963461266,
+      "Z+": 191.99450431774463,
+      "X-": 415.99449634612665,
+      "Z-": 191.99450431774463
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 6,
+    "signedAreas": {
+      "Y-": 110200.0989559142,
+      "Z+": 149930.5199505248,
+      "Z-": 149930.51995052476
+    },
+    "vertices": 16
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 1,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 196459.58257064462,
+      "X-": 196459.58257064462
+    },
+    "vertices": 8
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Foot APPROX (1)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 12,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (1)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 2290.0], [-450.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        2290
+      ],
+      [
+        -450,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988017,
+      "Y-": 600.0061843988017,
+      "X+": 200.00844629007122,
+      "Z+": 192.01223333249405,
+      "X-": 200.00844629007122,
+      "Z-": 192.01223333249405
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Foot APPROX (2)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 13,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (2)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 1945.0], [-155.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        1945
+      ],
+      [
+        -155,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545121027,
+      "Y-": 599.9985545121027,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678124,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678124
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Foot APPROX (3)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 14,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (3)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 1945.0], [-450.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        1945
+      ],
+      [
+        -450,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545120999,
+      "Y-": 599.9985545120999,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678033,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678033
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Foot APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 11,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 2290.0], [-155.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        2290
+      ],
+      [
+        -155,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988002,
+      "Y-": 600.0061843988002,
+      "X+": 200.00844629007122,
+      "Z+": 192.0122333324936,
+      "X-": 200.00844629007122,
+      "Z-": 192.0122333324936
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "Front frame_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 9,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Front frame",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-190.0, 58.0, 1940.0], [-186.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -190,
+        58,
+        1940
+      ],
+      [
+        -186,
+        575,
+        2320
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1522.895817997946,
+      "X+": 196459.58257064462,
+      "Z+": 2071.9451614490395,
+      "X-": 196459.58257064462,
+      "Z-": 2071.945161449039
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "ボディ51_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 0,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1805.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1805
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 257402.79288575,
+      "Y+": 257402.79288575007
+    },
+    "vertices": 20
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "node": "ボディ51_1",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 1,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1805.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1805
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "X+": 39004.05437411563,
+      "X-": 39004.054374115636
+    },
+    "vertices": 40
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Back panel - 15mm with tenons_0.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 0,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1785.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1785
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 31798.44389622505,
+      "X-": 31798.443896225046
+    },
+    "vertices": 72
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Back panel - 15mm with tenons_1.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 1,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1785.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1785
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 2,
+    "signedAreas": {
+      "Y-": 7948.336134139311
+    },
+    "vertices": 144
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Bottom centre latch APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 19,
+      "source_part_index": 0,
+      "source_path": "02_Door_closed:1",
+      "source_body_name": "Bottom centre latch APPROX",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-154.0, 54.0, 2104.0], [-130.0, 62.0, 2156.0]]"
+    },
+    "bounds": [
+      [
+        -154,
+        54,
+        2104
+      ],
+      [
+        -130,
+        62,
+        2156
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1247.9833213607544,
+      "X+": 415.9944963461266,
+      "Z+": 191.99450431774463,
+      "X-": 415.99449634612665,
+      "Z-": 191.99450431774463
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 6,
+    "signedAreas": {
+      "Y-": 110200.0989559142,
+      "Z+": 149930.5199505248,
+      "Z-": 149930.51995052476
+    },
+    "vertices": 16
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 1,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 196459.58257064462,
+      "X-": 196459.58257064462
+    },
+    "vertices": 8
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Foot APPROX (1)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 12,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (1)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 2290.0], [-450.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        2290
+      ],
+      [
+        -450,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988017,
+      "Y-": 600.0061843988017,
+      "X+": 200.00844629007122,
+      "Z+": 192.01223333249405,
+      "X-": 200.00844629007122,
+      "Z-": 192.01223333249405
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Foot APPROX (2)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 13,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (2)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 1945.0], [-155.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        1945
+      ],
+      [
+        -155,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545121027,
+      "Y-": 599.9985545121027,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678124,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678124
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Foot APPROX (3)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 14,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (3)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 1945.0], [-450.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        1945
+      ],
+      [
+        -450,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545120999,
+      "Y-": 599.9985545120999,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678033,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678033
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Foot APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 11,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 2290.0], [-155.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        2290
+      ],
+      [
+        -155,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988002,
+      "Y-": 600.0061843988002,
+      "X+": 200.00844629007122,
+      "Z+": 192.0122333324936,
+      "X-": 200.00844629007122,
+      "Z-": 192.0122333324936
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "Front frame_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 9,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Front frame",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-190.0, 58.0, 1940.0], [-186.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -190,
+        58,
+        1940
+      ],
+      [
+        -186,
+        575,
+        2320
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1522.895817997946,
+      "X+": 196459.58257064462,
+      "Z+": 2071.9451614490395,
+      "X-": 196459.58257064462,
+      "Z-": 2071.945161449039
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "ボディ51_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 0,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1795.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1795
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 262348.79381413443,
+      "Y+": 262348.7938141344
+    },
+    "vertices": 20
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "node": "ボディ51_1",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 1,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1795.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1795
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "X+": 39747.09492372303,
+      "X-": 39747.09492372303
+    },
+    "vertices": 40
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Back panel - 15mm with tenons_0.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 0,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1905.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1905
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 24599.209754298758,
+      "X-": 24599.209754298758
+    },
+    "vertices": 72
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Back panel - 15mm with tenons_1.002",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 221,
+      "source_part_index": 1,
+      "source_path": "Fridge cabinet - 15mm interlocking panels:1",
+      "source_body_name": "Back panel - 15mm with tenons",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-700.0, 0.0, 1905.0], [-685.0, 630.0, 2335.0]]"
+    },
+    "bounds": [
+      [
+        -700,
+        0,
+        1905
+      ],
+      [
+        -685,
+        630,
+        2335
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 2,
+    "signedAreas": {
+      "Y-": 6148.8162250787545
+    },
+    "vertices": 144
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Bottom centre latch APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 19,
+      "source_part_index": 0,
+      "source_path": "02_Door_closed:1",
+      "source_body_name": "Bottom centre latch APPROX",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-154.0, 54.0, 2104.0], [-130.0, 62.0, 2156.0]]"
+    },
+    "bounds": [
+      [
+        -154,
+        54,
+        2104
+      ],
+      [
+        -130,
+        62,
+        2156
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1247.9833213607544,
+      "X+": 415.9944963461266,
+      "Z+": 191.99450431774463,
+      "X-": 415.99449634612665,
+      "Z-": 191.99450431774463
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 6,
+    "signedAreas": {
+      "Y-": 110200.0989559142,
+      "Z+": 149930.5199505248,
+      "Z-": 149930.51995052476
+    },
+    "vertices": 16
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Cabinet envelope - rear top relief approximate_0",
+    "primitive": 1,
+    "extras": {
+      "source_body_index": 10,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Cabinet envelope - rear top relief approximate",
+      "source_material": "NRX C - gray coated cabinet",
+      "source_role": "",
+      "source_bounds_mm": "[[-480.0, 58.0, 1940.0], [-190.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -480,
+        58,
+        1940
+      ],
+      [
+        -190,
+        575,
+        2320
+      ]
+    ],
+    "material": "appliance:hexafix-source-solid",
+    "texture": null,
+    "color": [
+      0.23074004852434915,
+      0.25015828472995344,
+      0.27467731206038465,
+      1
+    ],
+    "regionTriangles": 4,
+    "signedAreas": {
+      "X+": 196459.58257064462,
+      "X-": 196459.58257064462
+    },
+    "vertices": 8
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Foot APPROX (1)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 12,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (1)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 2290.0], [-450.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        2290
+      ],
+      [
+        -450,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988017,
+      "Y-": 600.0061843988017,
+      "X+": 200.00844629007122,
+      "Z+": 192.01223333249405,
+      "X-": 200.00844629007122,
+      "Z-": 192.01223333249405
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Foot APPROX (2)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 13,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (2)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 1945.0], [-155.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        1945
+      ],
+      [
+        -155,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545121027,
+      "Y-": 599.9985545121027,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678124,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678124
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Foot APPROX (3)_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 14,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX (3)",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-474.0, 50.0, 1945.0], [-450.0, 58.0, 1970.0]]"
+    },
+    "bounds": [
+      [
+        -474,
+        50,
+        1945
+      ],
+      [
+        -450,
+        58,
+        1970
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 599.9985545120999,
+      "Y-": 599.9985545120999,
+      "X+": 199.99318696938514,
+      "Z+": 191.99148057678033,
+      "X-": 199.99318696938516,
+      "Z-": 191.99148057678033
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Foot APPROX_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 11,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Foot APPROX",
+      "source_material": "NRX C - matte black feet and seals",
+      "source_role": "",
+      "source_bounds_mm": "[[-179.0, 50.0, 2290.0], [-155.0, 58.0, 2315.0]]"
+    },
+    "bounds": [
+      [
+        -179,
+        50,
+        2290
+      ],
+      [
+        -155,
+        58,
+        2315
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#0a0b0c\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.0030352699104696512,
+      0.0033465358428657055,
+      0.0036765073891729116,
+      1
+    ],
+    "regionTriangles": 12,
+    "signedAreas": {
+      "Y+": 600.0061843988002,
+      "Y-": 600.0061843988002,
+      "X+": 200.00844629007122,
+      "Z+": 192.0122333324936,
+      "X-": 200.00844629007122,
+      "Z-": 192.0122333324936
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "Front frame_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 9,
+      "source_part_index": 0,
+      "source_path": "01_Cabinet:1",
+      "source_body_name": "Front frame",
+      "source_material": "NRX C - black satin ABS handle",
+      "source_role": "",
+      "source_bounds_mm": "[[-190.0, 58.0, 1940.0], [-186.0, 575.0, 2320.0]]"
+    },
+    "bounds": [
+      [
+        -190,
+        58,
+        1940
+      ],
+      [
+        -186,
+        575,
+        2320
+      ]
+    ],
+    "material": "plastic:{\"color\": \"#101113\", \"metalness\": 0, \"roughness\": 0.6}:solid",
+    "texture": null,
+    "color": [
+      0.005181516520678997,
+      0.005605391692370176,
+      0.006512090563774109,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 1522.895817997946,
+      "X+": 196459.58257064462,
+      "Z+": 2071.9451614490395,
+      "X-": 196459.58257064462,
+      "Z-": 2071.945161449039
+    },
+    "vertices": 24
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "ボディ51_0",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 0,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Hexa plywood - charcoal satin",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1915.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1915
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png",
+    "texture": "tex/78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "Y-": 202947.4997016295,
+      "Y+": 202947.49970162965
+    },
+    "vertices": 20
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "node": "ボディ51_1",
+    "primitive": 0,
+    "extras": {
+      "source_body_index": 0,
+      "source_part_index": 1,
+      "source_path": "root",
+      "source_body_name": "ボディ51",
+      "source_material": "SKY Birch plywood - wood grain cut edge",
+      "source_role": "",
+      "source_bounds_mm": "[[-685.0, 0.0, 1915.0], [-190.0, 45.0, 2325.0]]"
+    },
+    "bounds": [
+      [
+        -685,
+        0,
+        1915
+      ],
+      [
+        -190,
+        45,
+        2325
+      ]
+    ],
+    "material": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "texture": "tex/4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "color": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "regionTriangles": 10,
+    "signedAreas": {
+      "X+": 30751.502163859896,
+      "X-": 30751.5021638599
+    },
+    "vertices": 40
+  }
+]

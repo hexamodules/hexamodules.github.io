@@ -224,5 +224,25 @@
       "pattern": "h235|lid\\s*300x400|pfs|eurobox|box\\s*23|euro"
     }
   ],
-  "hexa_plywood_policy": "all_except_countertops_and_bed_tops"
+  "hexa_plywood_policy": "all_except_countertops_and_bed_tops",
+  "hexa_apron_faces": {
+    "body": "ボディ51",
+    "path": "root",
+    "part": 1,
+    "source_material": "SKY Birch plywood - wood grain cut edge",
+    "widths_mm": {
+      "front-module": 390,
+      "front-module-rear-20": 410,
+      "front-module-rear-114": 504,
+      "front-module-rear-130": 520,
+      "front-module-rear-140": 530
+    },
+    "planes_x_mm": [
+      -205,
+      -220
+    ],
+    "height_mm": 30,
+    "tolerance_mm": 0.02,
+    "note": "冷蔵庫下の段付き部材内の縦幕板。表裏だけHexa、上の15mm厚板と端の小口は維持。天板・ベッド規則は変更しない。"
+  }
 }

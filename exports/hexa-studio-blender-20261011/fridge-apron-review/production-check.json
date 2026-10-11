@@ -1,0 +1,37 @@
+[
+  {
+    "file": "front-module-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-hexa.glb",
+    "production_sha256": "a86b99aa86006c12b6d3f372d1dfcec81d64a65f6be0fd4be4a1eab80ccf6018",
+    "local_sha256": "a86b99aa86006c12b6d3f372d1dfcec81d64a65f6be0fd4be4a1eab80ccf6018",
+    "equal": true
+  },
+  {
+    "file": "front-module-rear-114-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-rear-114-hexa.glb",
+    "production_sha256": "17c9a5f047170db4336b4217bc4078c99525dd811461d1745106b88a0a2a5bec",
+    "local_sha256": "17c9a5f047170db4336b4217bc4078c99525dd811461d1745106b88a0a2a5bec",
+    "equal": true
+  },
+  {
+    "file": "front-module-rear-130-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-rear-130-hexa.glb",
+    "production_sha256": "ba0554847f700409666d4ba260736a86b9e4490bb0f8b81458f5ed4e75200a7c",
+    "local_sha256": "ba0554847f700409666d4ba260736a86b9e4490bb0f8b81458f5ed4e75200a7c",
+    "equal": true
+  },
+  {
+    "file": "front-module-rear-140-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-rear-140-hexa.glb",
+    "production_sha256": "3d226f3f655ea7c80fbbe32ec56259a3bd832183ea16f8fa1124c0c2b22b7122",
+    "local_sha256": "3d226f3f655ea7c80fbbe32ec56259a3bd832183ea16f8fa1124c0c2b22b7122",
+    "equal": true
+  },
+  {
+    "file": "front-module-rear-20-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-rear-20-hexa.glb",
+    "production_sha256": "0a7382e474fe5ffbe9dc02ac727ea30e4996c8b0ea44c9c17c65c569a91f8e3a",
+    "local_sha256": "0a7382e474fe5ffbe9dc02ac727ea30e4996c8b0ea44c9c17c65c569a91f8e3a",
+    "equal": true
+  }
+]

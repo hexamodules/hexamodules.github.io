@@ -17,6 +17,82 @@ from rebuild_bounds import ROOT, HERE, selected_parts
 NODE=Path.home()/'.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node'
 
 
+def repair_apron(raw, model, source, decoded):
+    """Split only the two vertical apron faces out of a stepped body's edge primitive.
+
+    The body's 45 mm bounding height is not a plywood thickness: it combines
+    a 15 mm shelf and a 30 mm high, 15 mm thick support. Its X-facing support
+    surfaces were misclassified as edges by the whole-body shortest-axis rule.
+    """
+    rule=load_rules().get('hexa_apron_faces',{})
+    if model not in rule.get('widths_mm',{}):return raw,[]
+    doc,binary=read_glb(raw); original=copy.deepcopy(doc); old_binary=binary
+    decoded={(r['node'],r['primitive']):r for r in decoded};rows=[]
+
+    def append(values, component, kind, count, target):
+        nonlocal binary
+        binary+=b'\0'*(-len(binary)%4)
+        payload=struct.pack('<'+component*len(values),*values);offset=len(binary);binary+=payload
+        view=len(doc['bufferViews']);doc['bufferViews'].append(dict(buffer=0,byteOffset=offset,byteLength=len(payload),target=target))
+        index=len(doc['accessors']);doc['accessors'].append(dict(bufferView=view,componentType=5126 if component=='f' else 5125,count=count,type=kind))
+        return index
+
+    for n in doc['nodes']:
+        e=n.get('extras',{})
+        if (e.get('source_body_name')!=rule['body'] or e.get('source_path')!=rule['path'] or
+            e.get('source_part_index')!=rule['part']):continue
+        body=source['bodies'][e['source_body_index']]
+        assert body['name']==rule['body'] and e['source_material']==rule['source_material']
+        bounds=json.loads(e['source_bounds_mm']);assert bounds==body['bounds']
+        width=rule['widths_mm'][model]
+        assert bounds==[[-685.0,0.0,2325.0-width],[-190.0,45.0,2325.0]],'Apron geometry changed'
+        primitives=doc['meshes'][n['mesh']]['primitives']
+        for pi,p in list(enumerate(primitives)):
+            name=doc['materials'][p['material']]['name']
+            if not name.startswith('plywood-edge:'):continue
+            data=decoded[n['name'],pi];points=data['points_mm'];indices=data['indices']
+            keep=[];faces=[];tol=rule['tolerance_mm']
+            for i in range(0,len(indices),3):
+                triangle=indices[i:i+3];q=[points[j] for j in triangle]
+                selected=(any(all(abs(v[0]-x)<tol for v in q) for x in rule['planes_x_mm']) and
+                          all(-tol<=v[1]<=rule['height_mm']+tol for v in q))
+                (faces if selected else keep).extend(triangle)
+            if not faces:continue  # Already repaired input is a no-op.
+            assert len(faces)==12 and keep,'Unexpected apron triangulation'
+            hexa=next(i for i,m in enumerate(doc['materials']) if m['name'].startswith('plywood-face:') and 'hexa-studio.png' in m['name'])
+            # Keep the apron edge's existing AO assignment, even when the
+            # approved face material uses constant unoccluded shading.
+            material=copy.deepcopy(doc['materials'][hexa])
+            material['name']+=':apron-preserve-ao'
+            ao=doc['materials'][p['material']].get('occlusionTexture')
+            if ao is None:material.pop('occlusionTexture',None)
+            else:material['occlusionTexture']=copy.deepcopy(ao)
+            hexa=len(doc['materials']);doc['materials'].append(material)
+            face=copy.deepcopy(p)
+            p['indices']=append(keep,'I','SCALAR',len(keep),34963)
+            face['indices']=append(faces,'I','SCALAR',len(faces),34963)
+            # Project the vertical Y/Z plane, not the horizontal parent-body X/Z plane.
+            tile=load_rules()['mapping']['hexa_mm']
+            uv=[v for q in points for v in ((q[2]-bounds[0][2])/tile[0],1-q[1]/tile[1])]
+            face['attributes']['TEXCOORD_0']=append(uv,'f','VEC2',len(points),34962)
+            face['material']=hexa;primitives.append(face)
+            rows.append(dict(model=model,node=n['name'],primitive=pi,new_primitive=len(primitives)-1,
+                             body=body['name'],body_index=e['source_body_index'],part=e['source_part_index'],
+                             path=e['source_path'],source_material=e['source_material'],kind='plywood',
+                             bounds_mm=bounds,before=name,after=doc['materials'][hexa]['name'],
+                             exception='冷蔵庫下の幕板の表裏のみ。15mm小口保持',changed=True,
+                             repaired_triangles=len(faces)//3,retained_triangles=len(keep)//3))
+    if not rows:return raw,[]
+    assert len(rows)==1 and binary[:len(old_binary)]==old_binary
+    for key in ['nodes','images','textures','samplers','scenes','extensionsUsed','extensionsRequired']:
+        assert doc.get(key)==original.get(key),key
+    assert doc['materials'][:len(original['materials'])]==original['materials']
+    assert doc['accessors'][:len(original['accessors'])]==original['accessors']
+    assert doc['bufferViews'][:len(original['bufferViews'])]==original['bufferViews']
+    doc['buffers'][0]['byteLength']=len(binary)
+    return write_glb(doc,binary),rows
+
+
 def decision(model, extras, source, countertop):
     body=source['bodies'][extras['source_body_index']]
     if body['name'] != extras['source_body_name'] or body.get('path','') != extras['source_path']:
@@ -38,6 +114,7 @@ def repair(raw, model, source, countertop, decoded):
     rows=[]; changed=0
     meshes=[n['mesh'] for n in doc['nodes'] if 'mesh' in n]
     if len(meshes)!=len(set(meshes)):raise ValueError('Shared mesh needs explicit isolation')
+    decoded_rows=decoded
     decoded={(r['node'],r['primitive']):r for r in decoded}
     rules=load_rules()
     for n in doc['nodes']:
@@ -76,7 +153,9 @@ def repair(raw, model, source, countertop, decoded):
                 replacement['occlusionTexture']=copy.deepcopy(ao)
                 p['material']=len(doc['materials']);doc['materials'].append(replacement)
             row['after']=doc['materials'][p['material']]['name']
-    if not changed:return raw,rows
+    if not changed:
+        result,apron_rows=repair_apron(raw,model,source,decoded_rows)
+        return result,rows+apron_rows
     doc['buffers'][0]['byteLength']=len(binary)
     # Strong invariants: no changes to existing buffers, geometry, images or transforms.
     assert binary[:len(old_binary)]==old_binary
@@ -88,7 +167,8 @@ def repair(raw, model, source, countertop, decoded):
         for a,b in zip(before['primitives'],after['primitives']):
             assert a.get('indices')==b.get('indices')
             assert {k:v for k,v in a['attributes'].items() if k!='TEXCOORD_0'}=={k:v for k,v in b['attributes'].items() if k!='TEXCOORD_0'}
-    return write_glb(doc,binary),rows
+    result,apron_rows=repair_apron(write_glb(doc,binary),model,source,decoded_rows)
+    return result,rows+apron_rows
 
 
 def plan(root=ROOT):

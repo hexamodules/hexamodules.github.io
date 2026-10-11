@@ -1,0 +1,202 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "file": "active-side-cabinet-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "active-side-cabinet-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-bed-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-bed-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-front-kitchen-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-front-kitchen-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-side-cabinet-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "aluminum-side-cabinet-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "centre-mattresses-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "centre-mattresses-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-hexa.glb",
+      "byte_identical": false,
+      "changed_body": "ボディ51",
+      "changed_triangles": 4,
+      "face_area_mm2": 23401.05467537827,
+      "uv_area": 2.8890185679384563,
+      "mm2_per_uv_area": 8100.001479767842,
+      "shape_normals_ao_unchanged": true,
+      "other_primitives_unchanged": true
+    },
+    {
+      "file": "front-module-rear-114-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-rear-114-hexa.glb",
+      "byte_identical": false,
+      "changed_body": "ボディ51",
+      "changed_triangles": 4,
+      "face_area_mm2": 30241.293977914167,
+      "uv_area": 3.733493229802461,
+      "mm2_per_uv_area": 8099.999683008461,
+      "shape_normals_ao_unchanged": true,
+      "other_primitives_unchanged": true
+    },
+    {
+      "file": "front-module-rear-130-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-rear-130-hexa.glb",
+      "byte_identical": false,
+      "changed_body": "ボディ51",
+      "changed_triangles": 4,
+      "face_area_mm2": 31201.593057977618,
+      "uv_area": 3.8520487491626714,
+      "mm2_per_uv_area": 8099.999530057863,
+      "shape_normals_ao_unchanged": true,
+      "other_primitives_unchanged": true
+    },
+    {
+      "file": "front-module-rear-140-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-rear-140-hexa.glb",
+      "byte_identical": false,
+      "changed_body": "ボディ51",
+      "changed_triangles": 4,
+      "face_area_mm2": 31795.96140884045,
+      "uv_area": 3.925427372732302,
+      "mm2_per_uv_area": 8099.999920953525,
+      "shape_normals_ao_unchanged": true,
+      "other_primitives_unchanged": true
+    },
+    {
+      "file": "front-module-rear-20-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "front-module-rear-20-hexa.glb",
+      "byte_identical": false,
+      "changed_body": "ボディ51",
+      "changed_triangles": 4,
+      "face_area_mm2": 24601.201731087916,
+      "uv_area": 3.0371850382911445,
+      "mm2_per_uv_area": 8100.000961722651,
+      "shape_normals_ao_unchanged": true,
+      "other_primitives_unchanged": true
+    },
+    {
+      "file": "i-seat-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "i-seat-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-bed-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-bed-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-fillers-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-fillers-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-slide-bed-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "lounge-slide-bed-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "seat-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "seat-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "side-cabinet-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "side-cabinet-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "simple-side-cabinet-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "simple-side-cabinet-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "slide-bed-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "slide-bed-hexa.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "two-side-bed-birch.glb",
+      "byte_identical": true
+    },
+    {
+      "file": "two-side-bed-hexa.glb",
+      "byte_identical": true
+    }
+  ],
+  "changed_files": 5,
+  "byte_identical_files": 33,
+  "unchanged_textures": [
+    "4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "69b6502ed0b1b45ed67e529c3b2ad858f88622152f9ff0fccf3f93a799433bdd.webp",
+    "ce48d1ebd18989d79b409c94e1f3979162bd9b2c28afa77abe17967a1a5af9d7.webp",
+    "0721eac7f370602d43ffb4f7ad1137d0ae0ca56ff083e5ff91ae5c9f6adf6dbf.webp"
+  ],
+  "other_material_rules_unchanged": true
+}
