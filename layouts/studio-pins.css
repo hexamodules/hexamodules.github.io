@@ -142,3 +142,23 @@ html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!
  html[data-studio-step=interior] .pin-hint>span{position:absolute;left:0;bottom:calc(100% + 10px);width:300px}
  html[data-studio-step=interior] .pin-popup{width:280px}
 }
+
+/* PC finish/mattress choices share the left dialog; the right card is a specification panel. */
+.pc-place,.pc-summary-title{display:none}
+@media(min-width:851px){
+ html[data-studio-step=interior] .place-toolbar .pc-place{display:block}
+ html[data-studio-step=interior] .view-toolbar.place-toolbar{flex-wrap:nowrap;white-space:nowrap;gap:2px;width:max-content}
+ html[data-studio-step=interior] .place-toolbar button[data-place]{font-size:10px;padding:7px 8px}
+ #pane-interior>.pin-card-controls{display:none}
+ .pc-summary-title{display:block;font-size:14px;font-weight:500;margin:18px 0 8px}
+ #pane-interior>.pin-summary li{display:block;padding:7px 0}
+ #pane-interior>.pin-summary strong{display:block;margin-bottom:2px;color:#333}
+ #pane-interior>.pin-summary span{display:block;white-space:normal;overflow:visible;line-height:1.5}
+ .pin-popup .pin-card-controls{border:0;padding:4px}
+ .pin-popup .pin-card-controls button{min-height:44px}
+ .pin-popup .pin-mattress-color{justify-content:space-between;margin-top:8px}
+}
+@media(min-width:851px) and (max-width:1100px){
+ html[data-studio-step=interior] .view-toolbar.place-toolbar{left:100px;max-width:calc(100% - 112px);gap:0}
+ .place-toolbar button[data-place]{font-size:9px;padding:7px 4px}
+}

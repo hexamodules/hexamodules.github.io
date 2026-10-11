@@ -664,8 +664,8 @@ function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hi
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-pc-places';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-pc-places');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-pc-spec';document.head.append(css);
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-pc-spec');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},

@@ -8,6 +8,8 @@ export function createPinStudio(api){
  const {scene,camera,controls,renderer,getState,apply,getGroup,keys,palettes,choices,modules,moduleNames}=api;
  const $=s=>document.querySelector(s),root=document.documentElement,stage=$('.stage');
  const t=s=>getLanguage()==='en'?translate(s):s;
+ const desktop=matchMedia('(min-width:851px)');
+ const placeTitle=key=>key==='finish'?(getLanguage()==='en'?'Furniture finish':'家具の仕上げ'):key==='mattress'?t('マットレス'):t(names[key]);
  const names={floor:'床',ceiling:'天井',wall:'壁',front:'フロントモジュール',bed:'ベッドモジュール',left:'サイドモジュール'};
  const layer=document.createElement('div');layer.className='pin-layer';layer.dataset.moduleI18n='';stage.append(layer);
  const backdrop=document.createElement('div');backdrop.className='pin-backdrop';backdrop.hidden=true;
@@ -26,6 +28,7 @@ export function createPinStudio(api){
  const hintLabel=document.createElement('span'),motionButton=document.createElement('button');motionButton.type='button';motionButton.className='pin-motion-toggle';motionButton.setAttribute('aria-haspopup','dialog');motionButton.setAttribute('aria-expanded','false');hint.append(hintLabel,motionButton);motionButton.onclick=()=>open('motion',motionButton);
  const hintText=()=>t(matchMedia('(pointer:coarse)').matches?'マークをタップするか、下のボタンから変更できます':'マークを押すか、下のボタンから変更できます');
  const summary=document.createElement('ul');summary.className='pin-summary';summary.dataset.moduleI18n='';$('#studio-vehicle-compatibility').before(summary);
+ const summaryTitle=document.createElement('h2');summaryTitle.className='pc-summary-title';summaryTitle.dataset.moduleI18n='';summary.before(summaryTitle);
  let active=null,lastFocus=null,movingUntil=0,dragging=false,dirty=true,lastTick=0,hoverAfter=0;
  const portrait=matchMedia('(max-width:850px) and (orientation:portrait)');
  const accordion=document.createElement('div');accordion.className='portrait-controls';accordion.dataset.moduleI18n='';
@@ -69,6 +72,13 @@ export function createPinStudio(api){
   }
   const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleNames[k]?.en||modules[k]?.en||t(k)):(moduleNames[k]?.ja||modules[k]?.name||t(k));
   for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(s.quarterPanels==='none'?'なし':'クォーターパネル'):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
+  summaryTitle.textContent=getLanguage()==='en'?'Selected specification':'選択された仕様';
+  for(const key of ['finish','mattress'])placeButtons.get(key).textContent=placeTitle(key);
+  if(desktop.matches){
+   const color=STUDIO_MATTRESS_COLORS.find(c=>c.id===(s.bedMattress?s.bedMattressColor:s.frontMattressColor));
+   if(color&&(api.bedMattressEnabled(s)||api.frontMattressEnabled(s)))summary.lastElementChild.querySelector('span').textContent+=' · '+(getLanguage()==='en'?color.en:color.ja);
+   renderDesktopControls();
+  }
   refreshPortrait();
   if(active){renderMotion(active);position();}
   dirty=true;
@@ -97,13 +107,22 @@ export function createPinStudio(api){
   }
   if(focused)card.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});
  }
+ function renderDesktopControls(){
+  if(!desktop.matches||!['finish','mattress'].includes(active))return;
+  const focused=list.contains(document.activeElement)?document.activeElement.dataset.cardChoice:null;
+  const fields=[...card.children],body=document.createElement('div');body.className='pin-card-controls';
+  body.append(...(active==='finish'?fields.slice(0,1):fields.slice(1)));list.replaceChildren(body);
+  if(focused)list.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});
+ }
+ desktop.addEventListener('change',()=>{close();refresh();});
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
  function close(){if(!active)return;for(const r of mobileRows.values()){r.body.hidden=true;r.button.setAttribute('aria-expanded','false');}document.body.append(popup);popup.classList.remove('portrait-inline');popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
  const swatches={clear:'#d8c7a3',teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
-  list.replaceChildren();popup.querySelector('.pin-motion-controls')?.remove();popup.querySelector('h2').textContent=key==='motion'?(getLanguage()==='en'?'Try moving':'動かしてみる'):t(names[key]);popup.querySelector('header button').setAttribute('aria-label',t('閉じる'));const s=getState();
+  list.replaceChildren();popup.querySelector('.pin-motion-controls')?.remove();popup.querySelector('h2').textContent=key==='motion'?(getLanguage()==='en'?'Try moving':'動かしてみる'):placeTitle(key);popup.querySelector('header button').setAttribute('aria-label',t('閉じる'));const s=getState();
   if(key==='motion'){list.hidden=true;renderMotion(key);return;}list.hidden=false;
+  if(desktop.matches&&['finish','mattress'].includes(key)){renderCard(s);renderDesktopControls();return;}
   if(['floor','ceiling','wall'].includes(key)){
    if(s.vehicle==='super-gl'&&key!=='floor'){
     if(key==='ceiling')for(const id of ['clear','walnut','none'])row(id==='none'?'なし':id==='clear'?'クリア':'ウォールナット','',s.twiCeiling===id,{twiCeiling:id},swatches[id]);
@@ -190,7 +209,7 @@ export function createPinStudio(api){
   for(const [key,b] of pins){const point=anchors.get(key),v=point.clone().project(camera);b.hidden=v.z< -1||v.z>1||Math.abs(v.x)>1||Math.abs(v.y)>1;if(b.hidden)continue;const ax=(v.x+1)*rect.width/2,ay=(1-v.y)*rect.height/2;let x=Math.max(24,Math.min(rect.width-24,ax)),y=Math.max(28,Math.min(rect.height-70,ay));const candidates=[];for(let dx=-5;dx<=5;dx++)for(let dy=-5;dy<=5;dy++)candidates.push({x:x+dx*44,y:y+dy*44,d:dx*dx+dy*dy});candidates.sort((a,b)=>a.d-b.d);const free=candidates.find(q=>q.x>=24&&q.x<=rect.width-24&&q.y>=28&&q.y<=rect.height-70&&!placed.some(p=>Math.hypot(q.x-p.x,q.y-p.y)<43));if(free){x=free.x;y=free.y;}placed.push({x,y});b.style.left=x+'px';b.style.top=y+'px';direction.copy(point).sub(camera.position);const distance=direction.length();ray.set(camera.position,direction.normalize());ray.far=distance-45;const occluded=ray.intersectObjects(blockers,true).some(hit=>{for(let n=hit.object;n;n=n.parent)if(!n.visible)return false;return true;});b.style.opacity=occluded?'.38':'1';}
   position();
  }
- window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active&&!['finish','mattress'].includes(active)){renderOptions(active);position();}});new ResizeObserver(()=>{dirty=true;position();hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';}).observe(stage);
+ window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active&&(desktop.matches||!['finish','mattress'].includes(active))){renderOptions(active);position();}});new ResizeObserver(()=>{dirty=true;position();hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';}).observe(stage);
  new ResizeObserver(([entry])=>{stage.style.setProperty('--place-bar-height',entry.target.offsetHeight+'px');position();}).observe(stage.querySelector('.place-toolbar'));
  refresh();requestAnimationFrame(frame);
  return {refresh,open,openForModel(id){const s=getState();const key=id===keys.floor?'floor':id===keys.ceiling?'ceiling':id===keys.wall?'wall':id===s.front?'front':id===s.bed?'bed':'left';open(key);}};
