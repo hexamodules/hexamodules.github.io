@@ -2,8 +2,8 @@ import {moduleName} from './module-names.js?v=20261011-rear-slide';
 import {normalizeNewVehicle,selectedNewVehicle,VEHICLE_GRADES,VEHICLE_POWERTRAINS} from './new-vehicle.js?v=1';
 import {studioEvent} from './analytics.js?v=20261010-events';
 import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
-import {dealerContext} from './dealer-context.js?v=20261011-rear-slide';
-import {calculateReferencePrice} from './reference-pricing.js?v=20261011-rear-slide';
+import {dealerContext} from './dealer-context.js?v=20261011-slide-set';
+import {calculateReferencePrice} from './reference-pricing.js?v=20261011-slide-set';
 
 // Transport-only vehicle information; never merge into customerSummary or selections.
 export function enquiryVehicle(state){
@@ -34,7 +34,7 @@ export function enquirySelections(catalogue,state,lang){
   const source=entries.get(item.key);
   if(source?.number==null)throw Error('Selection number unavailable');
   // One row per item, including two quarter panels. No quantity or price fields.
-  const label=(item.key==='two-side-bed:floor-slide'?(en?item.name_en:item.name):moduleName(source.module_id,lang)||(en?(source.name_en||source.name):item.name.replace(/ × \d+$/,'')))+(source.module_id?' / '+finish:'');
+  const label=(item.key==='two-side-bed:floor-slide'?(en?item.name_en:item.name):moduleName(source.module_id,lang)||(en?(source.name_en||source.name):item.name.replace(/ × \d+$/,'')))+(source.module_id?' / '+finish:'')+(item.key==='module:two-side-bed'?(en?' · Rear slide (Included)':' · 後部スライド（付属）'):'');
   return Array.from({length:item.quantity||1},()=>({key:source.key,number:source.number,label}));
  });
 }

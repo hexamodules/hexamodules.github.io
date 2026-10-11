@@ -23,7 +23,6 @@ export const RETAILER_PRICES=[
   ['simple-side-cabinet','サイドキャビネット（アルミ）','Side cabinet · Aluminium'],
   ['active-side-cabinet','冷蔵庫付きサイドキャビネット（アルミ）','Fridge side cabinet · Aluminium'],
  ].map(([key,ja,en])=>install('fit-'+key,moduleName(key)||ja,moduleName(key,'en')||en,['module:'+key])),
- install('fit-floor-slide','後部スライド（付属）','Rear slide (Included)',['two-side-bed:floor-slide']),
  ...[
   ['ceiling-lights','天井ダウンライト（6灯）','Ceiling downlights · six',null,null],
   ['tailgate-lights-dx','DX バックドアライト（2灯）','DX tailgate lights · two',null,null],

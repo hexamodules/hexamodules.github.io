@@ -1,4 +1,4 @@
-import {calculateLayoutReference} from './reference-pricing.js?v=20261011-rear-slide';
+import {calculateLayoutReference} from './reference-pricing.js?v=20261011-slide-set';
 import {bedMattressEnabled,mattressIncluded,mattressColor} from './mattress-state.js?v=2';
 import {lightingCutoutSummary} from './lighting-cutouts.js?v=1';
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

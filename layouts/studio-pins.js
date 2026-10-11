@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {getLanguage,translate} from './language.js?v=20261011-rear-slide';
+import {getLanguage,translate} from './language.js?v=20261011-slide-set';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
 import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {I_SEAT_POSES,iSeatDefaultSlide} from './i-seat-state.js?v=6';

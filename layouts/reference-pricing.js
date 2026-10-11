@@ -1,7 +1,7 @@
 import {moduleName} from './module-names.js?v=20261011-rear-slide';
 import {bedMattressEnabled,frontMattressEnabled,mattressIncluded} from './mattress-state.js?v=2';
 import {vehicleSelectionComplete,newVehicleSpecification} from './new-vehicle.js?v=1';
-import {retailerPriceLines} from './retailer-prices.js?v=20261011-rear-slide';
+import {retailerPriceLines} from './retailer-prices.js?v=20261011-slide-set';
 export function calculateReferencePrice(catalogue,state,region='jp') {
  const choices=new Map((catalogue?.items||[]).map(item=>[item.key,item])),items=[];
  const add=(key,quantity=1)=>{
@@ -22,11 +22,10 @@ export function calculateReferencePrice(catalogue,state,region='jp') {
  for (const key of [state.front, state.bed, state.cab]) if (selected(key) && !['seat','i-seat'].includes(key)) add('module:' + key);
  if(bedMattressEnabled(state)&&!mattressIncluded(state))add('mattress:bed');
  if(frontMattressEnabled(state))add('mattress:front');
- if (state.bed === 'two-side-bed') items.push({key:'two-side-bed:floor-slide',quantity:1,name:'後部スライド（付属）',name_en:'Rear slide (Included)'});
  return {type:'layout_summary',complete:selected(state.floor)===true,items};
 }
 export function calculateLayoutReference(catalogue,state,region='jp',dealer=null){
  const parts=calculateReferencePrice(catalogue,state,region);
  return {...parts,complete:parts.complete&&vehicleSelectionComplete(state),service_items:retailerPriceLines(state,parts.items,dealer),new_vehicle:newVehicleSpecification(state)};
 }
-export {createReferencePricing} from './pricing-presentation.js?v=20261011-rear-slide';
+export {createReferencePricing} from './pricing-presentation.js?v=20261011-slide-set';
