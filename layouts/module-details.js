@@ -1,4 +1,4 @@
-import {moduleName,moduleNames} from './module-names.js?v=20261011-wood-hint';
+import {moduleName,moduleNames} from './module-names.js?v=20261011-front-shower';
 import {constructionBadge} from './construction-badge.js?v=20261011-wood-hint';
 import {featuredViews} from './module-details-content.js?v=20261011-rear-slide';
 

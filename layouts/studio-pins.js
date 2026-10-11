@@ -1,7 +1,8 @@
+import {moduleSpecificationName} from './module-names.js?v=20261011-front-shower';
 import {twiCeilingLabel,quarterLabel} from './base-vehicle.js?v=20261011-twi-credit';
 import {featuredViews} from './module-details-content.js?v=20261011-rear-slide';
 import * as THREE from 'three';
-import {getLanguage,translate} from './language.js?v=20261011-twi-credit';
+import {getLanguage,translate} from './language.js?v=20261011-front-shower';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
 import {MATTRESS_COLORS as STUDIO_MATTRESS_COLORS} from './mattress-state.js?v=20261010-five-colors';
 import {I_SEAT_POSES,iSeatDefaultSlide} from './i-seat-state.js?v=6';
@@ -80,7 +81,7 @@ export function createPinStudio(api){
    if(g?.visible&&g.userData.data?.bounds){const [lo,hi]=g.userData.data.bounds;point.set((lo[0]+hi[0])/2,lo[1]+(hi[1]-lo[1])*.82,(lo[2]+hi[2])/2);if(key==='mattress'){point.y=hi[1]+90;point.z=lo[2]+(hi[2]-lo[2])*.36;}if(key==='right'){point.x=lo[0]+(hi[0]-lo[0])*.15;point.z=lo[2]+(hi[2]-lo[2])*.25;}if(key==='left'&&choices.FULL.includes(s.bed))point.x=hi[0]-(hi[0]-lo[0])*.15;g.updateWorldMatrix(true,false);g.localToWorld(point);}
    anchors.set(key,point);
   }
-  const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleNames[k]?.en||modules[k]?.en||t(k)):(moduleNames[k]?.ja||modules[k]?.name||t(k));
+  const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleSpecificationName(k,'en')||modules[k]?.en||t(k)):(moduleSpecificationName(k)||modules[k]?.name||t(k));
   for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(twiCeilingLabel(s)):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(quarterLabel(s)):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
   summaryTitle.textContent=getLanguage()==='en'?'Selected specification':'選択された仕様';
   if(s.vehicle==='super-gl'){const label=getLanguage()==='en'?'Reset to base configuration':'ベース構成に戻す';reset.title=label;reset.setAttribute('aria-label',label);}

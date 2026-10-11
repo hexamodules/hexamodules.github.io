@@ -1,4 +1,4 @@
-import {moduleName} from './module-names.js?v=20261011-wood-hint';
+import {moduleName} from './module-names.js?v=20261011-front-shower';
 import * as THREE from 'three';
 import {MATTRESS_COLORS} from './mattress-state.js?v=2';
 import {I_SEAT_POSES,iSeatColor,iSeatSlide,iSeatDefaultSlide,iSeatSlideRange,iSeatInstallationNote} from './i-seat-state.js?v=6';

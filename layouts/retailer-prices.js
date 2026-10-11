@@ -1,4 +1,4 @@
-import {moduleName} from './module-names.js?v=20261011-wood-hint';
+import {moduleName} from './module-names.js?v=20261011-front-shower';
 import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261005';
 // Public selection labels only. Pricing is unavailable.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;

@@ -20,9 +20,9 @@ export const moduleNames={
   },
   "aluminum-front-kitchen": {
     "ja": "フロントキッチン(アルミ)",
-    "noteJa": "冷蔵庫・シンク・収納付き",
+    "noteJa": "冷蔵庫・シンク・シャワー付き",
     "en": "Front kitchen (Aluminium)",
-    "noteEn": "Fridge, sink and storage"
+    "noteEn": "Fridge, sink and shower"
   },
   "side-cabinet": {
     "ja": "細身のサイドキャビネット(木製)",
@@ -98,3 +98,9 @@ export const moduleNames={
   }
 };
 export const moduleName=(key,language="ja")=>moduleNames[key]?.[language==="en"?"en":"ja"];
+
+// Keep the front kitchen equipment note visible in specifications and enquiries.
+export const moduleSpecificationName=(key,language="ja")=>{
+  const name=moduleName(key,language);
+  return key==="aluminum-front-kitchen"?`${name} · ${moduleNames[key][language==="en"?"noteEn":"noteJa"]}`:name;
+};

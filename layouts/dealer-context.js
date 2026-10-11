@@ -1,4 +1,4 @@
-import {selectedDealer,isDealerPreviewRequest} from './dealer-preview.js?v=20261011-wood-hint';
+import {selectedDealer,isDealerPreviewRequest} from './dealer-preview.js?v=20261011-front-shower';
 import {dealerOptionAvailability} from './dealer-option-policy.js?v=20261005';
 import {isCustomDealer,customDealerCopy,createCustomDealerBadge,updateCustomDealerBadge} from './dealer-custom.js?v=3';
 

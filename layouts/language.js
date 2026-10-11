@@ -1,6 +1,6 @@
-import {moduleNames} from './module-names.js?v=20261011-wood-hint';
-import {vehicleTranslations} from './vehicle-language.js?v=20261011-twi-credit';
-import {resolveDealerLocation} from './dealer-context.js?v=20261011-wood-hint';
+import {moduleNames} from './module-names.js?v=20261011-front-shower';
+import {vehicleTranslations} from './vehicle-language.js?v=20261011-front-shower';
+import {resolveDealerLocation} from './dealer-context.js?v=20261011-front-shower';
 const pairs=[
 ['マークを押すか、下のボタンから変更できます','Click a marker or use the buttons below.'],['マークをタップするか、下のボタンから変更できます','Tap a marker or use the buttons below.'],
 ['サイドモジュール','Side module'],['ベッドモジュール','Bed module'],['横画面にしてください','Please rotate your phone to landscape.'],['マットレスの色','Mattress colour'],

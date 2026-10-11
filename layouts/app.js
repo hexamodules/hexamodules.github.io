@@ -1,4 +1,4 @@
-import {moduleNames,moduleName} from './module-names.js?v=20261011-wood-hint';
+import {moduleNames,moduleName,moduleSpecificationName} from './module-names.js?v=20261011-front-shower';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js?v=20261011-super-gl-base';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js?v=20261011-context';
 import {sharedTexture} from './shared-images.js?v=20261010';
@@ -7,14 +7,14 @@ import {createVisualMaterials} from './visual-materials.js?v=20261011-context';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
-import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261011-wood-hint';
-import {selectedDealer} from './dealer-preview.js?v=20261011-wood-hint';
+import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261011-front-shower';
+import {selectedDealer} from './dealer-preview.js?v=20261011-front-shower';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
 import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261011-twi-credit';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=20261010-five-colors';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-twi-credit';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-front-shower';
 import {constructionBadge} from './construction-badge.js?v=20261011-wood-hint';
 import {createOpening} from './opening.js?v=20261011-wood-hint';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
@@ -587,7 +587,7 @@ function configureUI(){
  // Flooring is selected directly from the five samples, without an enable card.
  $('#floor-color-options').innerHTML=floorPalette.colors.map(c=>`<button type="button" class="wall-color-option ${state.floor===c.value?'active':''}" data-floor-color="${c.value}" aria-pressed="${state.floor===c.value}"><span>${c.label}</span></button>`).join('');
  $('#floor-view').hidden=!floorEnabled();$('#remove-floor').setAttribute('aria-pressed',String(!floorEnabled()));updateFloorRequirement();
- const rows=[['前側',state.front],['ベッド',state.bed],['サイド',state.cab]];$('#selection-summary').innerHTML=`<div class="selection-row" id="vehicle-compatibility-summary"><span>対応車種</span><b><span>${vehicleName(state)}</span><br> <span>標準ボディ（ナロー）・標準ルーフ・5ドア専用</span></b></div>${getStudioLocation().id==='au'?`<div class="selection-row"><span>ロケーション</span><b id="selection-location">未選択</b></div>`: ''}`+rows.map(([label,k])=>`<div class="selection-row"><span>${label}</span>${modules[k]?`<div class="selection-module"><a href="${modules[k].external_url||`../${k}.html`}" ${modules[k].external_url?'target="_blank" rel="noopener noreferrer"':''}>${name(k)} ↗</a> ${constructionBadge(modules[k])}</div>`:`<b>${name(k)}</b>`}</div>`).join('')+`<div class="selection-row"><span>仕上げ</span><b>${state.finish==='black'?'ヘキサ合板':'バーチ合板'}</b></div>`;
+ const rows=[['前側',state.front],['ベッド',state.bed],['サイド',state.cab]];$('#selection-summary').innerHTML=`<div class="selection-row" id="vehicle-compatibility-summary"><span>対応車種</span><b><span>${vehicleName(state)}</span><br> <span>標準ボディ（ナロー）・標準ルーフ・5ドア専用</span></b></div>${getStudioLocation().id==='au'?`<div class="selection-row"><span>ロケーション</span><b id="selection-location">未選択</b></div>`: ''}`+rows.map(([label,k])=>`<div class="selection-row"><span>${label}</span>${modules[k]?`<div class="selection-module"><a href="${modules[k].external_url||`../${k}.html`}" ${modules[k].external_url?'target="_blank" rel="noopener noreferrer"':''}>${moduleSpecificationName(k)||name(k)} ↗</a> ${constructionBadge(modules[k])}</div>`:`<b>${name(k)}</b>`}</div>`).join('')+`<div class="selection-row"><span>仕上げ</span><b>${state.finish==='black'?'ヘキサ合板':'バーチ合板'}</b></div>`;
  $('#selection-summary').insertAdjacentHTML('beforeend',mattressControls.summary()+iSeatControls.summary());
  $('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>内装</span><b>${interiorLabel()}</b></div><div class="selection-row"><span>照明</span><b>${lightingLabel()}</b></div>`);lightingUI();airconUI();heaterUI();insulationUI();electricalUI();shippingUI();pricing.update?.();dealerOptionsUI.update();
  if(state.bed==='two-side-bed')$('#selection-summary').insertAdjacentHTML('beforeend',`<div class="selection-row"><span>後部スライド</span><b>付属</b></div>`);
@@ -841,7 +841,7 @@ new MutationObserver(()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-no-night-flash');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-front-shower');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -1162,7 +1162,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-wood-hint');
+  const features=await import('./studio-features.js?v=20261011-front-shower');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
