@@ -54,6 +54,6 @@ export function createVisualMaterials(renderer,scene){
   };if(mat.userData.birchTone)applyBirchTone(mat);mat.customProgramCacheKey=()=>(mat.userData.visualHexa?'hexa-ply-edge-v2':'birch-ply-edge-v2')+(mat.userData.birchTone?'-tone-v2':'');mat.needsUpdate=true;
  }
 
- function lighting(night){scene.environmentIntensity=night?.035:.6}
+ function lighting(night){scene.environmentIntensity=night?.12:.6}
  return {material,finish,mesh,lighting};
 }

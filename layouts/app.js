@@ -3,7 +3,7 @@ import {startingConfiguration,hasSavedConfiguration} from './base-configuration.
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
-import {createVisualMaterials} from './visual-materials.js?v=2';
+import {createVisualMaterials} from './visual-materials.js?v=20261011-moonlight';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
@@ -319,10 +319,10 @@ function registerLightRig(key,data){
 function setLighting(){
  twiVisuals.updateState(state);
  const night=Boolean(state.night);visualMaterials.lighting(night);$('.stage').classList.toggle('night-mode',night);
- scene.background.set(night?'#111923':'#eeeeec');scene.fog=night?new THREE.Fog('#111923',6500,14500):null;renderer.toneMappingExposure=.95;
- ambient.intensity=night?.13:.9;ambient.color.set(night?'#b6c4d9':'#ffffff');ambient.groundColor.set(night?'#6a5441':'#9a9687');
- sun.intensity=night?.025:2.1;sun.castShadow=!night;fill.intensity=night?.045:.6;sideFill.intensity=night?0:.35;
- floor.material=night?nightGround:dayGround;grid.visible=false;
+ scene.background.set(night?'#192536':'#eeeeec');scene.fog=night?new THREE.Fog('#192536',9000,14500):null;renderer.toneMappingExposure=.95;
+ ambient.intensity=night?.18:.9;ambient.color.set(night?'#9fb4d8':'#ffffff');ambient.groundColor.set(night?'#6a5441':'#9a9687');
+ sun.intensity=night?.42:2.1;sun.color.set(night?'#9fb4d8':'#fff7e6');sun.castShadow=!night;fill.intensity=night?.12:.6;sideFill.intensity=night?0:.35;studioShadow.material.opacity=night?.3:1;
+ floor.material=night?nightGround:dayGround;floor.scale.setScalar(night?3:1);grid.visible=false;
  for(const [flag,info] of Object.entries(LIGHTS)){const rig=lightRigs.get(info.key);if(rig)rig.rig.visible=night&&state[flag]}
  for(const {mat,key} of lightDiffusers){const flag=Object.keys(LIGHTS).find(k=>LIGHTS[k].key===key);mat.emissiveIntensity=night&&state[flag]?3.2:0}
  for(const mat of lightTrims)mat.emissiveIntensity=night?.16:.45;
@@ -659,24 +659,70 @@ function updateInteriorPresentation(){
  if(lastCeilingHelpAbove!==above){lastCeilingHelpAbove=above;$('#ceiling-view-help').textContent=above?'天井は透過表示です。「天井を見上げる」で木目と開口を確認できます。':'天井の木目を表示しています。上からの全景では透過表示に切り替わります。';}
 }
 controls.addEventListener('change',updateInteriorPresentation);
-let viewFitScale=1,frameOpening=null;
+let viewFitScale=1,frameOpening=null,pcFramed=false;
 portraitView.addEventListener('change',()=>{
  controls.enablePan=!portraitView.matches;
  requestAnimationFrame(()=>{if(frameOpening)frameOpening();else setView(activeView)});
 });
-function responsiveViewScale(v){const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(matchMedia('(max-width:850px) and (orientation:portrait)').matches&&v==='home'?1.25/1.3:1)*(innerWidth>850&&v==='home'&&document.documentElement.matches('[data-studio-step=interior]:not(.intro-active):not(.outro-active)')?1.15:1)}
+function pcEditor(){return innerWidth>850&&document.documentElement.matches('[data-studio-step=interior]:not(.intro-active):not(.outro-active)')}
+function previousPcFrame(){
+ const height=innerHeight-$('.studio-header').offsetHeight-24,width=innerWidth-630;
+ const baseDistance=new THREE.Vector3(...HOME_VIEW[0]).distanceTo(new THREE.Vector3(...HOME_VIEW[1]));
+ const scale=1.18*1.15*Math.max(1,1.18/(width/height));
+ return {height,baseDistance,scale,distance:Math.min(12000,baseDistance*scale)};
+}
+function responsiveViewScale(v){
+ if(v==='home'&&pcEditor()){
+  // Match the old physical size, then enlarge it by 20%, including its distance limit.
+  const previous=previousPcFrame();return previous.distance*innerHeight/previous.height/1.2/previous.baseDistance;
+ }
+ const min=['home','rear','side','top'].includes(v)?1.18:['floor','panels','tailgate','tailgate-light','aircon'].includes(v)?1.35:0;
+ return Math.max(1,min/camera.aspect)*(v==='home'?1.18:1)*(portraitView.matches&&v==='home'?1.25/1.3:1);
+}
+function centerPcEditor(){
+ if(!pcEditor()||activeView!=='home')return;
+ const points=[],body=[],origin=controls.target.clone(),rotation=camera.quaternion.clone(),inverse=rotation.clone().invert();
+ for(const {group} of loadedModels.values()){
+  if(!group.visible)continue;group.updateWorldMatrix(true,true);
+  group.traverseVisible(node=>{if(!node.isMesh||!node.geometry?.attributes.position)return;
+   const materials=Array.isArray(node.material)?node.material:[node.material];if(materials.every(m=>!m.visible||m.opacity===0))return;
+   const a=node.geometry.attributes.position;
+   for(let i=0;i<a.count;i++){const p=new THREE.Vector3().fromBufferAttribute(a,i).applyMatrix4(node.matrixWorld).sub(origin).applyQuaternion(inverse);points.push(p);if(['vehicle','vehicle-body-completion'].includes(group.name))body.push(p)}
+  });
+ }
+ if(!body.length)return;pcFramed=true;
+ const width=renderer.domElement.clientWidth,height=renderer.domElement.clientHeight,tan=Math.tan(THREE.MathUtils.degToRad(camera.fov/2));
+ const left=292,right=innerWidth-302,top=$('.studio-header').offsetHeight+64,bottom=innerHeight-180;
+ const sx=((left+right)/width-1)*tan*camera.aspect,sy=(1-(top+bottom)/height)*tan;
+ function center(axis,distance,screen){let offset=0;for(let pass=0;pass<16;pass++){let lo=Infinity,hi=-Infinity,a,b;for(const p of body){const v=(p[axis]-offset)/(distance-p.z);if(v<lo){lo=v;a=p}if(v>hi){hi=v;b=p}}const da=distance-a.z,db=distance-b.z,next=(a[axis]/da+b[axis]/db-2*screen)/(1/da+1/db);if(Math.abs(next-offset)<1e-7)return next;offset=next}return offset}
+ let distance=camera.position.distanceTo(controls.target),x,y;
+ for(let pass=0;pass<80;pass++){
+  x=center('x',distance,sx);y=center('y',distance,sy);
+  if(points.every(p=>{const d=distance-p.z,px=((p.x-x)/d/tan/camera.aspect+1)*width/2,py=(1-(p.y-y)/d/tan)*height/2;return d>camera.near&&px>=left+12&&px<=right-12&&py>=top&&py<=bottom}))break;
+  distance*=1.01;
+ }
+ controls.maxDistance=Math.max(12000,distance);
+ const offset=new THREE.Vector3(x,y,0).applyQuaternion(rotation);controls.target.copy(origin).add(offset);camera.position.copy(new THREE.Vector3(x,y,distance).applyQuaternion(rotation).add(origin));controls.update();
+}
 function centerPortraitEditor(){
  if(!portraitView.matches||activeView!=='home'||document.documentElement.matches('.intro-active,.outro-active'))return;
  framePortrait(camera,controls,[...loadedModels.values()].map(entry=>entry.group),{left:.04,right:.96,top:.08,bottom:.92});
 }
-function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();centerPortraitEditor();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
-const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();else centerPortraitEditor();renderer.render(scene,camera)});observer.observe($('#viewport'));
+function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();centerPortraitEditor();centerPcEditor();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
+const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();else if(pcEditor()&&activeView==='home')setView(activeView);else centerPortraitEditor();renderer.render(scene,camera)});observer.observe($('#viewport'));
 function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hidden){controls.update();if(needsFrame){renderer.render(scene,camera);needsFrame=false}}}animate();setView(DEFAULT_VIEW);
+window.addEventListener('studio-step-change',()=>{
+ // Resume the previous camera fit before the existing non-editor resize path.
+ if(pcFramed&&!pcEditor()&&innerWidth>850&&!frameOpening&&activeView==='home'){
+  pcFramed=false;const previous=previousPcFrame();viewFitScale=previous.scale;controls.maxDistance=12000;
+  controls.target.set(...HOME_VIEW[1]);camera.position.set(...HOME_VIEW[0]).sub(controls.target).multiplyScalar(previous.distance/previous.baseDistance).add(controls.target);controls.update();
+ }
+});
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-pc-spec';document.head.append(css);
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-super-gl-base');
+ const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-full-stage';document.head.append(css);
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-full-stage');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -1069,7 +1115,7 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
   const out=Math.min(1,slide/.16),rear=Math.max(0,(slide-.12)/.88);
   outroSlider.position.set(85*out,0,-1180*rear);
   poseFrontDoor(frontDoor);
-  for(const group of [outroSlider,outroFrontDoor])group.traverse(n=>{if(n.isMesh)n.material.opacity=returned?(state.night?.065:.12):(state.night?.14:.24)});
+  for(const group of [outroSlider,outroFrontDoor])group.traverse(n=>{if(n.isMesh)n.material.opacity=returned?(state.night?.18:.12):(state.night?.14:.24)});
   $('#viewport').dataset.journey=JSON.stringify({tailgate_deg:Math.round(tail*90),front_door_deg:Math.round(frontDoor*65),full_body:outroBody.visible,sliding_mm:Math.round(1180*rear),vehicle_mm:outroRig.position.toArray().map(Math.round)});
   updateInteriorPresentation();renderer.render(scene,camera);
  },

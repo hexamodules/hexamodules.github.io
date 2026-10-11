@@ -178,7 +178,7 @@ export function createPinStudio(api){
  function position(){if(!active||portrait.matches)return;
   if(innerWidth>850&&root.dataset.studioStep==='interior'){
    const rect=stage.getBoundingClientRect(),bar=stage.querySelector('.place-toolbar').getBoundingClientRect();
-   const top=rect.top+12;
+   const top=Math.max(rect.top+12,$('.studio-header').getBoundingClientRect().bottom+24);
    popup.style.left=(rect.left+12)+'px';popup.style.top=top+'px';
    popup.style.maxHeight=Math.max(0,bar.top-top-32)+'px';return;
   }
@@ -211,7 +211,7 @@ export function createPinStudio(api){
   position();
  }
  window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active&&(desktop.matches||!['finish','mattress'].includes(active))){renderOptions(active);position();}});new ResizeObserver(()=>{dirty=true;position();hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';}).observe(stage);
- new ResizeObserver(([entry])=>{stage.style.setProperty('--place-bar-height',entry.target.offsetHeight+'px');position();}).observe(stage.querySelector('.place-toolbar'));
+ new ResizeObserver(([entry])=>{stage.style.setProperty('--place-bar-height',entry.target.offsetHeight+'px');stage.style.setProperty('--pc-bar-width',entry.target.offsetWidth+'px');position();}).observe(stage.querySelector('.place-toolbar'));
  refresh();requestAnimationFrame(frame);
  return {refresh,open,openForModel(id){const s=getState();const key=id===keys.floor?'floor':id===keys.ceiling?'ceiling':id===keys.wall?'wall':id===s.front?'front':id===s.bed?'bed':'left';open(key);}};
 }
