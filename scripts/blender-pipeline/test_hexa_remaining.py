@@ -39,15 +39,18 @@ class HexaRemainingTests(unittest.TestCase):
 
     def test_exact_reviewed_changes_and_exceptions(self):
         changed=[r for r in self.rows if r['changed']]
-        self.assertEqual(len(changed),44)
-        self.assertEqual(len({(r['model'],r['body_index']) for r in changed}),33)
-        self.assertEqual(len({(r['model'],r['body_index']) for r in changed if r['kind']=='plywood'}),22)
+        self.assertEqual(len(changed),48)
+        self.assertEqual(len({(r['model'],r['body_index']) for r in changed}),37)
+        self.assertEqual(len({(r['model'],r['body_index']) for r in changed if r['kind']=='plywood'}),26)
         for r in self.rows:
             if r['exception']:self.assertFalse(r['changed'],r)
             if r['kind']=='plywood' and not r['exception'] and r['before'].startswith('plywood-face:'):
                 self.assertIn('hexa-studio.png',r['after'],r)
         tops={r['body'] for r in self.rows if r['model']=='two-side-bed' and r['exception']=='ベッド天板'}
-        self.assertEqual(tops,{'ボディ69','ボディ78','ボディ214','ボディ215'})
+        self.assertEqual(tops,set())
+        for r in self.rows:
+            if r['model']=='two-side-bed' and r['kind']=='plywood' and r['before'].startswith('plywood-face:'):
+                self.assertIn('hexa-studio.png',r['after'],r)
         # SHO's other reported parts: every plywood face already black locally.
         for r in self.rows:
             if (r['model']=='side-cabinet' and not r['exception'] or r['model']=='front-module' and r['body'] in ['ボディ51','ボディ53']) and r['before'].startswith('plywood-face:'):

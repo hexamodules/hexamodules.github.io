@@ -1,0 +1,44 @@
+[
+  {
+    "file": "front-module-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/front-module-hexa.glb",
+    "bytes": 903112,
+    "sha256": "fc0460219bf0f0d90232b5c6f371cc07cdd8e8e6f1287d9dcb9e87df3d2dba56",
+    "matches_local": true
+  },
+  {
+    "file": "two-side-bed-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/two-side-bed-hexa.glb",
+    "bytes": 501048,
+    "sha256": "623559265255c81aa42f6e56374d411c6ff1e997b12e7a3a6482610418d9d7bd",
+    "matches_local": true
+  },
+  {
+    "file": "side-cabinet-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/side-cabinet-hexa.glb",
+    "bytes": 339388,
+    "sha256": "d71962a498d6ca60965c9dec58661368c1ad713ebde052b4475fd43d78805bd4",
+    "matches_local": true
+  },
+  {
+    "file": "lounge-bed-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/lounge-bed-hexa.glb",
+    "bytes": 624988,
+    "sha256": "783ee24832d079efdff5a86b04a30759974bc0681fc8ab82ae5f191ff4f8463d",
+    "matches_local": true
+  },
+  {
+    "file": "lounge-slide-bed-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/lounge-slide-bed-hexa.glb",
+    "bytes": 227348,
+    "sha256": "41351982f543666a28cc9987e412611e8745cdb59f0333b9536c1e527efe88d1",
+    "matches_local": true
+  },
+  {
+    "file": "aluminum-front-kitchen-hexa.glb",
+    "url": "https://hexamodules.com/layouts/assets/blender/aluminum-front-kitchen-hexa.glb",
+    "bytes": 1247136,
+    "sha256": "987bd70d7a665bf6420f3ea70d959951a9c72a937747a3cc3992014b0e08d1d7",
+    "matches_local": true
+  }
+]

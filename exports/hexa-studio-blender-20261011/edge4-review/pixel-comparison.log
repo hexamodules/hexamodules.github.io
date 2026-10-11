@@ -1,0 +1,506 @@
+[
+  {
+    "key": "front-module",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 1041,
+    "bbox": [
+      34,
+      25,
+      748,
+      482
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 399
+  },
+  {
+    "key": "front-module",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 2562,
+    "bbox": [
+      34,
+      25,
+      962,
+      784
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 1920
+  },
+  {
+    "key": "front-module",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 864,
+    "bbox": [
+      34,
+      25,
+      583,
+      443
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 222
+  },
+  {
+    "key": "front-module",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "front-module",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "front-module",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 3787,
+    "bbox": [
+      34,
+      25,
+      1121,
+      511
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 3145
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 67562,
+    "bbox": [
+      21,
+      25,
+      1343,
+      900
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 66920
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 4166,
+    "bbox": [
+      34,
+      25,
+      869,
+      547
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 3524
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "two-side-bed",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "side-cabinet",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 686,
+    "bbox": [
+      34,
+      25,
+      1101,
+      570
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 44
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 652,
+    "bbox": [
+      34,
+      25,
+      1253,
+      816
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 10
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 736,
+    "bbox": [
+      34,
+      25,
+      859,
+      634
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 94
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-bed",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "lounge-slide-bed",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "black",
+    "view": "side",
+    "pixels_changed": 652,
+    "bbox": [
+      34,
+      25,
+      652,
+      556
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 10
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "black",
+    "view": "inside",
+    "pixels_changed": 655,
+    "bbox": [
+      34,
+      25,
+      404,
+      546
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 13
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "black",
+    "view": "rear",
+    "pixels_changed": 644,
+    "bbox": [
+      34,
+      25,
+      371,
+      393
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 2
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "birch",
+    "view": "side",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "birch",
+    "view": "inside",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  },
+  {
+    "key": "aluminum-front-kitchen",
+    "finish": "birch",
+    "view": "rear",
+    "pixels_changed": 642,
+    "bbox": [
+      34,
+      25,
+      148,
+      61
+    ],
+    "camera_identical": true,
+    "viewport_pixels_changed": 0
+  }
+]

@@ -1,0 +1,23 @@
+{
+  "original_layout_changes_since_start": [
+    "studio-features.js",
+    "module-details-content.js",
+    "studio-pins.js",
+    "module-details.js"
+  ],
+  "original_asset_changes": [],
+  "preview_changed_files": [
+    "assets/blender/front-module-rear-114-hexa.glb",
+    "assets/blender/front-module-rear-130-hexa.glb",
+    "assets/blender/lounge-slide-bed-hexa.glb",
+    "assets/blender/two-side-bed-hexa.glb",
+    "assets/blender/front-module-hexa.glb",
+    "assets/blender/front-module-rear-140-hexa.glb",
+    "assets/blender/front-module-rear-20-hexa.glb",
+    "assets/blender/aluminum-front-kitchen-hexa.glb",
+    "assets/blender/lounge-bed-hexa.glb",
+    "assets/blender/aluminum-side-cabinet-hexa.glb"
+  ],
+  "preview_only_glb_changed": true,
+  "original_layouts_written_by_this_task": false
+}

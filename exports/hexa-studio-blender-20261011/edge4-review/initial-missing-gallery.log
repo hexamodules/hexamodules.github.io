@@ -1,0 +1,49 @@
+before front-module black 0.0047607421875
+before front-module birch 0.0047607421875
+before two-side-bed black 0.0103759765625
+before two-side-bed birch 0.0103759765625
+before side-cabinet black 0.008453369140625
+before side-cabinet birch 0.008453369140625
+before lounge-bed black 0.007870446890592575
+before lounge-bed birch 0.007870446890592575
+before lounge-slide-bed black 0.01288604736328125
+before lounge-slide-bed birch 0.01288604736328125
+before aluminum-front-kitchen black 0.00830078125
+before aluminum-front-kitchen birch 0.00830078125
+AssertionError [ERR_ASSERTION]: Expected values to be loosely deep-equal:
+
+[
+  {
+    status: 404,
+    url: 'http://127.0.0.1:8767/assets/aluminum-bed-birch-closed.webp'
+  },
+  {
+    status: 404,
+    url: 'http://127.0.0.1:8767/assets/aluminum-side-cabinet-birch-overview.webp'
+  },
+  {
+    status: 404,
+    url: 'http://127.0.0.1:8767/assets/front-module-black-overview.webp'
+  },
+  {
+    status: 404,
+    url: 'http://127.0.0.1:8767/assets/front-module-birch-overview.webp'
+  },
+  {
+    status: 404,
+    url: 'http://127.0.0.1:8767/assets/side-cabinet-black-flip-up.webp'
+  },
+  {
+  ...
+
+should loosely deep-equal
+
+[]
+    at /Users/shoichihiguchi/Desktop/SKY Bridge /projects/3d-modeling/scripts/blender-pipeline/capture_hexafix_edge4.cjs:28:179 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [Array],
+  expected: [],
+  operator: 'deepEqual',
+  diff: 'simple'
+}

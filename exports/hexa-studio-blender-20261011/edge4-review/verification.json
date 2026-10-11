@@ -1,0 +1,23 @@
+{
+  "birch_identical": true,
+  "birch_count": 19,
+  "changed_glb": [
+    "front-module-hexa.glb",
+    "lounge-bed-hexa.glb",
+    "front-module-rear-114-hexa.glb",
+    "front-module-rear-140-hexa.glb",
+    "front-module-rear-20-hexa.glb",
+    "front-module-rear-130-hexa.glb",
+    "lounge-slide-bed-hexa.glb",
+    "two-side-bed-hexa.glb",
+    "aluminum-front-kitchen-hexa.glb",
+    "aluminum-side-cabinet-hexa.glb"
+  ],
+  "textures_identical": true,
+  "test_count": 20,
+  "tests_passed": true,
+  "output_bytes": 27545444,
+  "changed_from_previous_export": [
+    "two-side-bed-hexa.glb"
+  ]
+}

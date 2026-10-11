@@ -17,7 +17,7 @@ class BedTopTests(unittest.TestCase):
         # Names are verified below by count and physical elevation; all other
         # parts and all Birch finishes must preserve their previous policy.
         counts = {'slide-bed': 2, 'lounge-slide-bed': 6, 'lounge-bed': 7,
-                  'two-side-bed': 4, 'lounge-fillers': 2}
+                  'two-side-bed': 0, 'lounge-fillers': 2}
         for model in selected_parts('all'):
             data = json.loads((ASSETS/(model+'.mesh.json')).read_text())
             tops = set()
@@ -45,7 +45,7 @@ class BedTopTests(unittest.TestCase):
             body = next(b for b in data['bodies'] if b['name'] == name)
             self.assertFalse(bed_top_board('lounge-slide-bed', body, 'plywood'))
         body = {'name':'ボディ69', 'bounds':[[0,370,0],[83,385,445]]}
-        self.assertTrue(bed_top_board('two-side-bed', body, 'plywood'))
+        self.assertFalse(bed_top_board('two-side-bed', body, 'plywood'))
         for kind in ['mattress', 'hardware', 'aluminum']:
             self.assertFalse(bed_top_board('two-side-bed', body, kind))
         body['bounds'] = [[0,0,0],[15,385,445]]

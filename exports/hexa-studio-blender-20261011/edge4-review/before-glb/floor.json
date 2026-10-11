@@ -1,0 +1,9 @@
+{
+  "sourceKey": "interior-floor-oak-filled",
+  "geometry": "floor-oak.glb",
+  "tile_mm": [
+    300,
+    900
+  ],
+  "note": "Filled floor, ratio 0.2, 14541 triangles, no AO."
+}
