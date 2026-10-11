@@ -35,7 +35,7 @@ export function createISeatControls({getState,getLanguage,onChange,onSlidePrevie
  function summary(){
   const s=getState();if(s.front!=='i-seat')return '';
   const color=iSeatColor(s),pose=I_SEAT_POSES.find(p=>p.id===s.iSeatPose)||I_SEAT_POSES[0];
-  return `<div id="iseat-summary" class="selection-row" data-module-i18n><span>${moduleName('i-seat',getLanguage())+text(' 仕様',' specification')}</span><b>${text('幅1,400mm','1,400 mm wide')}<br>${text(pose.ja,pose.en)} · ${text(color.ja,color.en)}<br>${slideText(iSeatSlide(s))}<br><small>${text('シート・取付費：別途お見積もり','Seat and fitting: quoted separately')}</small></b></div>`;
+  return `<div id="iseat-summary" class="selection-row" data-module-i18n><span>${moduleName('i-seat',getLanguage())+text(' 仕様',' specification')}</span><b>${text('幅1,400mm','1,400 mm wide')} · <br>${text(pose.ja,pose.en)} · ${text(color.ja,color.en)} · <br>${slideText(iSeatSlide(s))} · <br><small>${text('シート・取付費：別途お見積もり','Seat and fitting: quoted separately')}</small></b></div>`;
  }
  document.addEventListener('click',async e=>{
   const pose=e.target.closest('[data-iseat-pose],[data-iseat-stage-pose]');

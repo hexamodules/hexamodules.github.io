@@ -1042,7 +1042,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-rear-slide');
+  const features=await import('./studio-features.js?v=20261011-seat-separators');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
