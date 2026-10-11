@@ -198,3 +198,13 @@ html.intro-leaving[data-studio-ui=loading] .place-toolbar{visibility:visible;opa
  html.intro-leaving .stage{position:fixed;inset:0;width:100%;height:100dvh}
  html:not(.intro-active):not(.outro-active)[data-studio-step=interior] #loading,html.intro-leaving #loading{padding-right:10px;padding-bottom:calc(116px - var(--header));box-sizing:border-box}
 }
+
+/* Mouse-only previews leave the option button itself at its original height. */
+.pin-option-photos{display:none}
+@media(min-width:851px) and (hover:hover){
+ .pin-options:has(.pin-option-photos){scrollbar-gutter:stable}
+ .pin-option-photos:not([hidden]){display:flex;gap:6px;padding:4px 8px 8px;animation:pin-photo-in .15s ease-out}
+ .pin-option-photos img{display:block;min-width:0;flex:1;width:calc(50% - 3px);height:70px;object-fit:contain;background:#f5f5f2;border-radius:7px}
+}
+@keyframes pin-photo-in{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){.pin-option-photos:not([hidden]){animation:none}}

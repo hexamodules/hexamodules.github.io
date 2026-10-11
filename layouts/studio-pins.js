@@ -1,3 +1,4 @@
+import {featuredViews} from './module-details-content.js?v=20261011-rear-slide';
 import * as THREE from 'three';
 import {getLanguage,translate} from './language.js?v=20261011-wood-hint';
 // Use the longstanding export as well as a versioned URL: older cached state files remain compatible.
@@ -128,6 +129,31 @@ export function createPinStudio(api){
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
  function close(){if(!active)return;for(const r of mobileRows.values()){r.body.hidden=true;r.button.setAttribute('aria-expanded','false');}document.body.append(popup);popup.classList.remove('portrait-inline');popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');completedMotion.setAttribute('aria-expanded','false');popup.classList.remove('completed-motion');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
+ // Images use the same scene order and finish as the existing module gallery.
+ const photoHover=matchMedia('(min-width:851px) and (hover:hover)');
+ function hideOptionPhotos(){list.querySelectorAll('.pin-option-photos').forEach(strip=>strip.hidden=true);}
+ photoHover.addEventListener('change',hideOptionPhotos);
+ popup.addEventListener('keydown',hideOptionPhotos);
+ function optionPhotos(button,id){
+  if(!photoHover.matches||!featuredViews[id]||!modules[id]?.prefix)return;
+  const scenes=Object.keys(featuredViews[id]).map(key=>modules[id].scenes.find(scene=>scene.key===key)).filter(Boolean).slice(0,2);
+  if(!scenes.length)return;
+  const strip=document.createElement('div');strip.className='pin-option-photos';strip.hidden=true;strip.setAttribute('aria-hidden','true');button.after(strip);
+  button.addEventListener('pointerenter',event=>{
+   if(event.pointerType!=='mouse'||!photoHover.matches)return;
+   hideOptionPhotos();
+   if(!strip.childElementCount)for(const scene of scenes){
+    const image=document.createElement('img');image.alt='';image.draggable=false;image.decoding='async';
+    image.src=`../assets/${modules[id].prefix.replace('{finish}',getState().finish)}-${scene.key}.webp`;
+    strip.append(image);
+   }
+   strip.hidden=false;
+   // Reveal the strip within the scroller without moving the hovered row past the pointer.
+   const overflow=strip.getBoundingClientRect().bottom-list.getBoundingClientRect().bottom;
+   if(overflow>0)list.scrollTop+=Math.min(overflow,Math.max(0,button.getBoundingClientRect().bottom-event.clientY-2));
+  });
+  button.addEventListener('pointerleave',()=>{strip.hidden=true;});
+ }
  const swatches={clear:'#d8c7a3',teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
   list.replaceChildren();popup.querySelector('.pin-motion-controls')?.remove();popup.querySelector('h2').textContent=key==='motion'?(getLanguage()==='en'?'Try moving':'動かしてみる'):placeTitle(key);popup.querySelector('header button').setAttribute('aria-label',t('閉じる'));const s=getState();
@@ -150,7 +176,7 @@ export function createPinStudio(api){
   }else{
    const slot=key==='front'?'front':key==='left'?'cab':'bed';
    const ids=key==='front'?['seat','i-seat','front-module','aluminum-front-kitchen']:key==='left'?choices.CAB:[...choices.SINGLE,...choices.FULL];
-   for(const id of key==='front'?ids:[...ids,'none']){let patch={[slot]:id};if(choices.FULL.includes(id))patch={bed:id,cab:'none'};else if(slot==='cab'&&choices.FULL.includes(s.bed))patch={bed:'none',cab:id};if(patch.bed!==undefined)Object.assign(patch,{bedMattress:patch.bed!=='none',flat:patch.bed==='two-side-bed'});if(patch.front!==undefined)patch.frontMattress=patch.front==='front-module';const n=moduleNames[id];row(id==='none'?'なし':getLanguage()==='en'?(n?.en||modules[id]?.en||id):(n?.ja||modules[id]?.name||id),getLanguage()==='en'?n?.noteEn:n?.noteJa,s[slot]===id,{...patch,expanded:false,frontExpanded:false,rearExpanded:false,storage:false});}
+   for(const id of key==='front'?ids:[...ids,'none']){let patch={[slot]:id};if(choices.FULL.includes(id))patch={bed:id,cab:'none'};else if(slot==='cab'&&choices.FULL.includes(s.bed))patch={bed:'none',cab:id};if(patch.bed!==undefined)Object.assign(patch,{bedMattress:patch.bed!=='none',flat:patch.bed==='two-side-bed'});if(patch.front!==undefined)patch.frontMattress=patch.front==='front-module';const n=moduleNames[id];const button=row(id==='none'?'なし':getLanguage()==='en'?(n?.en||modules[id]?.en||id):(n?.ja||modules[id]?.name||id),getLanguage()==='en'?n?.noteEn:n?.noteJa,s[slot]===id,{...patch,expanded:false,frontExpanded:false,rearExpanded:false,storage:false});optionPhotos(button,id);}
 
   }
   renderMotion(key);
