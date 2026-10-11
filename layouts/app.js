@@ -721,7 +721,6 @@ window.addEventListener('studio-step-change',()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const css=document.createElement('link');css.rel='stylesheet';css.href='studio-pins.css?v=20261011-full-stage';document.head.append(css);
  const {createPinStudio}=await import('./studio-pins.js?v=20261011-rear-slide');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
@@ -732,6 +731,8 @@ async function ensurePins(){
   choices:{FRONT,FULL,SINGLE,CAB},modules,moduleNames,
   bedMattressEnabled,frontMattressEnabled
  });
+ document.documentElement.dataset.studioUi='ready';
+ $('#studio-loading-shell')?.remove();
 }
 function openReplacement(id){if(document.documentElement.dataset.studioStep==='interior')pinStudio?.openForModel(id);}
 
@@ -1042,7 +1043,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-seat-separators');
+  const features=await import('./studio-features.js?v=20261011-loading-shell');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());

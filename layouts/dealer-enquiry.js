@@ -76,6 +76,7 @@ export function initDealerEnquiry({describe,catalogue,captureImages=()=>[],selec
  <label class="enquiry-consent"><input name="consent" type="checkbox" required><span data-label="consent"></span></label>
  <button type="submit" class="primary-button" hidden></button></fieldset></form><p class="enquiry-result" role="status" aria-live="polite"></p>`;
  document.body.append(dialog);
+ button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls',dialog.id);
  if(gridVehicle){
   const vehicle=document.createElement('section');vehicle.className='enquiry-vehicle';
   vehicle.innerHTML=`<p data-label="compatible"></p>${['supply','grade','drive','fuel'].map(key=>`<label><span data-label="${key}"></span><select name="${key}" required></select></label>`).join('')}<div class="enquiry-owned" hidden><label><span data-label="year"></span><input name="year" maxlength="40" disabled></label><label><span data-label="model"></span><input name="model" maxlength="100" disabled></label></div>`;

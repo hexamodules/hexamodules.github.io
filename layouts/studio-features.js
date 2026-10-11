@@ -10,6 +10,6 @@ export {createReferencePricing} from './reference-pricing.js?v=20261011-rear-sli
 export {createMattressControls,createMattressVisuals} from './mattresses.js?v=20261008-choice';
 export {initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement} from './studio.js?v=20261010-events';
 export {createModuleDetails} from './module-details.js?v=20261011-rear-slide';
-export {createOutro} from './outro.js?v=20261011-rear-slide';
+export {createOutro} from './outro.js?v=20261011-enquiry-dialog';
 export {createLayoutShare} from './layout-share.js?v=20261010-deferred';
 export {createEquipmentUI} from './equipment-controls.js?v=20261010-deferred';
