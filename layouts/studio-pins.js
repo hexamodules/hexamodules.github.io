@@ -26,6 +26,14 @@ export function createPinStudio(api){
  const orientation=matchMedia('(orientation:portrait)');orientation.addEventListener('change',()=>{rotate.hidden=false;});
  const hint=document.createElement('p');hint.className='pin-hint';hint.dataset.moduleI18n='';stage.append(hint);
  const hintLabel=document.createElement('span'),motionButton=document.createElement('button');motionButton.type='button';motionButton.className='pin-motion-toggle';motionButton.setAttribute('aria-haspopup','dialog');motionButton.setAttribute('aria-expanded','false');hint.append(hintLabel,motionButton);motionButton.onclick=()=>open('motion',motionButton);
+ const completedMotion=document.createElement('button');completedMotion.id='outro-motion-toggle';completedMotion.type='button';completedMotion.dataset.moduleI18n='';completedMotion.setAttribute('aria-haspopup','dialog');completedMotion.setAttribute('aria-expanded','false');
+ const completedHome=document.createElement('div');completedHome.className='outro-motion-home';$('#outro-night-toggle').after(completedHome);completedHome.append(completedMotion,$('#outro-night-toggle'));
+ completedMotion.onclick=()=>open('motion',completedMotion);
+ function placeCompletedMotion(){
+  (desktop.matches?completedHome:$('.outro-buttons')).append(completedMotion);
+  completedMotion.textContent=getLanguage()==='en'?'Try moving ▾':'動かしてみる ▾';
+ }
+ desktop.addEventListener('change',placeCompletedMotion);
  const hintText=()=>t(matchMedia('(pointer:coarse)').matches?'マークをタップするか、下のボタンから変更できます':'マークを押すか、下のボタンから変更できます');
  const summary=document.createElement('ul');summary.className='pin-summary';summary.dataset.moduleI18n='';$('#studio-vehicle-compatibility').before(summary);
  const summaryTitle=document.createElement('h2');summaryTitle.className='pc-summary-title';summaryTitle.dataset.moduleI18n='';summary.before(summaryTitle);
@@ -63,7 +71,7 @@ export function createPinStudio(api){
  function occupied(key,s){return ({floor:s.floor!=='none',ceiling:s.vehicle==='super-gl'?s.twiCeiling!=='none':s.ceiling!=='none',wall:s.vehicle==='super-gl'?s.quarterPanels!=='none':s.wall!=='none'||s.panel!=='none',front:s.front!=='none',bed:s.bed!=='none',left:s.cab!=='none'||choices.FULL.includes(s.bed),right:s.bed!=='none',lights:s.ceilingLights||s.tailgateLights||s.twiCeiling!=='none',mattress:api.bedMattressEnabled(s)||api.frontMattressEnabled(s)})[key];}
  function model(key,s){return ({floor:keys.floor,ceiling:s.vehicle==='super-gl'?'twi-ceiling':keys.ceiling,wall:keys.wall,front:s.front,bed:s.bed,left:s.cab!=='none'?s.cab:choices.FULL.includes(s.bed)?s.bed:null,right:s.bed,mattress:s.bed})[key];}
  function refresh(){
-  const s=getState();summary.replaceChildren();renderCard(s);hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';rotateText.textContent=t('横画面にしてください');rotateClose.setAttribute('aria-label',t('閉じる'));cardToggle.textContent=t('選択肢');
+  placeCompletedMotion();const s=getState();summary.replaceChildren();renderCard(s);hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';rotateText.textContent=t('横画面にしてください');rotateClose.setAttribute('aria-label',t('閉じる'));cardToggle.textContent=t('選択肢');
   for(const [key,b] of pins){
    b.textContent='';b.dataset.label=t(names[key]);b.setAttribute('aria-label',t(names[key])+': '+t(occupied(key,s)?'色を変える':'ここに置く'));
    const g=getGroup(model(key,s));let point=new THREE.Vector3(...(PIN_ANCHORS[key]||PIN_ANCHORS.seat));
@@ -118,7 +126,7 @@ export function createPinStudio(api){
  }
  desktop.addEventListener('change',()=>{close();refresh();});
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
- function close(){if(!active)return;for(const r of mobileRows.values()){r.body.hidden=true;r.button.setAttribute('aria-expanded','false');}document.body.append(popup);popup.classList.remove('portrait-inline');popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
+ function close(){if(!active)return;for(const r of mobileRows.values()){r.body.hidden=true;r.button.setAttribute('aria-expanded','false');}document.body.append(popup);popup.classList.remove('portrait-inline');popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');completedMotion.setAttribute('aria-expanded','false');popup.classList.remove('completed-motion');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
  const swatches={clear:'#d8c7a3',teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
@@ -176,7 +184,9 @@ export function createPinStudio(api){
   if(region.querySelector('button')){popup.append(region);if(focus)region.querySelector(`[data-preview-motion="${focus}"]`)?.focus({preventScroll:true});}
   else if(key==='motion'){const empty=document.createElement('p');empty.textContent=text('動かせる家具を選ぶと、ここに操作が出ます。','Select movable furniture to see its controls here.');region.append(empty);popup.append(region);}
  }
- function position(){if(!active||portrait.matches)return;
+ function position(){if(!active)return;
+  if(lastFocus===completedMotion){const r=completedMotion.getBoundingClientRect();popup.style.maxHeight=Math.max(120,innerHeight-140)+'px';const w=popup.offsetWidth,h=popup.offsetHeight;popup.style.left=Math.max(12,Math.min(innerWidth-w-12,r.left+r.width/2-w/2))+'px';popup.style.top=Math.max(12,Math.min(innerHeight-h-12,desktop.matches?r.bottom+8:r.top-h-8))+'px';return;}
+  if(portrait.matches)return;
   if(innerWidth>850&&root.dataset.studioStep==='interior'){
    const rect=stage.getBoundingClientRect(),bar=stage.querySelector('.place-toolbar').getBoundingClientRect();
    const top=Math.max(rect.top+12,$('.studio-header').getBoundingClientRect().bottom+24);
@@ -192,6 +202,8 @@ export function createPinStudio(api){
   }
   const r=pins.get(active).getBoundingClientRect();const w=popup.offsetWidth,h=popup.offsetHeight;let x=r.right+12;if(x+w>innerWidth-12)x=r.left-w-12;popup.style.left=Math.max(12,x)+'px';popup.style.top=Math.max(12,Math.min(innerHeight-h-12,r.bottom+h+12<=innerHeight?r.bottom+12:r.top-h-12))+'px';}
  function open(key,trigger=pins.get(key)){
+  if(trigger===completedMotion){close();active='motion';lastFocus=trigger;popup.classList.add('completed-motion','from-place');trigger.setAttribute('aria-expanded','true');renderOptions('motion');popup.hidden=false;backdrop.hidden=false;position();popup.querySelector('header button').focus({preventScroll:true});return;}
+
   if(portrait.matches){
    const r=mobileRows.get(key);if(!r)return;
    if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();
@@ -204,7 +216,7 @@ export function createPinStudio(api){
   }
  if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();active=key;lastFocus=trigger;popup.classList.toggle('from-place',trigger===motionButton||trigger.matches('[data-place]'));popup.style.maxHeight='';pins.get(key)?.setAttribute('aria-expanded','true');motionButton.setAttribute('aria-expanded',String(key==='motion'));placeButtons.get(key)?.setAttribute('aria-expanded','true');renderOptions(key);popup.hidden=false;backdrop.hidden=false;position();popup.querySelector('header button').focus({preventScroll:true});}
  backdrop.onclick=close;popup.querySelector('header button').onclick=close;
- document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'&&!portrait.matches){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+ document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}if(e.key==='Tab'&&(!portrait.matches||lastFocus===completedMotion)){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}},true);
  controls.addEventListener('start',()=>{dragging=true;if(!portrait.matches)close();});controls.addEventListener('end',()=>{dragging=false;movingUntil=performance.now()+220;dirty=true;});controls.addEventListener('change',()=>{movingUntil=performance.now()+180;dirty=true;});
  const ray=new THREE.Raycaster(),direction=new THREE.Vector3();
  function frame(now){requestAnimationFrame(frame);const hide=portrait.matches||dragging||now<movingUntil||root.dataset.studioStep!=='interior'||root.classList.contains('intro-active')||root.classList.contains('outro-active');layer.hidden=hide;if(hide||document.hidden)return;if(!dirty)return;lastTick=now;dirty=false;camera.updateMatrixWorld();scene.updateMatrixWorld();const rect=layer.getBoundingClientRect();const blockers=scene.children.filter(g=>g.visible&&g.userData.data);const placed=[];

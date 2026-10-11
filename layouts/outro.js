@@ -68,7 +68,7 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
   try{await preparation;if(finishing)return;if(immediate||reduced.matches){await finish();return}paint(0);last=performance.now();frame=requestAnimationFrame(tick)}catch(e){await fail(e)}
  }
  $('#outro-skip').onclick=finish;$('#outro-edit').onclick=edit;
- document.addEventListener('keydown',e=>{if(!active||e.key!=='Escape'||$('#contact-dialog').open||$('#dealer-enquiry-dialog')?.open)return;e.preventDefault();if(ready)edit();else finish()});
+ document.addEventListener('keydown',e=>{if(e.defaultPrevented||!active||e.key!=='Escape'||$('#contact-dialog').open||$('#dealer-enquiry-dialog')?.open)return;e.preventDefault();if(ready)edit();else finish()});
  reduced.addEventListener('change',()=>{if(active&&!ready&&reduced.matches)finish()});
  const dialog=$('#contact-dialog'),contactForm=$('#contact-form');
  const japanContact=()=>getLocation()==='jp';
@@ -124,7 +124,7 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
   if(!ready)return;
   const button=$('#outro-specification'),status=$('#outro-pdf-status'),en=root.lang==='en';
   button.disabled=true;status.textContent=en?'Preparing PDF…':'PDFを作成しています…';
-  try{await downloadSpecification({data:describe({includeImage:false}),catalogue,images:captureSpecification({width:isIOS()?1200:1600,required:true}),lang:root.lang});status.textContent=en?'Specification downloaded.':'仕様書をダウンロードしました。';}
+  try{await downloadSpecification({data:describe({includeImage:false}),catalogue,images:await captureSpecification({width:isIOS()?1200:1600,required:true}),lang:root.lang});status.textContent=en?'Specification downloaded.':'仕様書をダウンロードしました。';}
   catch(error){console.error(error);const detail=specificationErrorDetail(error,new Error());status.textContent=en?`Could not create the PDF (${detail}).`:`PDFを作成できませんでした（${detail}）。`;}
   finally{button.disabled=false;}
  };

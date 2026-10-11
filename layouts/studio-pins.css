@@ -190,3 +190,11 @@ html.intro-leaving[data-studio-ui=loading] .place-toolbar{visibility:visible;opa
  #studio-loading-shell .loading-summary{display:none}
  html[data-studio-ui=loading] #studio-loading-shell{padding:0 12px}
 }
+
+.pin-popup.completed-motion{position:fixed!important;display:block;inset:auto;width:min(340px,calc(100vw - 24px));overflow:auto;z-index:101}
+.pin-popup.completed-motion[hidden]{display:none}
+/* The loading canvas follows the same full-width frame as the initial editor. */
+@media(min-width:851px){
+ html.intro-leaving .stage{position:fixed;inset:0;width:100%;height:100dvh}
+ html:not(.intro-active):not(.outro-active)[data-studio-step=interior] #loading,html.intro-leaving #loading{padding-right:10px;padding-bottom:calc(116px - var(--header));box-sizing:border-box}
+}

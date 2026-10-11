@@ -86,3 +86,11 @@
 .outro-buttons>button{width:auto;flex:0 0 auto;white-space:nowrap;min-height:48px}
 .outro-buttons .outro-contact>span:first-child{text-wrap:nowrap}
 @media(max-width:850px){.outro-buttons>button{padding:12px 10px}.outro-buttons .outro-contact{gap:8px}}
+
+/* Completed view reuses the editor's motion dialog. */
+.outro-motion-home{position:absolute;right:26px;top:22px;display:flex;align-items:center;gap:8px;pointer-events:auto}
+.outro-motion-home #outro-night-toggle{position:static}
+#outro-motion-toggle{visibility:hidden;pointer-events:auto;min-height:44px;padding:10px 14px;border:1px solid #c8cebf;border-radius:6px;background:#fffef9;color:#52624c;font-size:11px;white-space:nowrap}
+.outro-ready #outro-motion-toggle{visibility:visible}
+.outro-night #outro-motion-toggle{background:#253329;color:#e1e8da;border-color:#687762}
+@media(max-width:850px){.outro-motion-home{top:6px;right:12px}#outro-motion-toggle{grid-column:1 / -1;grid-row:1;justify-self:center;font-size:11px;padding:7px 10px}.outro-buttons .outro-photo{grid-row:2}}

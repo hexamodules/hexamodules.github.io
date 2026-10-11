@@ -617,7 +617,27 @@ const motionBaseline=new Map();
 function motionExportState(s=state){const clean={...s,...Object.fromEntries(motionBaseline)};delete clean.frontStorage;delete clean.cabStorage;return clean}
 async function previewMotion(patch){
  for(const key of Object.keys(patch))if(!motionBaseline.has(key))motionBaseline.set(key,state[key]);
- return apply({...state,...patch},{history:false});
+ return applyMotionState({...state,...patch});
+}
+// Keep the completed shell and door poses while using the same furniture pipeline.
+async function applyMotionState(next){
+ if(!outro.ready)return apply(next,{history:false});
+ const furniture=new Set([state.front,state.bed,state.cab,'lounge-fillers','centre-mattresses']);
+ const saved=[];
+ for(const group of outroGroups)if(!furniture.has(group.name))group.traverse(node=>saved.push({node,visible:node.visible,position:node.position.clone(),quaternion:node.quaternion.clone(),scale:node.scale.clone()}));
+ const fog=scene.fog,gridVisible=grid.visible;
+ try{return await apply(next,{history:false});}
+ finally{
+  for(const v of saved){v.node.visible=v.visible;v.node.position.copy(v.position);v.node.quaternion.copy(v.quaternion);v.node.scale.copy(v.scale);}
+  for(const promise of cache.values()){const group=await promise;if(group.visible&&!outroGroups.includes(group)){outroRig.attach(group);outroGroups.push(group);}}
+  scene.fog=fog;grid.visible=gridVisible;updateInteriorPresentation();await prepareLighting({complete:true});renderer.render(scene,camera);needsFrame=true;
+ }
+}
+async function completedSpecification(options){
+ if(!outro.ready)return enquiryPreviews(options);
+ const preview={...state};
+ try{await applyMotionState({...motionExportState(outroState||state),night:state.night,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,frontStorage:false,cabStorage:false});return enquiryPreviews(options);}
+ finally{await applyMotionState(preview);}
 }
 function clearMotionBaseline(patch){
  for(const key of Object.keys(patch))motionBaseline.delete(key);
@@ -789,10 +809,17 @@ window.addEventListener('studio-step-change',()=>{
   controls.target.set(...HOME_VIEW[1]);camera.position.set(...HOME_VIEW[0]).sub(controls.target).multiplyScalar(previous.distance/previous.baseDistance).add(controls.target);controls.update();
  }
 });
+// The loading stage already has its final size, so unlock no longer triggers ResizeObserver.
+let wasIntroActive=document.documentElement.classList.contains('intro-active');
+new MutationObserver(()=>{
+ const introActive=document.documentElement.classList.contains('intro-active');
+ if(wasIntroActive&&!introActive&&pcEditor())setView(activeView);
+ wasIntroActive=introActive;
+}).observe(document.documentElement,{attributes:true,attributeFilter:['class']});
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-slide-set');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-completed-motion');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -1113,7 +1140,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-slide-set');
+  const features=await import('./studio-features.js?v=20261011-completed-motion');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());
@@ -1136,7 +1163,7 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
   iSeatVisuals=createISeatVisuals({renderer,onTextureReady:()=>{needsFrame=true}});
   countertopVisuals=await createCountertopVisuals({renderer});
   outro=createOutro({
- captureSpecification:enquiryPreviews,
+ captureSpecification:completedSpecification,
  captureEnquiry:enquiryPreviews,
  catalogue:priceCatalogue,
  getVehicleState:()=>motionExportState(outroState||state),
