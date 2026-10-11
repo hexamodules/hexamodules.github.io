@@ -204,6 +204,9 @@ html.intro-leaving[data-studio-ui=loading] .place-toolbar{visibility:visible;opa
 @media(min-width:851px) and (hover:hover){
  .pin-options:has(.pin-option-photos){scrollbar-gutter:stable}
  .pin-option-photos:not([hidden]){display:flex;gap:6px;padding:4px 8px 8px;animation:pin-photo-in .15s ease-out}
+ .pin-option-photo{position:relative;display:block;min-width:0;flex:1;height:70px}
+ .pin-option-photos .pin-option-photo img{width:100%}
+ .pin-option-photo small{position:absolute;right:3px;bottom:2px;font-size:9px;line-height:1.2;color:#555;background:rgba(245,245,242,.9);padding:1px 3px;border-radius:2px}
  .pin-option-photos img{display:block;min-width:0;flex:1;width:calc(50% - 3px);height:70px;object-fit:contain;background:#f5f5f2;border-radius:7px}
 }
 @keyframes pin-photo-in{from{opacity:0}to{opacity:1}}

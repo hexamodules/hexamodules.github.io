@@ -355,12 +355,31 @@ function prepareLighting({complete=false}={}){
  const job=async()=>{
   if(contextUnavailable)return;
   lightingPreparing=true;nightButtons().forEach(b=>b.disabled=true);
+  // Keep the selected lighting during asynchronous compilation. A zero-area
+  // scissor retains every canvas pixel while warming the exact display programs;
+  // Three renders shadow maps into their own targets, with their own scissor.
+  const restoreLighting=()=>{setLighting();if(complete)scene.fog=null;};
   try{
    for(const night of [true,false]){
-    setLighting(night);if(complete)scene.fog=null;
-    if(!await compileLighting())return;
-    // Allocate each shadow map now; retain it across all subsequent toggles.
+    let compiled;
+    try{
+     setLighting(night);if(complete)scene.fog=null;
+     compiled=compileLighting();
+    }finally{restoreLighting();}
+    if(!await compiled)return;
+    // preserveDrawingBuffer is false: refresh the selected view in this same
+    // task before the zero-area pass, rather than relying on a discarded buffer.
     renderer.render(scene,camera);
+    const scissor=renderer.getScissor(new THREE.Vector4());
+    const scissorTest=renderer.getScissorTest();
+    try{
+     setLighting(night);if(complete)scene.fog=null;
+     renderer.setScissor(0,0,0,0);renderer.setScissorTest(true);
+     renderer.render(scene,camera);
+    }finally{
+     renderer.setScissor(scissor);renderer.setScissorTest(scissorTest);
+     restoreLighting();
+    }
    }
   }finally{
    setLighting();if(complete)scene.fog=null;
@@ -822,7 +841,7 @@ new MutationObserver(()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-twi-credit');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-no-night-flash');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},

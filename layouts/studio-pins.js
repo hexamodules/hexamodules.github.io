@@ -136,12 +136,19 @@ export function createPinStudio(api){
  photoHover.addEventListener('change',hideOptionPhotos);
  popup.addEventListener('keydown',hideOptionPhotos);
  function optionPhotos(button,id){
-  if(!photoHover.matches||!featuredViews[id]||!modules[id]?.prefix)return;
+  if(!photoHover.matches)return;
+  if(id==='i-seat'){
+   attachOptionPhotos(button,()=>['forward','flat-front','rearward'].map(view=>`assets/iseat/${view}.webp`));return;
+  }
+  if(id==='seat'){
+   attachOptionPhotos(button,()=>[1,2].map(view=>`assets/module-photos/seat-${view}.png`),true);return;
+  }
+  if(!featuredViews[id]||!modules[id]?.prefix)return;
   const scenes=Object.keys(featuredViews[id]).map(key=>modules[id].scenes.find(scene=>scene.key===key)).filter(Boolean).slice(0,2);
   if(!scenes.length)return;
   attachOptionPhotos(button,()=>scenes.map(scene=>`../assets/${modules[id].prefix.replace('{finish}',getState().finish)}-${scene.key}.webp`));
  }
- function attachOptionPhotos(button,sources){
+ function attachOptionPhotos(button,sources,illustration=false){
   if(!photoHover.matches)return;
   const strip=document.createElement('div');strip.className='pin-option-photos';strip.hidden=true;strip.setAttribute('aria-hidden','true');button.after(strip);
   button.addEventListener('pointerenter',event=>{
@@ -150,7 +157,11 @@ export function createPinStudio(api){
    if(!strip.childElementCount)for(const source of sources()){
     const image=document.createElement('img');image.alt='';image.draggable=false;image.decoding='async';
     image.src=source;
-    strip.append(image);
+    if(illustration){
+     const frame=document.createElement('span'),label=document.createElement('small');
+     frame.className='pin-option-photo';label.textContent=getLanguage()==='en'?'Image':'イメージ';
+     frame.append(image,label);strip.append(frame);
+    }else strip.append(image);
    }
    strip.hidden=false;
    // Reveal the strip within the scroller without moving the hovered row past the pointer.
