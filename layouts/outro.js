@@ -1,6 +1,6 @@
 import {studioEvent} from './analytics.js?v=20261010-events';
 import {initDealerEnquiry,enquiryDealerId} from './dealer-enquiry.js?v=20261011-enquiry-dialog';
-import {downloadSpecification} from './specification-pdf.js?v=20261011-rear-slide';
+import {downloadSpecification,isIOS,specificationErrorDetail} from './specification-pdf.js?v=20261011-ios-pdf';
 import {createJapanPostcodeLookup} from './japan-postcode.js?v=1';
 import {dealerContext} from './dealer-context.js?v=20261011-rear-slide';
 import {newVehicleSummary,vehicleSelectionComplete} from './new-vehicle.js?v=1';
@@ -122,8 +122,8 @@ export function createOutro({catalogue,captureEnquiry,captureSpecification,prepa
   if(!ready)return;
   const button=$('#outro-specification'),status=$('#outro-pdf-status'),en=root.lang==='en';
   button.disabled=true;status.textContent=en?'Preparing PDF…':'PDFを作成しています…';
-  try{await downloadSpecification({data:describe({includeImage:false}),catalogue,images:captureSpecification(),lang:root.lang});status.textContent=en?'Specification downloaded.':'仕様書をダウンロードしました。';}
-  catch(error){console.error(error);status.textContent=en?'Could not create the PDF. Please try again.':'PDFを作成できませんでした。もう一度お試しください。';}
+  try{await downloadSpecification({data:describe({includeImage:false}),catalogue,images:captureSpecification({width:isIOS()?1200:1600,required:true}),lang:root.lang});status.textContent=en?'Specification downloaded.':'仕様書をダウンロードしました。';}
+  catch(error){console.error(error);const detail=specificationErrorDetail(error,new Error());status.textContent=en?`Could not create the PDF (${detail}).`:`PDFを作成できませんでした（${detail}）。`;}
   finally{button.disabled=false;}
  };
  const quoteDemo=initQuoteDemo({form:contactForm,describe,getLanguage:()=>root.lang});

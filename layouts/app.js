@@ -927,22 +927,23 @@ function detachOutro(){
  outroGroups=[];outroLightGroups=[];
 }
 // Synchronous capture: the display canvas is restored before the browser paints.
-// Pixel ratio 1 makes the backing buffer exactly 1600 x 1000 on every device.
-function withEnquiryFrame(capture){
+// Pixel ratio 1 keeps the backing buffer at the requested size (default 1600 x 1000).
+function withEnquiryFrame(capture,width=1600){
+ const height=Math.round(width/1.6);
  const saved={size:renderer.getSize(new THREE.Vector2()),pixelRatio:renderer.getPixelRatio(),aspect:camera.aspect,
   eye:camera.position.clone(),target:controls.target.clone(),up:camera.up.clone(),quaternion:camera.quaternion.clone(),
   fov:camera.fov,frame:frameOpening,fit:viewFitScale,damping:controls.enableDamping,enabled:controls.enabled};
  try{
   frameOpening=null;controls.enabled=false;controls.enableDamping=false;
-  renderer.setPixelRatio(1);renderer.setSize(1600,1000,false);
+  renderer.setPixelRatio(1);renderer.setSize(width,height,false);
   camera.aspect=1.6;camera.updateProjectionMatrix();
   if(outroGroups.length){
    openingCamera(camera,controls,outroFrameModels(),{centerModels:[outroVehicle,outroBody],
     copySelector:'.outro-copy',actionSelector:'.outro-action',direction:[3465,2563,-6138],
     fitArea:stage=>({left:stage.width*.04,right:stage.width*.96,top:stage.height*.04,bottom:stage.height*.96})})();
    // Refine the conservative part bounds using the visible vertices. Include
-   // every open door and selected module; reserve 80 px at the image edges.
-   const fitted=photoCamera(camera,outroGroups,outroGroups,1600,1000,1000,0,.08,0);
+   // every open door and selected module; reserve 8% of the short edge.
+   const fitted=photoCamera(camera,outroGroups,outroGroups,width,height,height,0,.08,0);
    camera.position.copy(fitted.position);camera.quaternion.copy(fitted.quaternion);camera.updateMatrixWorld();
   }else{
    // Editing/retailer preview: remove the viewport-dependent distance scale.
@@ -952,7 +953,7 @@ function withEnquiryFrame(capture){
   updateInteriorPresentation();renderer.render(scene,camera);
   return capture(renderer.domElement);
  }finally{
-  renderer.setPixelRatio(saved.pixelRatio);renderer.setSize(saved.size.x,saved.size.y,false);
+  renderer.setSize(saved.size.x,saved.size.y,false);renderer.setPixelRatio(saved.pixelRatio);
   camera.aspect=saved.aspect;camera.fov=saved.fov;
   camera.position.copy(saved.eye);controls.target.copy(saved.target);camera.up.copy(saved.up);
   controls.update();controls.target.copy(saved.target);camera.position.copy(saved.eye);camera.quaternion.copy(saved.quaternion);camera.updateProjectionMatrix();camera.updateMatrixWorld();
@@ -963,28 +964,33 @@ function withEnquiryFrame(capture){
 function contactPreview(){
  return withEnquiryFrame(source=>{
   const canvas=document.createElement('canvas');canvas.width=720;canvas.height=450;
-  canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
-  return canvas.toDataURL('image/jpeg',.85);
+  try{canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+   return canvas.toDataURL('image/jpeg',.85);
+  }finally{canvas.width=0;canvas.height=0}
  });
 }
-function enquiryPreview(){
+function enquiryPreview({width:maximumWidth=1600,required=false}={}){
  try{
   return withEnquiryFrame(source=>{
    const canvas=document.createElement('canvas');
+   try{
    // Keep the existing data-URL limit (400 KiB JPEG plus base64/header).
-   for(const width of [1600,1400,1200,1000,800]){
+   for(const width of [1600,1400,1200,1000,800].filter(width=>width<=maximumWidth)){
     canvas.width=width;canvas.height=Math.round(width/1.6);
-    canvas.getContext('2d').drawImage(source,0,0,canvas.width,canvas.height);
+    const ctx=canvas.getContext('2d');if(!ctx)throw Object.assign(new Error('Preview canvas allocation failed'),{name:'PDFCanvasError'});
+    ctx.drawImage(source,0,0,canvas.width,canvas.height);
     const data=canvas.toDataURL('image/jpeg',.85);
     if(data.startsWith('data:image/jpeg;base64,')&&data.length<=546159)return data;
    }
+   if(required)throw Object.assign(new Error('Preview image encoding failed'),{name:'PDFCaptureError'});
    return '';
-  });
- }catch{/* Images are optional; withEnquiryFrame always restores the display. */}
+   }finally{canvas.width=0;canvas.height=0}
+  },maximumWidth);
+ }catch(error){if(required)throw error;/* Enquiry images remain optional. */}
  return '';
 }
-function enquiryPreviews(){
- const image=enquiryPreview();return image?[image]:[];
+function enquiryPreviews(options){
+ const image=enquiryPreview(options);return image?[image]:[];
 }
 let outro={active:false,ready:false};
 // Read-only photo bridge: render and copy synchronously before the WebGL buffer clears.
@@ -1043,7 +1049,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-loading-shell');
+  const features=await import('./studio-features.js?v=20261011-ios-pdf');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());

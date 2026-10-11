@@ -3,7 +3,28 @@ import {enquirySelections} from './dealer-enquiry.js?v=20261011-rear-slide';
 // A local canvas supplies Japanese glyphs without a font service. The PDF contains
 // one A4 image and a real URI annotation, so the studio link remains clickable.
 const ink='#263e35',muted='#738078';
-const loadImage=src=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(Error('Image unavailable'));image.src=src;});
+export const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const pdfError=(name,message)=>Object.assign(new Error(message),{name});
+// Temporary diagnosis: expose only error type and source line, never URLs or form data.
+export function specificationErrorDetail(error,fallbackError){
+ const name=String(error?.name||'Error').replace(/[^a-zA-Z0-9_-]/g,'').slice(0,60)||'Error';
+ const location=stack=>String(stack||'').match(/([a-zA-Z0-9_.-]+\.js)(?:\?[^\s:)]*)?:(\d+)(?::(\d+))?/);
+ const source=location(error?.stack)||location(fallbackError?.stack);
+ return name+(source?` · ${source[1]}:${source[2]}`:'');
+}
+const loadImage=src=>new Promise((resolve,reject)=>{
+ const image=new Image();
+ const finish=error=>{clearTimeout(timer);image.onload=image.onerror=null;if(error){image.src='';reject(error)}else resolve(image)};
+ const timer=setTimeout(()=>finish(pdfError('PDFImageTimeoutError','Image load timed out')),15000);
+ image.onload=()=>finish();image.onerror=()=>finish(pdfError('PDFImageError','Image unavailable'));
+ image.crossOrigin='anonymous';image.src=src;
+});
+async function waitForFonts(){
+ if(!document.fonts?.ready)return;
+ let timer;
+ try{await Promise.race([document.fonts.ready,new Promise((_,reject)=>{timer=setTimeout(()=>reject(pdfError('PDFFontTimeoutError','Font load timed out')),15000)})])}
+ finally{clearTimeout(timer)}
+}
 export function specificationRows(data,catalogue,lang){
  const en=lang==='en';
  const modules=enquirySelections(catalogue,data.configuration,lang).filter(item=>item.key.startsWith('module:')).map(item=>({label:en?'Furniture':'家具',value:item.label}));
@@ -39,11 +60,17 @@ export function imagePdf(jpeg,width,height,url,linkRect){
 export async function createSpecification({data,catalogue,images,lang='ja'}){
  const en=lang==='en',rows=specificationRows(data,catalogue,lang);
  const layoutUrl=new URL(data.url,location.href);layoutUrl.searchParams.set('complete','1');
- if(!images?.[0])throw Error('Completed van image unavailable');
- await document.fonts.ready;
- const [logo,photo]=await Promise.all([loadImage(new URL('./assets/hexa-logo.jpg',import.meta.url).href),loadImage(images[0])]);
- const canvas=document.createElement('canvas');canvas.width=1190;canvas.height=1684;
- const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#fff';ctx.fillRect(0,0,595,842);
+ if(!images?.[0])throw pdfError('PDFCaptureError','Completed van image unavailable');
+ await waitForFonts();
+ const canvas=document.createElement('canvas');let logo,photo;
+ try{
+ logo=await loadImage(new URL('./assets/hexa-logo.jpg',import.meta.url).href);
+ photo=await loadImage(images[0]);
+ // Keep A4 coordinates and typography; reduce only the iOS backing-store resolution.
+ const pixelScale=isIOS()?1.5:2;
+ canvas.width=Math.ceil(595*pixelScale);canvas.height=Math.ceil(842*pixelScale);
+ const ctx=canvas.getContext('2d');if(!ctx)throw pdfError('PDFCanvasError','Canvas allocation failed');
+ ctx.scale(pixelScale,pixelScale);ctx.fillStyle='#fff';ctx.fillRect(0,0,595,842);
  const font=(size,bold=false)=>{ctx.font=`${bold?'600':'400'} ${size}px -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif`;ctx.fillStyle=ink;};
  // Reserve the complete URL before fitting the specification rows.
  font(7);
@@ -108,10 +135,18 @@ export async function createSpecification({data,catalogue,images,lang='ja'}){
  ctx.fillStyle=ink;ctx.fillRect(46,linkTop+28,503,22);
  font(11,true);ctx.fillStyle='#fff';ctx.textAlign='center';ctx.fillText(en?'Open in the Layout Studio ↗':'レイアウトスタジオで開く ↗',297.5,linkTop+43);ctx.textAlign='left';
  font(7);linkLines.forEach((line,i)=>ctx.fillText(line,46,linkTop+61+i*9));
- return imagePdf(canvas.toDataURL('image/jpeg',.94),canvas.width,canvas.height,layoutUrl.href,[34,30,561,842-linkTop]);
+ const jpeg=canvas.toDataURL('image/jpeg',.94);
+ if(!jpeg.startsWith('data:image/jpeg;base64,'))throw pdfError('PDFCanvasError','Canvas encoding failed');
+ return imagePdf(jpeg,canvas.width,canvas.height,layoutUrl.href,[34,30,561,842-linkTop]);
+ }finally{
+  // Safari can retain the backing store after JS references disappear.
+  canvas.width=0;canvas.height=0;if(logo)logo.src='';if(photo)photo.src='';
+ }
 }
 export async function downloadSpecification(options){
  const blob=await createSpecification(options),url=URL.createObjectURL(blob),a=document.createElement('a');
  a.href=url;a.download=`Hexa-${options.lang==='en'?'Specification':'仕様書'}-${options.data.layoutNumber}.pdf`;
- document.body.append(a);a.click();a.remove();studioEvent('spec_pdf_download');setTimeout(()=>URL.revokeObjectURL(url),60000);
+ // Do not use navigator.share here: image/font awaits can outlive user activation on iOS.
+ try{document.body.append(a);a.click();studioEvent('spec_pdf_download')}
+ finally{setTimeout(()=>a.remove(),1000);setTimeout(()=>URL.revokeObjectURL(url),60000)}
 }
