@@ -1,9 +1,9 @@
 import {moduleNames,moduleName} from './module-names.js?v=20261011-rear-slide';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js?v=20261011-super-gl-base';
-import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js';
+import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js?v=20261011-context';
 import {sharedTexture} from './shared-images.js?v=20261010';
 import {studioEvent,trackStudioSelection} from './analytics.js?v=20261010-events';
-import {createVisualMaterials} from './visual-materials.js?v=20261011-moonlight';
+import {createVisualMaterials} from './visual-materials.js?v=20261011-context';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
@@ -317,10 +317,11 @@ function registerLightRig(key,data){
  }
  rig.visible=false;scene.add(rig);lightRigs.set(key,{rig,sources});
 }
-function setLighting(){
- twiVisuals.updateState(state);
- const night=Boolean(state.night);visualMaterials.lighting(night);$('.stage').classList.toggle('night-mode',night);
- scene.background.set(night?'#192536':'#eeeeec');scene.fog=night?new THREE.Fog('#192536',9000,14500):null;renderer.toneMappingExposure=.95;
+const nightFog=new THREE.Fog('#192536',9000,14500);
+function setLighting(night=Boolean(state.night)){
+ twiVisuals.updateState({...state,night});
+ visualMaterials.lighting(night);$('.stage').classList.toggle('night-mode',night);
+ scene.background.set(night?'#192536':'#eeeeec');scene.fog=night?nightFog:null;renderer.toneMappingExposure=.95;
  ambient.intensity=night?.18:.9;ambient.color.set(night?'#9fb4d8':'#ffffff');ambient.groundColor.set(night?'#6a5441':'#9a9687');
  sun.intensity=night?.42:2.1;sun.color.set(night?'#9fb4d8':'#fff7e6');sun.castShadow=!night;fill.intensity=night?.12:.6;sideFill.intensity=night?0:.35;studioShadow.material.opacity=night?.3:1;
  floor.material=night?nightGround:dayGround;floor.scale.setScalar(night?3:1);grid.visible=false;
@@ -333,6 +334,74 @@ function setLighting(){
  scene.traverse(o=>{if(o.isMesh&&o.material?.userData.vehicle)o.material.opacity=night?.065:.12});
  renderer.shadowMap.needsUpdate=true;needsFrame=true;
 }
+// Program variants and shadow maps are prepared with the selected assets, once per
+// configuration. A day/night click only updates existing lights/material uniforms.
+let lightingPreparing=false,contextUnavailable=false,lightingQueue=Promise.resolve();
+const nightButtons=()=>$$('[data-night-toggle],#outro-night-toggle');
+async function compileLighting(){
+ renderer.compile(scene,camera);
+ const gl=renderer.getContext(),extension=gl.getExtension('KHR_parallel_shader_compile');
+ if(!extension)return !contextUnavailable;
+ // Snapshot native programs: unlike material properties, these cannot be replaced
+ // by a later compile while waiting. Stop polling as soon as this context is lost.
+ const programs=renderer.info.programs.map(program=>program.program);
+ while(!contextUnavailable){
+  if(programs.every(program=>gl.getProgramParameter(program,extension.COMPLETION_STATUS_KHR)))return true;
+  await new Promise(resolve=>setTimeout(resolve,10));
+ }
+ return false;
+}
+function prepareLighting({complete=false}={}){
+ const job=async()=>{
+  if(contextUnavailable)return;
+  lightingPreparing=true;nightButtons().forEach(b=>b.disabled=true);
+  try{
+   for(const night of [true,false]){
+    setLighting(night);if(complete)scene.fog=null;
+    if(!await compileLighting())return;
+    // Allocate each shadow map now; retain it across all subsequent toggles.
+    renderer.render(scene,camera);
+   }
+  }finally{
+   setLighting();if(complete)scene.fog=null;
+   lightingPreparing=false;nightButtons().forEach(b=>b.disabled=contextUnavailable);
+   needsFrame=true;
+  }
+ };
+ lightingQueue=lightingQueue.then(job,job);return lightingQueue;
+}
+function toggleNight(){
+ if(lightingPreparing||contextUnavailable)return;
+ state={...state,night:!state.night};
+ if(outro.ready)outroState={...outroState,night:state.night};
+ setLighting();if(outro.ready){scene.fog=null;updateOutroLighting()}
+ lightingUI();window.history.replaceState(null,'',urlFor(outro.ready?outroState:state));
+ renderer.render(scene,camera);needsFrame=false;
+}
+// Three restores ordinary geometry/textures itself. PMREM pixels were generated
+// on the lost GPU, so rebuild those from the retained source before redrawing.
+let contextRetry;
+renderer.domElement.addEventListener('webglcontextlost',event=>{
+ event.preventDefault();contextUnavailable=true;needsFrame=false;
+ nightButtons().forEach(b=>b.disabled=true);
+ $('#loading p').textContent=getLanguage()==='en'?'Restoring the view…':'画面を復旧しています…';
+ $('#loading').style.display='flex';
+ clearTimeout(contextRetry);
+ contextRetry=setTimeout(()=>{if(renderer.getContext().isContextLost())renderer.forceContextRestore()},1000);
+});
+renderer.domElement.addEventListener('webglcontextrestored',async()=>{
+ clearTimeout(contextRetry);
+ try{
+  visualMaterials.restoreEnvironment();await studioEnvironment.restore();
+  contextUnavailable=false;await prepareLighting({complete:outro.ready});
+  updateInteriorPresentation();renderer.shadowMap.needsUpdate=true;
+  renderer.render(scene,camera);needsFrame=true;$('#loading').style.display='none';
+ }catch(error){
+  contextUnavailable=false;needsFrame=true;
+  $('#loading p').textContent=getLanguage()==='en'?'Please reload to restore the view.':'再読み込みして画面を復旧してください。';
+  console.error('View restoration failed',error);
+ }
+});
 function lightingUI(){
  $('[data-light=ceilingLights] strong').textContent=moduleName('ceiling-lights');
  $('[data-light=tailgateLights] strong').textContent=moduleName('tailgate-lights');
@@ -614,6 +683,7 @@ async function apply(s=state,{history=true,ui=true,entryReveal=false}={}){const 
  if(ui&&((!airconEnabled()&&activeView==='aircon')||(!panelEnabled()&&['panels','tailgate'].includes(activeView))||(!panelEnabled()&&!state.tailgateLights&&activeView==='tailgate-light')||(!ceilingEnabled()&&!twiCeilingEnabled(state)&&activeView==='ceiling')||(!floorEnabled()&&activeView==='floor')))setView('rear');
  updateInteriorPresentation();
  updateFitDisplay();
+ await prepareLighting();if(ticket!==renderVersion)return;
  if(history&&!batchRunning)window.history.replaceState(null,'',urlFor());$('#loading').style.display='none';$('#viewport').dataset.assets=keys.join(',');pinStudio?.refresh();studioScale.dimensions(models[0]?.userData.data?.bounds);renderer.render(scene,camera);if(entryReveal&&!matchMedia('(prefers-reduced-motion: reduce)').matches)await new Promise(resolve=>setTimeout(resolve,560));return {keys,fit,bedLength:bedLength()}}
 // All model and material loads finish above before any selected group is shown.
 // No awaits or intermediate renders separate the floor from the furniture and interior.
@@ -711,7 +781,7 @@ function centerPortraitEditor(){
 }
 function setView(v){activeView=v;const [eye,target]=views[v];camera.position.set(...eye);controls.target.set(...target);viewFitScale=responsiveViewScale(v);camera.position.sub(controls.target).multiplyScalar(viewFitScale).add(controls.target);camera.up.set(0,1,0);controls.maxPolarAngle=THREE.MathUtils.degToRad(110);if(v==='top'){camera.position.z+=.1;camera.up.set(1,0,0)}controls.update();centerPortraitEditor();centerPcEditor();updateInteriorPresentation();$$('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===v));renderer.render(scene,camera)}
 const observer=new ResizeObserver(()=>{if(batchRunning)return;let rect=$('#viewport').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;const nextScale=responsiveViewScale(activeView);camera.position.sub(controls.target).multiplyScalar(nextScale/viewFitScale).add(controls.target);viewFitScale=nextScale;if(matchMedia('(max-width:850px) and (orientation:portrait)').matches)controls.maxDistance=Math.max(12000,camera.position.distanceTo(controls.target));camera.updateProjectionMatrix();if(frameOpening)frameOpening();else if(pcEditor()&&activeView==='home')setView(activeView);else centerPortraitEditor();renderer.render(scene,camera)});observer.observe($('#viewport'));
-function animate(){requestAnimationFrame(animate);if(!batchRunning&&!document.hidden){controls.update();if(needsFrame){renderer.render(scene,camera);needsFrame=false}}}animate();setView(DEFAULT_VIEW);
+function animate(){requestAnimationFrame(animate);if(!batchRunning&&!lightingPreparing&&!contextUnavailable&&!document.hidden){controls.update();if(needsFrame){renderer.render(scene,camera);needsFrame=false}}}animate();setView(DEFAULT_VIEW);
 window.addEventListener('studio-step-change',()=>{
  // Resume the previous camera fit before the existing non-editor resize path.
  if(pcFramed&&!pcEditor()&&innerWidth>850&&!frameOpening&&activeView==='home'){
@@ -750,7 +820,7 @@ $('#front-options').addEventListener('click',e=>{let b=e.target.closest('.option
 };
 
 $('#remove-floor').onclick=()=>apply({...state,floor:'none'}).catch(console.error);
-$$('[data-night-toggle]').forEach(b=>b.onclick=()=>apply({...state,night:!state.night}).catch(console.error));
+$$('[data-night-toggle]').forEach(b=>b.onclick=()=>toggleNight());
 $('#ceiling-options').addEventListener('click',e=>{const b=e.target.closest('[data-ceiling-choice]');if(!b)return;apply({...state,ceiling:b.dataset.ceilingChoice==='finish'?lastCeilingColor:'none'}).catch(console.error)});
 $('#wall-options').addEventListener('click',e=>{
  const b=e.target.closest('[data-wall-choice]');if(!b)return;
@@ -999,14 +1069,7 @@ window.__hexaStudio=Object.freeze({canvas:renderer.domElement,renderOnce:()=>ren
 for(const button of $$('.review-enquiry'))button.onclick=()=>{if(!readyForReview())return;outro.play()};
 
 
-$('#outro-night-toggle').onclick=()=>{
- if(!outro.ready)return;
- state={...state,night:!state.night};outroState={...outroState,night:state.night};
- // Change only the lighting: retain the full shell, open doors and current orbit.
- setLighting();scene.fog=null;grid.visible=false;lightingUI();updateOutroLighting();
- window.history.replaceState(null,'',urlFor(outroState));
- updateInteriorPresentation();renderer.render(scene,camera);needsFrame=true;
-};
+$('#outro-night-toggle').onclick=()=>{if(outro.ready)toggleNight()};
 $$('[data-outro-view]').forEach(b=>b.onclick=()=>{if(outro.ready)frameOutro(b.dataset.outroView)});
 
 // Pick visible furniture through the transparent shell. Raycasting runs only
@@ -1129,7 +1192,9 @@ wallVerification=await fetch('interior-wall-fit.json?v=wall-1').then(r=>r.json()
  },
  showcase:async()=>{
   outroRig.visible=true;outroRig.position.set(0,0,0);controls.enabled=true;
-  frameOutro('rear');$('#outro-night-toggle').disabled=false;needsFrame=true;
+  frameOutro('rear');$('#loading').style.display='flex';
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  await prepareLighting({complete:true});renderer.render(scene,camera);$('#loading').style.display='none';$('#outro-night-toggle').disabled=false;needsFrame=true;
  },
  restore:async()=>{
   detachOutro();$('.stage').append($('.equipment-indicators'),$('#electrical-preview'));await apply(outroState,{history:false});setView(outroView);

@@ -1,19 +1,25 @@
 import * as THREE from 'three';
 // Starts only after the entrance has rendered. Existing lighting is the fallback.
 export function scheduleStudioEnvironment(renderer,scene,onReady){
- let started=false;
- const load=async()=>{if(started)return;started=true;
-  try{const {RGBELoader}=await import('./vendor/RGBELoader.js');
-   const hdr=await new RGBELoader().loadAsync('assets/studio-small-09-1k.hdr');
-   const pmrem=new THREE.PMREMGenerator(renderer);const target=pmrem.fromEquirectangular(hdr);
-   const previous=scene.environment;scene.environment=target.texture;hdr.dispose();pmrem.dispose();previous?.dispose();
-   document.documentElement.dataset.environment='ready';onReady();
-  }catch(error){document.documentElement.dataset.environment='fallback';console.warn('Studio environment unavailable',error);}
+ let pending,hdr,target;
+ const build=()=>{
+  if(!hdr||renderer.getContext().isContextLost())return;
+  const pmrem=new THREE.PMREMGenerator(renderer);
+  try{const next=pmrem.fromEquirectangular(hdr);target?.dispose();target=next;scene.environment=target.texture;}
+  finally{pmrem.dispose()}
+  document.documentElement.dataset.environment='ready';onReady();
  };
+ const load=()=>pending??=(async()=>{
+  try{const {RGBELoader}=await import('./vendor/RGBELoader.js');
+   // Keep the small CPU source for GPU context recovery, never reload on toggles.
+   hdr=await new RGBELoader().loadAsync('assets/studio-small-09-1k.hdr');build();
+  }catch(error){document.documentElement.dataset.environment='fallback';console.warn('Studio environment unavailable',error);}
+ })();
+ const restore=async()=>{await load();build()};
  const observer=new MutationObserver(()=>{if(['ready','complete'].includes(document.documentElement.dataset.introState)){observer.disconnect();setTimeout(load,0);}});
  observer.observe(document.documentElement,{attributes:true,attributeFilter:['data-intro-state']});
  if(['ready','complete'].includes(document.documentElement.dataset.introState)){observer.disconnect();setTimeout(load,0);}
- return {load};
+ return {load,restore};
 }
 export function contactShadow(scene){
  const canvas=document.createElement('canvas');canvas.width=canvas.height=128;const ctx=canvas.getContext('2d');

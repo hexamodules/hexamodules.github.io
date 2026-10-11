@@ -20,9 +20,13 @@ export function createVisualMaterials(renderer,scene){
  const e=document.createElement('canvas');e.width=128;e.height=128;const ex=e.getContext('2d');ex.fillStyle='#d7bf96';ex.fillRect(0,0,128,128);for(let i=0;i<10;i++){ex.fillStyle=i%2?'#cdb58d':'#e2cda8';ex.fillRect(0,i*12.8,128,11.6);ex.fillStyle='#aa916d';ex.fillRect(0,i*12.8+11.6,128,1.2)}const edge=texture(e);edge.colorSpace=THREE.SRGBColorSpace;
  // A small neutral studio environment supplies soft reflections for metal.
  // Generated once, shared by all materials; no HDR download or extra scene draw calls.
+ let environmentTarget;
+ function restoreEnvironment(){
  const envScene=new THREE.Scene();envScene.background=new THREE.Color('#a3aaa6');
  for(const [position,scale,color] of [[[0,6,0],[8,.1,8],'#ffffff'],[[-5,2,1],[.1,5,6],'#dbe6ec'],[[4,2,-2],[.1,4,4],'#eee8da']]){const m=new THREE.Mesh(new THREE.BoxGeometry(...scale),new THREE.MeshBasicMaterial({color}));m.position.set(...position);envScene.add(m)}
- const pmrem=new THREE.PMREMGenerator(renderer),target=pmrem.fromScene(envScene,.12,.1,30);scene.environment=target.texture;pmrem.dispose();envScene.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});
+ const pmrem=new THREE.PMREMGenerator(renderer),target=pmrem.fromScene(envScene,.12,.1,30);environmentTarget?.dispose();environmentTarget=target;scene.environment=target.texture;pmrem.dispose();envScene.traverse(o=>{o.geometry?.dispose();o.material?.dispose()});
+ }
+ restoreEnvironment();
  function material(mat,{woodKind,edge:cutEdge,metal,isVehicle,switchable,key}){
   if(isVehicle||/^interior-|lights/.test(key))return;
   mat.envMapIntensity=metal?.85:.18;
@@ -55,5 +59,5 @@ export function createVisualMaterials(renderer,scene){
  }
 
  function lighting(night){scene.environmentIntensity=night?.12:.6}
- return {material,finish,mesh,lighting};
+ return {material,finish,mesh,lighting,restoreEnvironment};
 }
