@@ -1,4 +1,4 @@
-import {moduleName} from './module-names.js?v=20261011-rear-slide';
+import {moduleName} from './module-names.js?v=20261011-wood-hint';
 import {LOCKED_REFERENCE} from './reference-baseline.js?v=20261005';
 // Public selection labels only. Pricing is unavailable.
 export const RETAILER_PRICE_REVISION=LOCKED_REFERENCE.revision;
@@ -11,14 +11,14 @@ export const RETAILER_PRICES=[
  install('fit-twi-ceiling','TWI 天井（付属照明の取付込み）','TWI ceiling with integrated lighting',['twi-ceiling:']),
  install('fit-twi-quarter','TWI クォーターパネル（1枚）','TWI quarter panel · one side',['twi-quarter']),
  ...[
-  ['front-module','フロントモジュール（プライウッド）','Front module · Plywood'],
+  ['front-module','フロントモジュール（木製）','Front module · Wood'],
   ['aluminum-front-kitchen','フロントモジュール（アルミ）','Front module · Aluminium'],
-  ['slide-bed','シンプルスライドアウトベッド（プライウッド）','Simple slide-out bed · Plywood'],
-  ['lounge-slide-bed','収納付きスライドアウトベッド（プライウッド）','Storage slide-out bed · Plywood'],
+  ['slide-bed','シンプルスライドアウトベッド（木製）','Simple slide-out bed · Wood'],
+  ['lounge-slide-bed','収納付きスライドアウトベッド（木製）','Storage slide-out bed · Wood'],
   ['aluminum-bed','スライドアウトベッド（アルミ）','Slide-out bed · Aluminium'],
-  ['lounge-bed','ラウンジベッド（プライウッド）','Lounge bed · Plywood'],
-  ['two-side-bed','スライド付き両サイドベッド(合板)','Twin side beds with rear slide (Plywood)'],
-  ['side-cabinet','フリップアップテーブル付きサイドキャビネット（プライウッド）','Flip-up side cabinet · Plywood'],
+  ['lounge-bed','ラウンジベッド（木製）','Lounge bed · Wood'],
+  ['two-side-bed','スライド付き両サイドベッド(木製)','Twin side beds with rear slide (Wood)'],
+  ['side-cabinet','フリップアップテーブル付きサイドキャビネット（木製）','Flip-up side cabinet · Wood'],
   ['aluminum-side-cabinet','シンク付きサイドキャビネット（アルミ）','Sink side cabinet · Aluminium'],
   ['simple-side-cabinet','サイドキャビネット（アルミ）','Side cabinet · Aluminium'],
   ['active-side-cabinet','冷蔵庫付きサイドキャビネット（アルミ）','Fridge side cabinet · Aluminium'],

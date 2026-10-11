@@ -13,9 +13,9 @@ export const moduleNames={
     "noteEn": "Folds flat, swivels to face rear"
   },
   "front-module": {
-    "ja": "フロントキッチン(合板)",
+    "ja": "フロントキッチン(木製)",
     "noteJa": "冷蔵庫・シンク・スツール付き",
-    "en": "Front kitchen (Plywood)",
+    "en": "Front kitchen (Wood)",
     "noteEn": "Fridge, sink and stool"
   },
   "aluminum-front-kitchen": {
@@ -25,9 +25,9 @@ export const moduleNames={
     "noteEn": "Fridge, sink and storage"
   },
   "side-cabinet": {
-    "ja": "細身のサイドキャビネット(合板)",
+    "ja": "細身のサイドキャビネット(木製)",
     "noteJa": "テーブル付き",
-    "en": "Slim side cabinet (Plywood)",
+    "en": "Slim side cabinet (Wood)",
     "noteEn": "With flip-up table"
   },
   "simple-side-cabinet": {
@@ -49,15 +49,15 @@ export const moduleNames={
     "noteEn": "Large fridge"
   },
   "slide-bed": {
-    "ja": "シンプルスライドベッド(合板)",
+    "ja": "シンプルスライドベッド(木製)",
     "noteJa": "横に広がる",
-    "en": "Simple slide bed (Plywood)",
+    "en": "Simple slide bed (Wood)",
     "noteEn": "Extends sideways"
   },
   "lounge-slide-bed": {
-    "ja": "収納付きスライドベッド(合板)",
+    "ja": "収納付きスライドベッド(木製)",
     "noteJa": "横に広がる・後部と室内側に引き出し",
-    "en": "Slide bed with storage (Plywood)",
+    "en": "Slide bed with storage (Wood)",
     "noteEn": "Extends sideways; drawers at the rear and inside"
   },
   "aluminum-bed": {
@@ -67,15 +67,15 @@ export const moduleNames={
     "noteEn": "Front and rear extend separately"
   },
   "lounge-bed": {
-    "ja": "ラウンジベッド(合板)",
+    "ja": "ラウンジベッド(木製)",
     "noteJa": "対面ソファ・後部に大収納",
-    "en": "Lounge bed (Plywood)",
+    "en": "Lounge bed (Wood)",
     "noteEn": "Facing sofa; big rear storage"
   },
   "two-side-bed": {
-    "ja": "スライド付き両サイドベッド(合板)",
+    "ja": "スライド付き両サイドベッド(木製)",
     "noteJa": "中央が通路・後部に引き出し",
-    "en": "Twin side beds with rear slide (Plywood)",
+    "en": "Twin side beds with rear slide (Wood)",
     "noteEn": "Centre aisle; rear pull-out slide"
   },
   "aircon-cube-air460b": {

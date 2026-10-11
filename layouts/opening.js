@@ -4,6 +4,23 @@ import {studioEvent} from './analytics.js?v=20261010-events';
 export function createOpening({prepare,pose,restore}) {
  const root=document.documentElement, overlay=document.querySelector('#studio-opening');
  const start=document.querySelector('#opening-start'), action=document.querySelector('.opening-action');
+ const hint=document.querySelector('#mobile-entry-hint'), hintKey='hexa-mobile-entry-hint-dismissed';
+ const smallScreen=matchMedia('(max-width:850px)');
+ let hintDismissed=false;
+ try{hintDismissed=localStorage.getItem(hintKey)==='1'}catch{}
+ function refreshHint(){
+  const en=root.lang==='en';
+  hint.hidden=hintDismissed||!smallScreen.matches;
+  hint.querySelector('span').textContent=en?'Best viewed on a PC or tablet.':'パソコンまたはタブレットでの操作をおすすめします';
+  hint.querySelector('button').setAttribute('aria-label',en?'Close':'閉じる');
+ }
+ hint.querySelector('button').addEventListener('click',()=>{
+  hintDismissed=true;hint.hidden=true;
+  try{localStorage.setItem(hintKey,'1')}catch{}
+ });
+ smallScreen.addEventListener('change',refreshHint);
+ window.addEventListener('studio-locale-change',refreshHint);
+ refreshHint();
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const locked=[...document.querySelectorAll('.configuration,.stage-context,.lighting-preview,.motion-popover,.view-toolbar,.gesture-hint,.shell-label,#open-help,.brand')];
  let active=false, leaving=false, readyPromise, frame=0, elapsed=0, lastTime=0;

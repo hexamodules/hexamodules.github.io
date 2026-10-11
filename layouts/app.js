@@ -1,4 +1,4 @@
-import {moduleNames,moduleName} from './module-names.js?v=20261011-rear-slide';
+import {moduleNames,moduleName} from './module-names.js?v=20261011-wood-hint';
 import {startingConfiguration,hasSavedConfiguration} from './base-configuration.js?v=20261011-super-gl-base';
 import {scheduleStudioEnvironment,contactShadow} from './studio-environment.js?v=20261011-context';
 import {sharedTexture} from './shared-images.js?v=20261010';
@@ -7,16 +7,16 @@ import {createVisualMaterials} from './visual-materials.js?v=20261011-context';
 import {normalizeNewVehicle,addNewVehicleParams,newVehicleSpecification,vehicleSelectionComplete} from './new-vehicle.js?v=1';
 import {normalizeISeat,iSeatSpecification,I_SEAT_MOUNT,iSeatInstallationNote} from './i-seat-state.js?v=6';
 import {lightingCutoutSpecification,lightingCutoutSummary} from './lighting-cutouts.js?v=1';
-import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261011-slide-set';
-import {selectedDealer} from './dealer-preview.js?v=20261011-slide-set';
+import {dealerContext,dealerParams,dealerSummary,initDealerBranding} from './dealer-context.js?v=20261011-wood-hint';
+import {selectedDealer} from './dealer-preview.js?v=20261011-wood-hint';
 import {dealerOptionAvailability,normalizeDealerOptionState,dealerOptionSummary,dealerOptionExport} from './dealer-option-policy.js?v=20261005';
 import {isSuperGL,twiCeilingEnabled,quarterCount,vehicleName,vehicleNameEnglish,twiCeilingLabel,quarterLabel,normalizeBaseVehicle,installBaseVehicleControls} from './base-vehicle.js?v=20261010-light';
 import {TWI_KEYS,createTwiVisuals} from './twi-interior.js?v=6';
 import {normalizeMattresses,mattressSpecification,bedMattressEnabled,frontMattressEnabled} from './mattress-state.js?v=20261010-five-colors';
 import {normalizeRegistration,registrationDetails,registrationRows,registrationLocationLabel,createRegistrationDestination} from './registration-destination.js?v=2';
-import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-slide-set';
-import {constructionBadge} from './construction-badge.js?v=1';
-import {createOpening} from './opening.js?v=20261008-ga';
+import {initLanguage,getLanguage,getStudioLocation} from './language.js?v=20261011-wood-hint';
+import {constructionBadge} from './construction-badge.js?v=20261011-wood-hint';
+import {createOpening} from './opening.js?v=20261011-wood-hint';
 import {openingCamera} from './opening-camera.js?v=closeup-24a';
 import {framePortrait,centerPortraitBody} from './portrait-camera.js?v=20261011-body';
 import * as THREE from 'three';
@@ -819,7 +819,7 @@ new MutationObserver(()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-completed-motion');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-wood-hint');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -1140,7 +1140,7 @@ async function restoreLayout(saved,{complete=false}={}){
 }
 async function ensureStudioFeatures(){
  return featuresReady??=(async()=>{
-  const features=await import('./studio-features.js?v=20261011-completed-motion');
+  const features=await import('./studio-features.js?v=20261011-wood-hint');
   ({createEquipmentUI,createLayoutShare,capturePhoto,photoCamera,initLayoutRecall,initRetailerSimulation,createNewVehicleControls,createISeatControls,createISeatVisuals,createDealerOptionsUI,createCountertopVisuals,createReferencePricing,createMattressControls,createMattressVisuals,initStudio,updateStudio,updateReviewIndicator,updateFloorRequirement,createModuleDetails,createOutro}=features);
   priceCatalogue=await fetch('assets/reference-prices.json?v=20261010-names').then(r=>{if(!r.ok)throw Error('Reference price catalogue unavailable');return r.json()}).catch(error=>{console.error(error);return null});
 const M=await fetch('../modules.json?v=20261010-names').then(r=>r.json());

@@ -1,9 +1,9 @@
-import {moduleName} from './module-names.js?v=20261011-rear-slide';
+import {moduleName} from './module-names.js?v=20261011-wood-hint';
 import {normalizeNewVehicle,selectedNewVehicle,VEHICLE_GRADES,VEHICLE_POWERTRAINS} from './new-vehicle.js?v=1';
 import {studioEvent} from './analytics.js?v=20261010-events';
 import {ENQUIRY_ENDPOINT} from './enquiry-config.js?v=20261007-1850';
-import {dealerContext} from './dealer-context.js?v=20261011-slide-set';
-import {calculateReferencePrice} from './reference-pricing.js?v=20261011-slide-set';
+import {dealerContext} from './dealer-context.js?v=20261011-wood-hint';
+import {calculateReferencePrice} from './reference-pricing.js?v=20261011-wood-hint';
 
 // Transport-only vehicle information; never merge into customerSummary or selections.
 export function enquiryVehicle(state){

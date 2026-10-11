@@ -1,5 +1,5 @@
-import {moduleName,moduleNames} from './module-names.js?v=20261011-rear-slide';
-import {constructionBadge} from './construction-badge.js?v=1';
+import {moduleName,moduleNames} from './module-names.js?v=20261011-wood-hint';
+import {constructionBadge} from './construction-badge.js?v=20261011-wood-hint';
 import {featuredViews} from './module-details-content.js?v=20261011-rear-slide';
 
 const escape=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

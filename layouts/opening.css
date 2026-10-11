@@ -101,3 +101,11 @@
 .complete-loading body *{visibility:hidden!important}
 .complete-loading #loading,.complete-loading #loading *{visibility:visible!important}
 .complete-loading #loading{display:flex!important}
+
+/* A quiet, dismissible note below the mobile start button. */
+.mobile-entry-hint{display:none}
+@media(max-width:850px){
+ .mobile-entry-hint:not([hidden]){display:flex;align-items:center;justify-content:center;gap:2px;margin:4px auto 0;max-width:100%;color:#7a837d;font-size:10px;font-weight:400;line-height:1.6}
+ .mobile-entry-hint>span{min-width:0}
+ .mobile-entry-hint>button{flex:0 0 32px;width:32px;height:32px;padding:0;border:0;background:transparent;color:inherit;font:inherit;font-size:16px;cursor:pointer}
+}
