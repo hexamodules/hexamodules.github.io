@@ -173,6 +173,7 @@ export function createPinStudio(api){
   ]);
   if((key==='front'||key==='motion')&&s.front==='aluminum-front-kitchen')toggle('front-storage',t(names.front),'frontStorage','引き出しを出す','Pull out tray');
   if((key==='left'||key==='motion')&&['active-side-cabinet','aluminum-side-cabinet'].includes(s.cab))toggle('cab-storage',t(names.left),'cabStorage','引き出しを出す','Pull out tray');
+  if((key==='left'||key==='motion')&&s.cab==='side-cabinet')toggle('cab-table',t(names.left),'cabTableOpen','テーブルを上げる','Raise table');
   if(key==='bed'||key==='motion'||key==='left'&&choices.FULL.includes(s.bed)){
    if(s.bed==='two-side-bed'&&api.bedMattressEnabled(s))toggle('bed-centre',t('中央マットレスを敷く'),'flat','敷く','Lay out');
    if(s.bed==='aluminum-bed'){

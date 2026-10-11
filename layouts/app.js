@@ -614,7 +614,7 @@ function shippingUI(){
 function urlFor(s=state){s=motionExportState(s);const q=new URLSearchParams({vehicle:s.vehicle||'dx',front:s.front,bed:s.bed,cab:s.cab,finish:s.finish||state.finish});addNewVehicleParams(q,s);if(s.front==='i-seat'){q.set('i_seat_slide',String(s.iSeatSlide||0));q.set('i_seat_pose',s.iSeatPose||'forward');q.set('i_seat_color',s.iSeatColor||'light-green');}if(twiCeilingEnabled(s)){q.set('twi_ceiling',s.twiCeiling);if(s.twiBarLights===false)q.set('twi_bar','0');if(s.twiIndirectLights===false)q.set('twi_indirect','0')}if(quarterCount(s))q.set('quarter',s.quarterPanels);if(s.bed==='two-side-bed')q.set('floor_slide','1');if(s.bedMattress)q.set('bed_mattress','1');else if(s.bed==='two-side-bed')q.set('bed_mattress','0');if(s.frontMattress)q.set('front_mattress','1');if(bedMattressEnabled(s))q.set('bed_mattress_color',s.bedMattressColor||'light-green');if(frontMattressEnabled(s))q.set('front_mattress_color',s.frontMattressColor||'light-green');if(wallEnabled(s))q.set('wall',s.wall);if(panelEnabled(s))q.set('panel',Object.hasOwn(WALL_COLORS,s.panel)?s.panel:'auto');if(ceilingEnabled(s))q.set('ceiling',s.ceiling);if(floorEnabled(s))q.set('floor',s.floor);if(airconEnabled(s))q.set('ac',AIRCON.value);if(heaterEnabled(s))q.set('heater',HEATER.value);if(insulationEnabled(s))q.set('insulation',INSULATION.value);if(electricalEnabled(s)){q.set('electrical','standard');q.set('battery',String(s.batteryAh));if(s.inverterW)q.set('inverter',String(s.inverterW))}if(shippingForAustralia()){if(s.vehicleSourcing){q.set('sourcing','1');if(s.sourcingFuel)q.set('sourcing_fuel',s.sourcingFuel);if(s.sourcingDrive)q.set('sourcing_drive',s.sourcingDrive);if(s.sourcingBudget)q.set('vehicle_budget',String(s.sourcingBudget))}if(s.shippingAgent){q.set('shipping','1');addRegistrationParams(q,s)}}if(s.ceilingLights)q.set('ceiling_lights','1');if(s.tailgateLights)q.set('tailgate_lights','1');if(s.night)q.set('night','1');for(const [key,param] of [['expanded','expanded'],['frontExpanded','front_expanded'],['rearExpanded','rear_expanded'],['storage','storage'],['flat','flat']])if(s[key])q.set(param,'1');q.set('location',getStudioLocation().id);q.set('lang',getLanguage());if(reviewMode)q.set("review","1");dealerParams(q);return `${location.pathname}?${q}`}
 // Preview-only changes are projected out of saved configurations and specification images.
 const motionBaseline=new Map();
-function motionExportState(s=state){const clean={...s,...Object.fromEntries(motionBaseline)};delete clean.frontStorage;delete clean.cabStorage;return clean}
+function motionExportState(s=state){const clean={...s,...Object.fromEntries(motionBaseline)};delete clean.frontStorage;delete clean.cabStorage;delete clean.cabTableOpen;return clean}
 async function previewMotion(patch){
  for(const key of Object.keys(patch))if(!motionBaseline.has(key))motionBaseline.set(key,state[key]);
  return applyMotionState({...state,...patch});
@@ -642,7 +642,7 @@ async function completedSpecification(options){
 function clearMotionBaseline(patch){
  for(const key of Object.keys(patch))motionBaseline.delete(key);
  if(patch.front!==undefined){motionBaseline.delete('iSeatPose');motionBaseline.delete('iSeatSlide');patch.iSeatPose='forward';patch.iSeatSlide=0;patch.frontStorage=false;}
- if(patch.cab!==undefined)patch.cabStorage=false;
+ if(patch.cab!==undefined){patch.cabStorage=false;patch.cabTableOpen=false;motionBaseline.delete('cabTableOpen');}
 }
 function moveBody(node,delta){node.position.add(new THREE.Vector3(...delta))}
 function rotateBody(node,pivot,axis,degrees){let q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(...axis),THREE.MathUtils.degToRad(degrees));node.quaternion.copy(q);let v=new THREE.Vector3(...pivot);node.position.copy(v).sub(v.clone().applyQuaternion(q))}
@@ -672,6 +672,9 @@ function positionMotion(g,fit){let key=g.name;for(const n of g.children){if(n.us
  if(key==='aluminum-front-kitchen'&&state.frontStorage&&/^(05 PFS|20 Eurocontainer)/.test(path))moveBody(n,[0,0,-300]);
  if(key==='active-side-cabinet'&&state.cabStorage&&path.startsWith('04 Original'))moveBody(n,[-250,0,0]);
  if(key==='aluminum-side-cabinet'&&state.cabStorage&&/^(11|12) Push-open/.test(path))moveBody(n,[-250,0,0]);
+ // Fusion: B (1), 857 x 325 x 15 mm; SideCabinetTableAngle is -90 degrees
+ // around world (-462,607,462)->(-1319,607,462), transformed to the GLB Z axis.
+ if(key==='side-cabinet'&&state.cabTableOpen&&n.name==='B (1)'&&path==='Plywood side cabinet - 1551mm:1')rotateBody(n,[462,607,462],[0,0,1],-90);
  }}
 async function apply(s=state,{history=true,ui=true,entryReveal=false}={}){const ticket=++renderVersion;state=normalizeNewVehicle(normalizeISeat(normalizeDealerOptionState(normalizeMattresses(normalizeBaseVehicle(normalizeShipping(s))),dealerOptions)));state.floorSlide=state.bed==='two-side-bed';if(!wallEnabled()&&!isSuperGL(state))state.ac='none';if(wallEnabled())state.panel='auto';if(panelEnabled())lastPanelColor=panelColor();if(wallEnabled())lastWallColor=state.wall;if(ceilingEnabled())lastCeilingColor=state.ceiling;if(floorEnabled())lastFloorColor=state.floor;if(ui)configureUI();trackStudioSelection(state,{silent:!history});let keys=['vehicle',TAILGATE,...[placementReportFor()?.placements?.[state.front]?.asset_key||state.front,state.bed,state.cab].filter(k=>k!=='none')];if(twiCeilingEnabled(state))keys.push(TWI_KEYS.ceiling);if(['left','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.left);if(['right','both'].includes(state.quarterPanels))keys.push(TWI_KEYS.right);if(wallEnabled())keys.push(WALL.key);if(airconEnabled())keys.push(AIRCON.key);if(panelEnabled())keys.push(PANEL.key);if(ceilingEnabled())keys.push(CEILING.key);if(floorEnabled())keys.push(FLOOR.key);for(const [flag,info] of Object.entries(LIGHTS))if(state[flag])keys.push(info.key);if(state.bed==='lounge-bed')keys.push('lounge-fillers');if(state.bed==='two-side-bed'&&state.flat)keys.push('centre-mattresses');const loading=$('#loading');
  const showLoading=()=>{loading.style.display='flex'};
@@ -819,7 +822,7 @@ new MutationObserver(()=>{
 let pinStudio=null;
 async function ensurePins(){
  if(pinStudio)return;
- const {createPinStudio}=await import('./studio-pins.js?v=20261011-wood-hint');
+ const {createPinStudio}=await import('./studio-pins.js?v=20261011-flip-table');
  pinStudio=createPinStudio({scene,camera,controls,renderer,getState:()=>state,
   previewMotion,
   apply:patch=>{clearMotionBaseline(patch);if(patch.bed!==undefined)rearType=FULL.includes(patch.bed)?'full':'single';return apply({...state,...patch});},
@@ -835,7 +838,7 @@ async function ensurePins(){
 function openReplacement(id){if(document.documentElement.dataset.studioStep==='interior')pinStudio?.openForModel(id);}
 
 
-function updated(next){if(next.bed!==undefined&&next.bed!==state.bed)next.bedMattress=next.bed!=='none';if(next.front!==undefined&&next.front!==state.front)next.frontMattress=next.front==='front-module';state={...state,...next,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false};apply().catch(console.error)}
+function updated(next){if(next.cab!==undefined){next.cabTableOpen=false;motionBaseline.delete('cabTableOpen');}if(next.bed!==undefined&&next.bed!==state.bed)next.bedMattress=next.bed!=='none';if(next.front!==undefined&&next.front!==state.front)next.frontMattress=next.front==='front-module';state={...state,...next,expanded:false,frontExpanded:false,rearExpanded:false,storage:false,flat:false};apply().catch(console.error)}
 $('#front-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({front:b.dataset.key})}});$('#bed-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({bed:b.dataset.key,cab:FULL.includes(b.dataset.key)?'none':state.cab})}});$('#cabinet-options').addEventListener('click',e=>{let b=e.target.closest('.option[data-key]');if(b){moduleDetails.selected(b.dataset.key);updated({cab:b.dataset.key})}});$('#rear-types').addEventListener('click',e=>{let b=e.target.closest('[data-type]');if(b){rearType=b.dataset.type;configureUI()}});$('#clear-rear').onclick=()=>updated({bed:'none',cab:'none'});$$('[data-finish]').forEach(b=>b.onclick=()=>{apply({...state,finish:b.dataset.finish}).catch(console.error)});$('#motion-controls').addEventListener('click',e=>{let b=e.target.closest('[data-motion]');if(b)apply({...state,[b.dataset.motion]:!state[b.dataset.motion]}).catch(console.error)});$$('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));$('#reset-view').onclick=async()=>{
  try{
   if(isSuperGL(state)){
