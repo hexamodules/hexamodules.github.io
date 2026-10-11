@@ -30,6 +30,8 @@ class BedTopTests(unittest.TestCase):
                     tops.add(row['body_index'])
                     self.assertGreaterEqual(body['bounds'][0][1], 250)
                     self.assertEqual(face_policy(*args, 'hexa', model, body, kind)['finish'], 'birch')
+                elif kind == 'plywood' and not top:
+                    self.assertEqual(face_policy(*args, 'hexa', model, body, kind)['finish'], 'hexa')
                 elif model != 'aluminum-bed':
                     self.assertEqual(face_policy(*args, 'hexa', model, body, kind), face_policy(*args, 'hexa'))
                 self.assertEqual(face_policy(*args, 'birch', model, body, kind), face_policy(*args, 'birch'))
@@ -78,7 +80,10 @@ class BedTopTests(unittest.TestCase):
                     for finish in ['birch','hexa']:
                         old=face_policy(key,data['materials'],finish)
                         new=face_policy(key,data['materials'],finish,model,body,kind)
-                        self.assertEqual(old,new) # Existing sources are already Birch on tops.
+                        if finish == 'hexa' and kind == 'plywood' and not bed_top_board(model,body,kind):
+                            self.assertEqual(new['finish'],'hexa')
+                        else:
+                            self.assertEqual(old,new)
                     if bed_top_board(model,body,kind):
                         tops.append(body['name'])
                         changed={key:{'name':'SKY Hexa plywood - charcoal satin'}}

@@ -494,9 +494,9 @@ def run(a,source):
    decisions.append(dict(object=o.name,source_material=label,**decision))
    axes,origin,local_bounds=frames[o.get('source_body_index',o.name)]
    spec,color_source=studio_spec(decision['kind'],label,meta.get('materials',{}),rules,o.get('source_role',''),model_key=meta.get('key',''))
-   policy=face_policy(label,meta.get('materials',{}),a.finish,
-                      model_key=meta.get('key',''),body=source_body,kind=decision['kind'])
    albero=countertop_candidate(meta.get('base_module') or meta.get('key',''),label,meta.get('materials',{}),countertop_definition,body=source_body)
+   policy=face_policy(label,meta.get('materials',{}),a.finish,
+                      model_key=meta.get('key',''),body=source_body,kind=decision['kind'],countertop=albero)
    decisions[-1]['albero_candidate']=albero
    preserve_face=a.face_source=='studio' and policy['finish']!='hexa'
    decisions[-1].update(face_policy=policy,face_source=a.face_source)

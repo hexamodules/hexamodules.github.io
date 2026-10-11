@@ -183,13 +183,16 @@ def bed_top_board(model_key, body, kind):
     return 0 < spans[1] < min(spans[0], spans[2])
 
 
-def face_policy(material_key, materials, finish, model_key='', body=None, kind=''):
-    """Source material switch plus geometry-confirmed coated boards."""
+def face_policy(material_key, materials, finish, model_key='', body=None, kind='', countertop=False):
+    """Hexa covers classified plywood; keep worktop and bed-top exceptions."""
     name = materials.get(str(material_key), {}).get('name', str(material_key))
     switchable = bool(re.search(r'SKY Hexa plywood|Hexa lightweight - charcoal', name))
     if kind == 'plywood' and coated_board((body or {}).get('name',''), name, (body or {}).get('bounds')):
         switchable = True
-    if finish == 'hexa' and bed_top_board(model_key, body or {}, kind):
+    if finish == 'hexa' and kind == 'plywood' and body:
+        if load_rules().get('hexa_plywood_policy') == 'all_except_countertops_and_bed_tops':
+            switchable = True
+    if finish == 'hexa' and (countertop or bed_top_board(model_key, body or {}, kind)):
         switchable = False
     hexa = finish == 'hexa' and switchable
     toned = switchable or bool(re.search('birch', name, re.I))

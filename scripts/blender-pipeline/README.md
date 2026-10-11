@@ -290,3 +290,24 @@ python3 -B -m unittest discover -s scripts/blender-pipeline -p test_external_tex
 全38本の画像・AO・圧縮形状バイト一致、材質・UV・変換情報の保持、
 共通化・再入力・上書き拒否・dry-run・meshoptのみの分岐を検査する。
 画面のピクセル比較は未実施。表示データの同一性をバイト単位で確認する。
+
+### 2026-10-11 Hexaで残るバーチの修正
+
+`materials.json`の`hexa_plywood_policy`により、分類済み合板はHexaで黒へ。
+既存のALBERO天板とベッド天板の判定は維持。冷蔵庫外箱と操作パネルの
+元材質には限定した優先分類を追加する。
+
+既存の`rebuild_bounds.py --external-textures`は再梱包だけなので、この修正には
+`repair_hexa.py`を使う。全38本を読み、対象Hexa面の材質・UVだけを修正。
+画像・圧縮形状・AOはバイト保持、Birch19本は完全一致。Blenderは不要。
+
+```sh
+python3 -B scripts/blender-pipeline/repair_hexa.py --execute --tag hexafix-20261011-1 --external-textures
+```
+
+今回は実行せず、メモリ上の検証のみ。`--execute`なしは検査だけ。
+出力は`exports/hexa-studio-blender-20261011/shared-textures-hexafix-20261011-1/`。
+layoutsには書かない。同名出力先があれば停止。
+報告の未解決事項（指摘された幕板・扉内側とローカル版の相違、
+両サイドの既存天板4枚）を読んでから採用する。
+`test_hexa_remaining.py`は38本の画像・形状保持と天板例外を検査する。

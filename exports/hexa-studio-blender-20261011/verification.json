@@ -1,0 +1,13 @@
+{
+  "tests_passed": {
+    "test_hexa_remaining.py": 4,
+    "test_bed_top.py": 5,
+    "test_albero.py": 4,
+    "test_furniture_materials.py": 7
+  },
+  "input_glb_sha256_unchanged": true,
+  "bed_top_and_countertop_predicate_AST_unchanged": true,
+  "blender_started": false,
+  "glb_written": false,
+  "layouts_written": false
+}

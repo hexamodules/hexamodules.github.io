@@ -1,0 +1,219 @@
+{
+  "fallback": "plastic",
+  "body_rules": [
+    {
+      "kind": "hardware",
+      "pattern": "screw|bolt|hinge|rail outer|slide|金物|ねじ|蝶番|支柱|ブラケット|固定プレート|台形脚|脚天面|脚後端|スライドレール|\\bseat (?:leg|hinge)\\b"
+    },
+    {
+      "kind": "aluminum",
+      "pattern": "box (?:bay|rail)|\\bpost\\b"
+    },
+    {
+      "kind": "container",
+      "pattern": "pfs|box\\s*23|eurobox|container|コンテナ"
+    },
+    {
+      "kind": "plywood",
+      "pattern": "oak|オーク|pannel|(?:sink|fridge|tank).*(?:support|lining|wall|cutout)|(?:sink).*clearance.*pannel"
+    },
+    {
+      "kind": "aluminum",
+      "pattern": "(?:sink|fridge).*(?:frame|rail|grid)"
+    },
+    {
+      "kind": "tank",
+      "pattern": "tank|タンク"
+    },
+    {
+      "kind": "stainless",
+      "pattern": "sink|シンク|faucet|蛇口|\\btap\\b|stainless"
+    },
+    {
+      "kind": "appliance",
+      "pattern": "fridge|engel|dometic|refriger|冷蔵|aircon|cube|shower|シャワー|pump|ポンプ"
+    },
+    {
+      "kind": "mattress",
+      "pattern": "mattress|マットレス"
+    },
+    {
+      "kind": "seat_fabric",
+      "pattern": "seat|cushion|backrest|headrest|座面|背もたれ|ヘッドレスト|シート|foam|upholster|張地|ステッチ"
+    },
+    {
+      "kind": "aluminum",
+      "pattern": "rail|frame|post|20x20|aluminum|alu|アルミ|profile|extrusion"
+    },
+    {
+      "kind": "plywood",
+      "pattern": "birch|plywood|panel|board|天板|棚|side|top|bottom|合板|ply"
+    }
+  ],
+  "material_rules": [
+    {
+      "kind": "plywood",
+      "pattern": "birch|plywood|hexa|合板|ply|oak|オーク"
+    },
+    {
+      "kind": "plastic",
+      "pattern": "HDPE|printed|wordmark|logo|ink|temperature|\\bcap\\b|socket|seal|rubber|plastic|resin|樹脂|プラスチック|ABS|enamel glass"
+    },
+    {
+      "kind": "plastic",
+      "pattern": "plastic|resin|プラスチック|樹脂|rubber|gasket|\\bABS\\b|enamel glass"
+    },
+    {
+      "kind": "aluminum",
+      "pattern": "aluminum|aluminium|アルミ|extrusion"
+    },
+    {
+      "kind": "hardware",
+      "pattern": "steel|chrome|クロム|鋼|金物|ねじ"
+    },
+    {
+      "kind": "container",
+      "pattern": "eurobox|container|コンテナ"
+    },
+    {
+      "kind": "mattress",
+      "pattern": "mattress|マットレス|cushion"
+    },
+    {
+      "kind": "stainless",
+      "pattern": "stainless"
+    }
+  ],
+  "materials": {
+    "aluminum": {
+      "color": "#d9d9d9",
+      "metalness": 0.9,
+      "roughness": 0.35
+    },
+    "hardware": {
+      "color": "#555555",
+      "metalness": 0.8,
+      "roughness": 0.35
+    },
+    "container": {
+      "color": "#858585",
+      "metalness": 0,
+      "roughness": 0.6
+    },
+    "mattress": {
+      "color": "#c9b79c",
+      "metalness": 0,
+      "roughness": 0.94
+    },
+    "plastic": {
+      "color": "#191919",
+      "metalness": 0,
+      "roughness": 0.6
+    },
+    "plywood": {
+      "color": "#ffffff",
+      "metalness": 0,
+      "roughness": 0.6
+    },
+    "appliance": {
+      "color": "#3a3a3a",
+      "metalness": 0.2,
+      "roughness": 0.5
+    },
+    "stainless": {
+      "color": "#c0c0c0",
+      "metalness": 0.9,
+      "roughness": 0.3
+    },
+    "tank": {
+      "color": "#e8e8e8",
+      "metalness": 0,
+      "roughness": 0.7
+    },
+    "seat_fabric": {
+      "color": "#94977d",
+      "metalness": 0,
+      "roughness": 0.9
+    }
+  },
+  "mapping": {
+    "face_mm": [
+      1220,
+      2440
+    ],
+    "edge_mm": [
+      300,
+      15
+    ],
+    "face_normal_threshold": 0.7,
+    "grain_axis": "shorter in-plane body axis (width)",
+    "hexa_mm": [
+      90,
+      90
+    ]
+  },
+  "textures": {
+    "birch_face": "birch-face.png",
+    "birch_source": "models/module-finishes/tetsuya-2026-10-10/birch-face-B-2848x4288.png",
+    "birch_crop": [
+      0,
+      0,
+      2848,
+      3900
+    ],
+    "edge": "birch-edge-15mm.png",
+    "hexa_source": "hexa-studio.png",
+    "hexa_note": "Generated from layouts/visual-materials.js canvas geometry and sRGB palette. prepare_assets.py UV spans 450 x 900 mm; repeat(5,10) gives 90 x 90 mm per 288 x 256 px tile."
+  },
+  "source_guards": [
+    {
+      "kind": "plywood",
+      "pattern": "birch|plywood|hexa|合板|ply|オーク|\\boak\\b"
+    },
+    {
+      "kind": "hardware",
+      "pattern": "ISeat (?:frame|steel)"
+    },
+    {
+      "kind": "plastic",
+      "pattern": "ISeat cover-detail"
+    },
+    {
+      "kind": "seat_fabric",
+      "pattern": "ISeat (?:fabric|seam)"
+    }
+  ],
+  "path_rules": [
+    {
+      "kind": "container",
+      "pattern": "(?:^|[+/])[^+/]*(?:PFS|BOX\\s*23)"
+    },
+    {
+      "kind": "tank",
+      "pattern": "water.*(?:cap|tank)|水.*タンク"
+    },
+    {
+      "kind": "stainless",
+      "pattern": "Dometic SNG|Dometic AC539"
+    },
+    {
+      "kind": "appliance",
+      "pattern": "(?:^|[+/])[^+/]*(?:ENGEL|Dometic NRX|aircon|冷蔵庫)"
+    },
+    {
+      "kind": "seat_fabric",
+      "pattern": "座面クッション|背もたれクッション"
+    }
+  ],
+  "hexa_face": {
+    "color": "#ffffff",
+    "metalness": 0,
+    "roughness": 0.6
+  },
+  "name_priority_rules": [
+    {
+      "kind": "container",
+      "pattern": "h235|lid\\s*300x400|pfs|eurobox|box\\s*23|euro"
+    }
+  ]
+}

@@ -167,6 +167,14 @@
   },
   "source_guards": [
     {
+      "kind": "appliance",
+      "pattern": "^NRX C - gray coated cabinet(?: |$)"
+    },
+    {
+      "kind": "plastic",
+      "pattern": "^(?:SC control - )?Black rope and grip(?: |$)"
+    },
+    {
       "kind": "plywood",
       "pattern": "birch|plywood|hexa|合板|ply|オーク|\\boak\\b"
     },
@@ -215,5 +223,6 @@
       "kind": "container",
       "pattern": "h235|lid\\s*300x400|pfs|eurobox|box\\s*23|euro"
     }
-  ]
+  ],
+  "hexa_plywood_policy": "all_except_countertops_and_bed_tops"
 }
