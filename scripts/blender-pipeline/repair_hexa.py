@@ -171,8 +171,9 @@ def repair(raw, model, source, countertop, decoded):
     return result,rows+apron_rows
 
 
-def plan(root=ROOT):
-    assets=root/'exports/hexa-public/layouts/assets'; folder=assets/'blender'
+def plan(root=ROOT, source_folder=None):
+    assets=root/'exports/hexa-public/layouts/assets'
+    folder=Path(source_folder) if source_folder else assets/'blender'
     decoded=json.loads(subprocess.check_output([str(NODE),str(HERE/'audit_hexa_glb.mjs'),str(folder),'--points']))
     counter=json.loads((assets/'countertop-material.json').read_text());outputs={};rows=[];hashes={}
     for model in selected_parts('all'):
@@ -189,14 +190,15 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--tag',required=True);p.add_argument('--external-textures',action='store_true',required=True)
     p.add_argument('--execute',action='store_true')
+    p.add_argument('--source',type=Path,help='Approved GLB folder; -4 defaults to the -3 export')
     a=p.parse_args()
     if not a.tag or any(c not in 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_' for c in a.tag):p.error('Invalid tag')
     destination=ROOT/'exports/hexa-studio-blender-20261011'/('shared-textures-'+a.tag)
     if destination.exists():p.error('Output already exists')
-    outputs,rows,hashes=plan()
-    summary=dict(models=len(outputs),changed_primitives=sum(r['changed'] for r in rows),changed_bodies=len({(r['model'],r['body_index']) for r in rows if r['changed']}),source_sha256=hashes,blender_started=False,image_reencoded=False,output=str(destination),executed=a.execute)
+    source=a.source or (ROOT/'exports/hexa-studio-blender-20261011/shared-textures-hexafix-20261011-3/assets/blender' if a.tag=='hexafix-20261011-4' else ROOT/'exports/hexa-public/layouts/assets/blender')
+    outputs,rows,hashes=plan(source_folder=source)
+    summary=dict(source=str(source),models=len(outputs),changed_primitives=sum(r['changed'] for r in rows),changed_bodies=len({(r['model'],r['body_index']) for r in rows if r['changed']}),source_sha256=hashes,blender_started=False,image_reencoded=False,output=str(destination),executed=a.execute)
     if a.execute:
-        source=ROOT/'exports/hexa-public/layouts/assets/blender'
         if any(hashlib.sha256((source/n).read_bytes()).hexdigest()!=h for n,h in hashes.items()):raise ValueError('Source changed during preflight')
         destination.mkdir(parents=True,exist_ok=False)
         target=destination/'assets/blender';target.mkdir(parents=True)

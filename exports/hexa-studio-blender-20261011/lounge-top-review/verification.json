@@ -1,0 +1,415 @@
+{
+  "passed": true,
+  "files": [
+    {
+      "file": "active-side-cabinet-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "272f0b2e85f52f3bf3864f53faa786c1782d24fcf4c74594e471a536333b5f4e",
+      "after_sha256": "272f0b2e85f52f3bf3864f53faa786c1782d24fcf4c74594e471a536333b5f4e",
+      "bytes": 1823496
+    },
+    {
+      "file": "active-side-cabinet-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "04a71c2da6d78a34fc6e0a549b8c1850eee44f6a7c29cb91464d1f2d2c6ef6d7",
+      "after_sha256": "04a71c2da6d78a34fc6e0a549b8c1850eee44f6a7c29cb91464d1f2d2c6ef6d7",
+      "bytes": 1823688
+    },
+    {
+      "file": "aluminum-bed-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "dc4f5407d32092e44cf33457dfd2c6bdbe8f389af3b2a1ffaceecb2fae0661b6",
+      "after_sha256": "dc4f5407d32092e44cf33457dfd2c6bdbe8f389af3b2a1ffaceecb2fae0661b6",
+      "bytes": 1005980
+    },
+    {
+      "file": "aluminum-bed-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "b1ed2b67b9934ab858ae0e9931de57c3345b0ede888d9ead5a57abdf91596f89",
+      "after_sha256": "b1ed2b67b9934ab858ae0e9931de57c3345b0ede888d9ead5a57abdf91596f89",
+      "bytes": 1008244
+    },
+    {
+      "file": "aluminum-front-kitchen-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "d0dd13956c82cc2a8374fea04941c43f413516869809f4d18dae34f9bff353b2",
+      "after_sha256": "d0dd13956c82cc2a8374fea04941c43f413516869809f4d18dae34f9bff353b2",
+      "bytes": 1251812
+    },
+    {
+      "file": "aluminum-front-kitchen-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "4de1e764af24806401882f044fc071e7479933d5e28f584792e98b718514d597",
+      "after_sha256": "4de1e764af24806401882f044fc071e7479933d5e28f584792e98b718514d597",
+      "bytes": 1253112
+    },
+    {
+      "file": "aluminum-side-cabinet-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "2744ec4a9e3f5c9c642420a37fa62bff33c9d754e9a836bf12c6319b3d328e47",
+      "after_sha256": "2744ec4a9e3f5c9c642420a37fa62bff33c9d754e9a836bf12c6319b3d328e47",
+      "bytes": 779140
+    },
+    {
+      "file": "aluminum-side-cabinet-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "5b2681fa7988366b53bb48f40b6daee48d013057cee954a4bce3fcbe92c1473b",
+      "after_sha256": "5b2681fa7988366b53bb48f40b6daee48d013057cee954a4bce3fcbe92c1473b",
+      "bytes": 779888
+    },
+    {
+      "file": "centre-mattresses-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "c880901f61ea531990f9b027dd0c119afb0e55b088cb2ac66ee32637a645c95e",
+      "after_sha256": "c880901f61ea531990f9b027dd0c119afb0e55b088cb2ac66ee32637a645c95e",
+      "bytes": 18840
+    },
+    {
+      "file": "centre-mattresses-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "c880901f61ea531990f9b027dd0c119afb0e55b088cb2ac66ee32637a645c95e",
+      "after_sha256": "c880901f61ea531990f9b027dd0c119afb0e55b088cb2ac66ee32637a645c95e",
+      "bytes": 18840
+    },
+    {
+      "file": "front-module-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "6b014200a9d6880f1e5c6aa00c7d1d9f6668f3497553b867478780c1bb1d69d5",
+      "after_sha256": "6b014200a9d6880f1e5c6aa00c7d1d9f6668f3497553b867478780c1bb1d69d5",
+      "bytes": 907828
+    },
+    {
+      "file": "front-module-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "bf8aa7b5bb4a44d5519a72039c8a2336df48b1afacf7d3f208c2001dbca75105",
+      "after_sha256": "bf8aa7b5bb4a44d5519a72039c8a2336df48b1afacf7d3f208c2001dbca75105",
+      "bytes": 908892
+    },
+    {
+      "file": "front-module-rear-114-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "2f8e34e7e3ec4dfe33cbefc4500a1e6fd7a262353ab5f040ddbb1a264d8e3367",
+      "after_sha256": "2f8e34e7e3ec4dfe33cbefc4500a1e6fd7a262353ab5f040ddbb1a264d8e3367",
+      "bytes": 921300
+    },
+    {
+      "file": "front-module-rear-114-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "085632fa32f0ac38f9d5cfdbc714b32896158254bbc4b71116a72c848099e5ff",
+      "after_sha256": "085632fa32f0ac38f9d5cfdbc714b32896158254bbc4b71116a72c848099e5ff",
+      "bytes": 923088
+    },
+    {
+      "file": "front-module-rear-130-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "8389e7c6688be28ea58afa1829426279766d81235fe5d1ad7a61cc3ffd146cbc",
+      "after_sha256": "8389e7c6688be28ea58afa1829426279766d81235fe5d1ad7a61cc3ffd146cbc",
+      "bytes": 921280
+    },
+    {
+      "file": "front-module-rear-130-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "da078e3f9251f68f655f8748b75fffe840213311fa5600fb75a4912e925c6419",
+      "after_sha256": "da078e3f9251f68f655f8748b75fffe840213311fa5600fb75a4912e925c6419",
+      "bytes": 923312
+    },
+    {
+      "file": "front-module-rear-140-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "5e735dc7cc2dad9918ce5614144eb8d0258e88b68eb7bf3ebf65d5ee5be83ad9",
+      "after_sha256": "5e735dc7cc2dad9918ce5614144eb8d0258e88b68eb7bf3ebf65d5ee5be83ad9",
+      "bytes": 921312
+    },
+    {
+      "file": "front-module-rear-140-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "2507b8da546b605c6734d0e1a61c49b6136b0658f61dcb70270dde948628ec20",
+      "after_sha256": "2507b8da546b605c6734d0e1a61c49b6136b0658f61dcb70270dde948628ec20",
+      "bytes": 922988
+    },
+    {
+      "file": "front-module-rear-20-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "b5c5b0845fb2e8abe54ea8f6c1201f05e6718320a7d948ab01d2293ffd771fb7",
+      "after_sha256": "b5c5b0845fb2e8abe54ea8f6c1201f05e6718320a7d948ab01d2293ffd771fb7",
+      "bytes": 921992
+    },
+    {
+      "file": "front-module-rear-20-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "6d4a49e08e382d8f95063961a461dbdc700ebc358fcb54f01a3908db1e2e268c",
+      "after_sha256": "6d4a49e08e382d8f95063961a461dbdc700ebc358fcb54f01a3908db1e2e268c",
+      "bytes": 922988
+    },
+    {
+      "file": "i-seat-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "4ce30491a037b764831455ec206712f807618b980b1bc281c833de3db4a35f98",
+      "after_sha256": "4ce30491a037b764831455ec206712f807618b980b1bc281c833de3db4a35f98",
+      "bytes": 856748
+    },
+    {
+      "file": "i-seat-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "4ce30491a037b764831455ec206712f807618b980b1bc281c833de3db4a35f98",
+      "after_sha256": "4ce30491a037b764831455ec206712f807618b980b1bc281c833de3db4a35f98",
+      "bytes": 856748
+    },
+    {
+      "file": "lounge-bed-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "15f7540db54983a4eb2ca687a73e4eb47374c1882d0918dd7eb3763e31c0ab73",
+      "after_sha256": "15f7540db54983a4eb2ca687a73e4eb47374c1882d0918dd7eb3763e31c0ab73",
+      "bytes": 619524
+    },
+    {
+      "file": "lounge-bed-hexa.glb",
+      "byte_identical": false,
+      "before_sha256": "e5dc3fa5867df143925e58fcd75bf79aab4c88dd9d7452dc5dd7a552faedde10",
+      "after_sha256": "361356412ba55315ce32aae8eb423b93525f9227cabc815becbd8e43011472b2",
+      "bytes": 651912
+    },
+    {
+      "file": "lounge-fillers-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "554603e179f556d7698cb081c82ceaf48d055788cb8fc2a18d67500c3b8fe278",
+      "after_sha256": "554603e179f556d7698cb081c82ceaf48d055788cb8fc2a18d67500c3b8fe278",
+      "bytes": 21740
+    },
+    {
+      "file": "lounge-fillers-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "853864911e3e59fabc5d0d0bcf6240905de334f6090eff7241fb1fab4b253b6f",
+      "after_sha256": "853864911e3e59fabc5d0d0bcf6240905de334f6090eff7241fb1fab4b253b6f",
+      "bytes": 21736
+    },
+    {
+      "file": "lounge-slide-bed-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "c0dc780230b6445c4401e4e266dea9bf72a4ab8f9b22659ec4d242849f7387ce",
+      "after_sha256": "c0dc780230b6445c4401e4e266dea9bf72a4ab8f9b22659ec4d242849f7387ce",
+      "bytes": 226824
+    },
+    {
+      "file": "lounge-slide-bed-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "84857292d8046aaf7c237324e58bbaae4c36e7c0f1c60620d916c5866dbbc219",
+      "after_sha256": "84857292d8046aaf7c237324e58bbaae4c36e7c0f1c60620d916c5866dbbc219",
+      "bytes": 234732
+    },
+    {
+      "file": "seat-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "1baef995accf2cfd3ab6e5bffb4ebd93c28ba81a2ddd9c9fbc157d37075fd6a2",
+      "after_sha256": "1baef995accf2cfd3ab6e5bffb4ebd93c28ba81a2ddd9c9fbc157d37075fd6a2",
+      "bytes": 488660
+    },
+    {
+      "file": "seat-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "1baef995accf2cfd3ab6e5bffb4ebd93c28ba81a2ddd9c9fbc157d37075fd6a2",
+      "after_sha256": "1baef995accf2cfd3ab6e5bffb4ebd93c28ba81a2ddd9c9fbc157d37075fd6a2",
+      "bytes": 488660
+    },
+    {
+      "file": "side-cabinet-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "a5c9784e4231a155871d5cdb5b108e0258957124be0d5b43ae18147bee2c3f59",
+      "after_sha256": "a5c9784e4231a155871d5cdb5b108e0258957124be0d5b43ae18147bee2c3f59",
+      "bytes": 337084
+    },
+    {
+      "file": "side-cabinet-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "d1a365c2f717ca22d422ccc1661cadb2402fd12c001fcf37eaf259df03f9cfdd",
+      "after_sha256": "d1a365c2f717ca22d422ccc1661cadb2402fd12c001fcf37eaf259df03f9cfdd",
+      "bytes": 340720
+    },
+    {
+      "file": "simple-side-cabinet-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "261b234a08356887e80bd33dfa3d5fdc7e0c87eaeda52627cf8572e5370bf510",
+      "after_sha256": "261b234a08356887e80bd33dfa3d5fdc7e0c87eaeda52627cf8572e5370bf510",
+      "bytes": 301552
+    },
+    {
+      "file": "simple-side-cabinet-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "654c3debcebb5bf32235bb5ab34aeb2539f2c10c4665a1c8d4b6762e68fbcc1e",
+      "after_sha256": "654c3debcebb5bf32235bb5ab34aeb2539f2c10c4665a1c8d4b6762e68fbcc1e",
+      "bytes": 303732
+    },
+    {
+      "file": "slide-bed-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "92ce92b87df75ec4bccddc9c55687920cd837332ecf378d149902f6678b4ff72",
+      "after_sha256": "92ce92b87df75ec4bccddc9c55687920cd837332ecf378d149902f6678b4ff72",
+      "bytes": 123904
+    },
+    {
+      "file": "slide-bed-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "2e356fbe215dafb8b40d77a21787b3bd1c0854e92e46ed34ef6d136cca023adc",
+      "after_sha256": "2e356fbe215dafb8b40d77a21787b3bd1c0854e92e46ed34ef6d136cca023adc",
+      "bytes": 124664
+    },
+    {
+      "file": "two-side-bed-birch.glb",
+      "byte_identical": true,
+      "before_sha256": "e6314b67e98492ffe2d5e69c687ce66c09bbb51814706e3d4e2ce941fb55f86a",
+      "after_sha256": "e6314b67e98492ffe2d5e69c687ce66c09bbb51814706e3d4e2ce941fb55f86a",
+      "bytes": 496672
+    },
+    {
+      "file": "two-side-bed-hexa.glb",
+      "byte_identical": true,
+      "before_sha256": "a3fb45b5f255a869878e7a1655c1bacd7549ada10af7cc356be10673d5aa1daa",
+      "after_sha256": "a3fb45b5f255a869878e7a1655c1bacd7549ada10af7cc356be10673d5aa1daa",
+      "bytes": 505620
+    }
+  ],
+  "changes": [
+    {
+      "node": "ボディ44 (1)_1",
+      "body": "ボディ44 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          257.0,
+          350.0,
+          1387.0
+        ],
+        [
+          588.0,
+          368.0,
+          1863.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "ボディ45 (1)_1",
+      "body": "ボディ45 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          -588.0,
+          350.0,
+          512.0
+        ],
+        [
+          -257.0,
+          368.0,
+          1288.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "ボディ46 (1)_1",
+      "body": "ボディ46 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          257.0,
+          350.0,
+          512.0
+        ],
+        [
+          588.0,
+          368.0,
+          1288.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "ボディ47 (1)_1",
+      "body": "ボディ47 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          -588.0,
+          350.0,
+          1387.0
+        ],
+        [
+          -257.0,
+          368.0,
+          1863.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "ボディ48 (1)_1",
+      "body": "ボディ48 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          -645.0,
+          350.0,
+          0.0
+        ],
+        [
+          -200.0,
+          368.0,
+          1920.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "ボディ49 (1)_1",
+      "body": "ボディ49 (1)",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          -200.0,
+          350.0,
+          0.0
+        ],
+        [
+          645.0,
+          368.0,
+          1920.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    },
+    {
+      "node": "天板_0",
+      "body": "天板",
+      "primitive": 0,
+      "bounds_mm": [
+        [
+          -182.0,
+          275.0,
+          1.0
+        ],
+        [
+          627.0,
+          295.0,
+          440.0
+        ]
+      ],
+      "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+      "after": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:hexa-studio.png"
+    }
+  ],
+  "unchanged_textures": [
+    "4d1e3dd1565a9120ec3151a393ca2070303527065200326e81f28dc8bf101444.webp",
+    "78a7ffc73dc45fb99e00822f0962bc247e96498c06304dcc4cae14eeb56748e1.webp",
+    "69b6502ed0b1b45ed67e529c3b2ad858f88622152f9ff0fccf3f93a799433bdd.webp",
+    "ce48d1ebd18989d79b409c94e1f3979162bd9b2c28afa77abe17967a1a5af9d7.webp",
+    "0721eac7f370602d43ffb4f7ad1137d0ae0ca56ff083e5ff91ae5c9f6adf6dbf.webp"
+  ],
+  "geometry_normals_ao_edges_unchanged": true,
+  "apron_fix_preserved": true
+}

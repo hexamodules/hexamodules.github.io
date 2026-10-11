@@ -151,7 +151,8 @@ WOOD_BED_TOPS = {
         'Hexa hinged top A -524.5x490x15',
         'Hexa hinged top B -524.5x490x15',
     },
-    'lounge-bed': {'天板', *(f'ボディ{i} (1)' for i in range(44, 50))},
+    # SHO 2026-10-11: lounge-bed faces, including tops, use Hexa.
+    'lounge-bed': set(),
     # SHO 2026-10-11: wall-side ledges 69/78/214/215 are Hexa, not bed tops.
     'two-side-bed': set(),
     'lounge-fillers': {

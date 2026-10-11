@@ -16,7 +16,7 @@ class BedTopTests(unittest.TestCase):
     def test_wood_tops_and_every_other_source_part(self):
         # Names are verified below by count and physical elevation; all other
         # parts and all Birch finishes must preserve their previous policy.
-        counts = {'slide-bed': 2, 'lounge-slide-bed': 6, 'lounge-bed': 7,
+        counts = {'slide-bed': 2, 'lounge-slide-bed': 6, 'lounge-bed': 0,
                   'two-side-bed': 0, 'lounge-fillers': 2}
         for model in selected_parts('all'):
             data = json.loads((ASSETS/(model+'.mesh.json')).read_text())
