@@ -1,0 +1,926 @@
+[
+  {
+    "model": "front-module",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1910.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1910.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1910.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1910.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "aluminum-front-kitchen",
+    "body_index": 293,
+    "body": "Oak top18mm - revised perimeter and original sink cutout",
+    "node": "Oak top18mm - revised perimeter and original sink cutout_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -760.0,
+        582.0,
+        1858.0
+      ],
+      [
+        767.0,
+        600.0,
+        2937.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "aluminum-front-kitchen",
+    "body_index": 293,
+    "body": "Oak top18mm - revised perimeter and original sink cutout",
+    "node": "Oak top18mm - revised perimeter and original sink cutout_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -760.0,
+        582.0,
+        1858.0
+      ],
+      [
+        767.0,
+        600.0,
+        2937.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "aluminum-front-kitchen",
+    "body_index": 293,
+    "body": "Oak top18mm - revised perimeter and original sink cutout",
+    "node": "Oak top18mm - revised perimeter and original sink cutout_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -760.0,
+        582.0,
+        1858.0
+      ],
+      [
+        767.0,
+        600.0,
+        2937.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "aluminum-front-kitchen",
+    "body_index": 293,
+    "body": "Oak top18mm - revised perimeter and original sink cutout",
+    "node": "Oak top18mm - revised perimeter and original sink cutout_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -760.0,
+        582.0,
+        1858.0
+      ],
+      [
+        767.0,
+        600.0,
+        2937.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "side-cabinet",
+    "body_index": 20,
+    "body": "Side cabinet oak top - 1561x295x20 - R15",
+    "node": "Side cabinet oak top - 1561x295x20 - R15_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        455.0,
+        635.0,
+        -5.0
+      ],
+      [
+        750.0,
+        655.0,
+        1556.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "side-cabinet",
+    "body_index": 20,
+    "body": "Side cabinet oak top - 1561x295x20 - R15",
+    "node": "Side cabinet oak top - 1561x295x20 - R15_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        455.0,
+        635.0,
+        -5.0
+      ],
+      [
+        750.0,
+        655.0,
+        1556.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "side-cabinet",
+    "body_index": 20,
+    "body": "Side cabinet oak top - 1561x295x20 - R15",
+    "node": "Side cabinet oak top - 1561x295x20 - R15_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        455.0,
+        635.0,
+        -5.0
+      ],
+      [
+        750.0,
+        655.0,
+        1556.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "side-cabinet",
+    "body_index": 20,
+    "body": "Side cabinet oak top - 1561x295x20 - R15",
+    "node": "Side cabinet oak top - 1561x295x20 - R15_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        455.0,
+        635.0,
+        -5.0
+      ],
+      [
+        750.0,
+        655.0,
+        1556.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_1",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "simple-side-cabinet",
+    "body_index": 34,
+    "body": "tennbann",
+    "node": "tennbann_1",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        494.9999999999997,
+        532.0,
+        -5.0
+      ],
+      [
+        750.0,
+        550.0,
+        1405.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "aluminum-side-cabinet",
+    "body_index": 141,
+    "body": "Oak top1294.8x360x18 - compact sink and centered pump",
+    "node": "Oak top1294.8x360x18 - compact sink and centered pump_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        390.0,
+        631.0,
+        0.0
+      ],
+      [
+        750.0,
+        649.0,
+        1294.800048828125
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "aluminum-side-cabinet",
+    "body_index": 141,
+    "body": "Oak top1294.8x360x18 - compact sink and centered pump",
+    "node": "Oak top1294.8x360x18 - compact sink and centered pump_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        390.0,
+        631.0,
+        0.0
+      ],
+      [
+        750.0,
+        649.0,
+        1294.800048828125
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "aluminum-side-cabinet",
+    "body_index": 141,
+    "body": "Oak top1294.8x360x18 - compact sink and centered pump",
+    "node": "Oak top1294.8x360x18 - compact sink and centered pump_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        390.0,
+        631.0,
+        0.0
+      ],
+      [
+        750.0,
+        649.0,
+        1294.800048828125
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "aluminum-side-cabinet",
+    "body_index": 141,
+    "body": "Oak top1294.8x360x18 - compact sink and centered pump",
+    "node": "Oak top1294.8x360x18 - compact sink and centered pump_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        390.0,
+        631.0,
+        0.0
+      ],
+      [
+        750.0,
+        649.0,
+        1294.800048828125
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "active-side-cabinet",
+    "body_index": 35,
+    "body": "Oak top652x374x15 - surfaceZ650",
+    "node": "Oak top652x374x15 - surfaceZ650_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        376.0,
+        635.0,
+        0.0
+      ],
+      [
+        750.0,
+        650.0,
+        652.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "active-side-cabinet",
+    "body_index": 35,
+    "body": "Oak top652x374x15 - surfaceZ650",
+    "node": "Oak top652x374x15 - surfaceZ650_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        376.0,
+        635.0,
+        0.0
+      ],
+      [
+        750.0,
+        650.0,
+        652.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "active-side-cabinet",
+    "body_index": 35,
+    "body": "Oak top652x374x15 - surfaceZ650",
+    "node": "Oak top652x374x15 - surfaceZ650_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        376.0,
+        635.0,
+        0.0
+      ],
+      [
+        750.0,
+        650.0,
+        652.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "active-side-cabinet",
+    "body_index": 35,
+    "body": "Oak top652x374x15 - surfaceZ650",
+    "node": "Oak top652x374x15 - surfaceZ650_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        376.0,
+        635.0,
+        0.0
+      ],
+      [
+        750.0,
+        650.0,
+        652.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-20",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1890.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-20",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1890.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-20",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1890.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-20",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1890.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-114",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1796.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-114",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1796.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-114",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1796.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-114",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1796.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-130",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1780.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-130",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1780.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-130",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1780.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-130",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1780.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-140",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1770.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-140",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1770.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-natural.png",
+    "after": "ALBERO melamine surface",
+    "finish": "birch"
+  },
+  {
+    "model": "front-module-rear-140",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 0,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1770.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-edge:{\"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.6}:edge-birch.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  },
+  {
+    "model": "front-module-rear-140",
+    "body_index": 4,
+    "body": "ボディ61",
+    "node": "ボディ61_0",
+    "primitive": 1,
+    "bounds_mm": [
+      [
+        -710.0,
+        630.0,
+        1770.0
+      ],
+      [
+        -180.0,
+        650.0,
+        2840.0
+      ]
+    ],
+    "before": "plywood-face:{\"ao_constant\": 1, \"color\": \"#ffffff\", \"metalness\": 0, \"repeat\": true, \"roughness\": 0.45}:face-raw.png",
+    "after": "ALBERO melamine surface",
+    "finish": "hexa"
+  }
+]

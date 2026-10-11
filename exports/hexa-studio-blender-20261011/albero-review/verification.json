@@ -1,0 +1,201 @@
+{
+  "files": [
+    {
+      "file": "front-module-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "aluminum-front-kitchen-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "aluminum-front-kitchen-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "i-seat-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "i-seat-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "seat-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "seat-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "side-cabinet-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "side-cabinet-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "simple-side-cabinet-birch.glb",
+      "albero_primitives": 4,
+      "unchanged": false
+    },
+    {
+      "file": "simple-side-cabinet-hexa.glb",
+      "albero_primitives": 4,
+      "unchanged": false
+    },
+    {
+      "file": "aluminum-side-cabinet-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "aluminum-side-cabinet-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "active-side-cabinet-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "active-side-cabinet-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "slide-bed-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "slide-bed-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "lounge-slide-bed-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "lounge-slide-bed-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "aluminum-bed-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "aluminum-bed-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "lounge-bed-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "lounge-bed-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "two-side-bed-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "two-side-bed-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "front-module-rear-20-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-20-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-114-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-114-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-130-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-130-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-140-birch.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "front-module-rear-140-hexa.glb",
+      "albero_primitives": 3,
+      "unchanged": false
+    },
+    {
+      "file": "lounge-fillers-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "lounge-fillers-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "centre-mattresses-birch.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    },
+    {
+      "file": "centre-mattresses-hexa.glb",
+      "albero_primitives": 0,
+      "unchanged": true
+    }
+  ],
+  "passed": 38,
+  "unchanged": 18,
+  "textures_unchanged": true,
+  "geometry_unchanged": true,
+  "non_worktops_unchanged": true,
+  "top_faces_unchanged": true,
+  "ao_unchanged": true
+}

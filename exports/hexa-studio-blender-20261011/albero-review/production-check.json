@@ -1,0 +1,38 @@
+[
+  {
+    "file": "side-cabinet-birch.glb",
+    "production_sha256": "2e56ba454ac1fcccb6e6e13bbb7e8fd7008717585418a1a142a26125e4cbed9e",
+    "local_sha256": "2e56ba454ac1fcccb6e6e13bbb7e8fd7008717585418a1a142a26125e4cbed9e",
+    "equal": true
+  },
+  {
+    "file": "side-cabinet-hexa.glb",
+    "production_sha256": "d71962a498d6ca60965c9dec58661368c1ad713ebde052b4475fd43d78805bd4",
+    "local_sha256": "d71962a498d6ca60965c9dec58661368c1ad713ebde052b4475fd43d78805bd4",
+    "equal": true
+  },
+  {
+    "file": "front-module-birch.glb",
+    "production_sha256": "1a5258a158b1d6edad3b44a71c8ab34903451c224d397310fef130b636c61a96",
+    "local_sha256": "1a5258a158b1d6edad3b44a71c8ab34903451c224d397310fef130b636c61a96",
+    "equal": true
+  },
+  {
+    "file": "front-module-hexa.glb",
+    "production_sha256": "5de32124ca093c54130c7bf2f825bac1f80a2aa18d1615e4503fbddcc671ecbe",
+    "local_sha256": "5de32124ca093c54130c7bf2f825bac1f80a2aa18d1615e4503fbddcc671ecbe",
+    "equal": true
+  },
+  {
+    "file": "aluminum-side-cabinet-birch.glb",
+    "production_sha256": "37e666d7eec9a126d5a46d8aee8adc9e7685f94c3b9bda833ccecccc5a98e470",
+    "local_sha256": "37e666d7eec9a126d5a46d8aee8adc9e7685f94c3b9bda833ccecccc5a98e470",
+    "equal": true
+  },
+  {
+    "file": "aluminum-side-cabinet-hexa.glb",
+    "production_sha256": "7c1696555c21c30478ad4611aa0db9cb2772f471bfa413e850abc1d4f29dfcc7",
+    "local_sha256": "7c1696555c21c30478ad4611aa0db9cb2772f471bfa413e850abc1d4f29dfcc7",
+    "equal": true
+  }
+]
