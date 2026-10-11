@@ -96,3 +96,39 @@ html[data-studio-step]:not([data-studio-step=interior]) .pin-layer{display:none!
 .pin-motion-controls [data-motion-group=seat] legend{width:100%}
 
 @media(max-height:600px) and (orientation:landscape){.pin-motion-controls{flex-shrink:0;max-height:min(184px,50dvh)}.pin-options:not([hidden]){min-height:44px}.pin-popup:has(.pin-options[hidden]) .pin-motion-controls{flex-shrink:1;max-height:none}}
+
+/* Portrait choices live below the stage, using the same selection controls. */
+.portrait-controls{display:none}
+.landscape-prompt{display:none!important}
+@media(max-width:850px) and (orientation:portrait){
+ .pin-layer,.pin-hint,.place-toolbar,.pin-card-toggle{display:none!important}
+ html[data-studio-step=interior]:not(.intro-active):not(.outro-active) .workspace{display:flex;flex-direction:column;gap:8px}
+ html[data-studio-step=interior]:not(.intro-active):not(.outro-active) .stage{flex:0 0 45dvh;height:45dvh;min-height:0}
+ html[data-studio-step=interior]:not(.intro-active):not(.outro-active) .configuration{flex:1;min-height:0;max-height:none;height:auto;align-self:stretch}
+ html[data-studio-step=interior] .configuration .panel-scroll{flex:1;min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain}
+ #pane-interior{padding:0 12px}
+ #pane-interior>.pin-card-controls,#pane-interior>#studio-vehicle-compatibility{display:none}
+ .portrait-controls{display:block}
+ .portrait-section{border-bottom:1px solid #e4e4e1}
+ .portrait-heading{display:flex;align-items:center;gap:4px}
+ .portrait-heading>button:first-child{flex:1;text-align:left;border:0;background:transparent;min-height:52px;padding:12px 2px;font-size:13px;color:#303831}
+ .portrait-heading>button:first-child::after{content:" ▾"}.portrait-heading>button[aria-expanded=true]:first-child::after{content:" ▴"}
+ .portrait-heading #reset-view{display:block;flex:none;width:44px;min-height:44px;padding:4px;background:transparent;border:0;font-size:19px;color:#65715e}
+ .portrait-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:52px;text-align:left;border:0;border-top:1px solid #eee;background:#fff;padding:10px 6px;font-size:12px}
+ .portrait-row>span{flex-shrink:0}.portrait-row>small{font-size:10px;line-height:1.5;color:#777;text-align:right;max-width:48%}
+ .portrait-row[aria-expanded=true]{background:#f3f4f1}
+ .portrait-options{padding:4px 0 10px}
+ .portrait-options[hidden],.portrait-section>div[hidden]{display:none!important}
+ .portrait-options .pin-popup.portrait-inline{position:static!important;inset:auto!important;width:100%;max-width:none;max-height:none!important;border:0;border-radius:0;box-shadow:none;padding:0;overflow:visible}
+ .portrait-inline>header{display:none}.portrait-inline .pin-options{overflow:visible;padding:0}
+ .portrait-inline .pin-option{min-height:54px}.portrait-inline .pin-option small{max-width:none;white-space:normal}
+ .portrait-options fieldset{border:0;margin:0;padding:4px;display:flex;gap:8px;flex-wrap:wrap}.portrait-options legend{font-size:11px;padding:4px 0}
+ .portrait-options fieldset>button{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;flex:1;padding:8px;border:1px solid #ddd;border-radius:7px;background:white;font-size:12px}
+ .portrait-options button[aria-pressed=true]{border-color:#84917b;background:#eff1eb}
+ .portrait-options .pin-mattress-color{justify-content:space-between;padding:8px 4px}
+ .portrait-options .pin-mattress-color button{display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:1px solid transparent;border-radius:50%;background:transparent}
+ .portrait-options .pin-mattress-color button[aria-pressed=true]{border-color:#84917b}
+ .portrait-options button:disabled{opacity:.4}
+ .portrait-controls .pin-summary{display:block;padding:6px 0 12px}.portrait-controls .pin-summary li{padding:7px 0;font-size:11px}.portrait-controls .pin-summary span{white-space:normal;overflow:visible}
+ .portrait-controls .pin-motion-controls{overflow:visible;flex:none}
+}

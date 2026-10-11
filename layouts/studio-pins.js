@@ -27,6 +27,33 @@ export function createPinStudio(api){
  const hintText=()=>t(matchMedia('(pointer:coarse)').matches?'マークをタップするか、下のボタンから変更できます':'マークを押すか、下のボタンから変更できます');
  const summary=document.createElement('ul');summary.className='pin-summary';summary.dataset.moduleI18n='';$('#studio-vehicle-compatibility').before(summary);
  let active=null,lastFocus=null,movingUntil=0,dragging=false,dirty=true,lastTick=0,hoverAfter=0;
+ const portrait=matchMedia('(max-width:850px) and (orientation:portrait)');
+ const accordion=document.createElement('div');accordion.className='portrait-controls';accordion.dataset.moduleI18n='';
+ const groups=new Map(),mobileRows=new Map();
+ const summaryHome=document.createComment('summary home');summary.before(summaryHome);
+ const reset=$('#reset-view'),resetHome=document.createComment('reset home');reset.before(resetHome);
+ const sectionLabels={modules:['モジュールの変更','Change modules'],interior:['内装の変更','Change interior'],spec:['選択された仕様を表示','Show selected specification']};
+ for(const id of ['modules','interior','spec']){
+  const section=document.createElement('section'),head=document.createElement('div'),button=document.createElement('button'),body=document.createElement('div');
+  section.className='portrait-section';head.className='portrait-heading';button.type='button';button.dataset.portraitSection=id;button.setAttribute('aria-expanded','false');body.id='portrait-'+id;button.setAttribute('aria-controls',body.id);body.hidden=true;head.append(button);section.append(head,body);accordion.append(section);groups.set(id,{head,button,body});
+  button.onclick=()=>{const opening=body.hidden;close();for(const g of groups.values()){g.body.hidden=true;g.button.setAttribute('aria-expanded','false');}body.hidden=!opening;button.setAttribute('aria-expanded',String(opening));};
+ }
+ for(const [key,group] of [['front','modules'],['left','modules'],['bed','modules'],['finish','modules'],['mattress','modules'],['wall','interior'],['ceiling','interior'],['floor','interior']]){
+  const button=document.createElement('button'),title=document.createElement('span'),value=document.createElement('small'),body=document.createElement('div');button.type='button';button.className='portrait-row';button.dataset.portraitRow=key;button.setAttribute('aria-expanded','false');body.className='portrait-options';body.id='portrait-options-'+key;body.hidden=true;button.setAttribute('aria-controls',body.id);button.append(title,value);groups.get(group).body.append(button,body);mobileRows.set(key,{button,title,value,body,group});
+  button.onclick=()=>{if(active===key){close();return;}open(key,button);};
+ }
+ $('#pane-interior').prepend(accordion);
+ function refreshPortrait(){
+  if(!portrait.matches)return;
+  const en=getLanguage()==='en';
+  for(const [id,g] of groups)g.button.textContent=sectionLabels[id][en?1:0];
+  groups.get('spec').body.append(summary);groups.get('modules').head.append(reset);
+  const values=[...summary.querySelectorAll('li span')].map(x=>x.textContent);
+  for(const [key,r] of mobileRows){r.title.textContent=key==='finish'?(en?'Furniture finish':'家具の仕上げ'):key==='mattress'?t('マットレス'):t(names[key]);r.value.textContent=values[({front:0,bed:1,left:2,floor:3,ceiling:4,wall:5,finish:6,mattress:7})[key]];}
+  const fields=[...card.children];
+  mobileRows.get('finish').body.replaceChildren(...fields.slice(0,1));mobileRows.get('mattress').body.replaceChildren(...fields.slice(1));
+ }
+ portrait.addEventListener('change',()=>{close();if(!portrait.matches){summaryHome.after(summary);resetHome.after(reset);}refresh();});
  const anchors=new Map(),pins=new Map(),placeButtons=new Map([...stage.querySelectorAll('[data-place]')].map(b=>[b.dataset.place,b]));
  for(const [key,b] of placeButtons)b.onclick=()=>open(key,b);
  for(const key of Object.keys(names)){const b=document.createElement('button');b.className='studio-pin';b.type='button';b.dataset.pin=key;b.setAttribute('aria-expanded','false');b.setAttribute('aria-haspopup','dialog');let hoverTimer;b.onclick=()=>{clearTimeout(hoverTimer);open(key);};b.onpointerenter=e=>{if(e.pointerType==='mouse'&&matchMedia('(hover:hover)').matches&&!active&&performance.now()>=hoverAfter)hoverTimer=setTimeout(()=>open(key),180);};b.onpointerleave=()=>clearTimeout(hoverTimer);layer.append(b);pins.set(key,b);}
@@ -42,6 +69,7 @@ export function createPinStudio(api){
   }
   const label=k=>k==='none'?t('なし'):getLanguage()==='en'?(moduleNames[k]?.en||modules[k]?.en||t(k)):(moduleNames[k]?.ja||modules[k]?.name||t(k));
   for(const [title,value] of [['前側',label(s.front)],['ベッド',label(s.bed)],['サイドキャビネット',label(s.cab)],['床',paletteName('floor',s.floor)],['天井',s.vehicle==='super-gl'?t(s.twiCeiling==='none'?'なし':s.twiCeiling==='clear'?'クリア':'ウォールナット'):paletteName('ceiling',s.ceiling)],['壁',s.vehicle==='super-gl'?t(s.quarterPanels==='none'?'なし':'クォーターパネル'):s.wall!=='none'?t('壁面板張り仕上げ')+' · '+paletteName('wall',s.wall):s.panel!=='none'?t('パネルのみ')+' · '+paletteName('wall',s.panel):t('なし')],['仕上げ',t(s.finish==='black'?'ヘキサ合板':'バーチ合板')],['マットレス',t((api.bedMattressEnabled(s)||api.frontMattressEnabled(s))?'あり':'なし')]]){const li=document.createElement('li'),a=document.createElement('strong'),v=document.createElement('span');a.textContent=t(title);v.textContent=value;li.append(a,v);summary.append(li);}
+  refreshPortrait();
   if(active){renderMotion(active);position();}
   dirty=true;
  }
@@ -70,7 +98,7 @@ export function createPinStudio(api){
   if(focused)card.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});
  }
  function paletteName(type,id){const c=palettes[type].find(c=>c.value===id);return t((type==='wall'?({white:'ホワイト',teffy:'テッフィ','volcanic-gray':'ボルカニックグレー'})[id]:c?.label||c?.name)||'なし');}
- function close(){if(!active)return;hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
+ function close(){if(!active)return;for(const r of mobileRows.values()){r.body.hidden=true;r.button.setAttribute('aria-expanded','false');}document.body.append(popup);popup.classList.remove('portrait-inline');popup.setAttribute('role','dialog');popup.setAttribute('aria-modal','true');hoverAfter=performance.now()+500;pins.get(active)?.setAttribute('aria-expanded','false');motionButton.setAttribute('aria-expanded','false');placeButtons.get(active)?.setAttribute('aria-expanded','false');active=null;popup.hidden=true;backdrop.hidden=true;lastFocus?.focus({preventScroll:true});}
  function row(label,note,selected,patch,color){const b=document.createElement('button');b.type='button';b.className='pin-option';b.setAttribute('aria-pressed',String(selected));if(color){const sw=document.createElement('span');sw.className='pin-swatch';sw.style.background=color;b.append(sw);}const text=document.createElement('span'),strong=document.createElement('strong');strong.textContent=t(label);text.append(strong);if(note){const small=document.createElement('small');small.textContent=t(note);text.append(small);}const check=document.createElement('span');check.className='pin-check';check.textContent=selected?'✓':'';b.append(text,check);b.onclick=()=>{close();apply(patch).catch(console.error);};list.append(b);return b;}
  const swatches={clear:'#d8c7a3',teak:'#a9774b',oak:'#c6a273',walnut:'#654b3e','light-canvas':'#c8c5b9','dark-canvas':'#73736b','white-ash':'#d8c7a3','black-cherry':'#a77952',white:'#fefefe',teffy:'#c5bbb5','volcanic-gray':'#74747a'};
  function renderOptions(key){
@@ -127,7 +155,7 @@ export function createPinStudio(api){
   if(region.querySelector('button')){popup.append(region);if(focus)region.querySelector(`[data-preview-motion="${focus}"]`)?.focus({preventScroll:true});}
   else if(key==='motion'){const empty=document.createElement('p');empty.textContent=text('動かせる家具を選ぶと、ここに操作が出ます。','Select movable furniture to see its controls here.');region.append(empty);popup.append(region);}
  }
- function position(){if(!active)return;
+ function position(){if(!active||portrait.matches)return;
   if(lastFocus===motionButton||lastFocus?.matches('[data-place]')){
    const r=lastFocus.getBoundingClientRect(),bar=stage.querySelector('.place-toolbar').getBoundingClientRect();
    popup.style.maxHeight=Math.max(0,bar.top-24)+'px';
@@ -136,16 +164,27 @@ export function createPinStudio(api){
    popup.style.top=Math.max(12,bar.top-h-12)+'px';return;
   }
   const r=pins.get(active).getBoundingClientRect();const w=popup.offsetWidth,h=popup.offsetHeight;let x=r.right+12;if(x+w>innerWidth-12)x=r.left-w-12;popup.style.left=Math.max(12,x)+'px';popup.style.top=Math.max(12,Math.min(innerHeight-h-12,r.bottom+h+12<=innerHeight?r.bottom+12:r.top-h-12))+'px';}
- function open(key,trigger=pins.get(key)){if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();active=key;lastFocus=trigger;popup.classList.toggle('from-place',trigger===motionButton||trigger.matches('[data-place]'));popup.style.maxHeight='';pins.get(key)?.setAttribute('aria-expanded','true');motionButton.setAttribute('aria-expanded',String(key==='motion'));placeButtons.get(key)?.setAttribute('aria-expanded','true');renderOptions(key);popup.hidden=false;backdrop.hidden=false;position();popup.querySelector('header button').focus({preventScroll:true});}
+ function open(key,trigger=pins.get(key)){
+  if(portrait.matches){
+   const r=mobileRows.get(key);if(!r)return;
+   if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();
+   for(const [id,g] of groups){g.body.hidden=id!==r.group;g.button.setAttribute('aria-expanded',String(id===r.group));}
+   active=key;lastFocus=r.button;r.button.setAttribute('aria-expanded','true');r.body.hidden=false;
+   if(key!=='finish'&&key!=='mattress'){renderOptions(key);popup.classList.add('portrait-inline');popup.setAttribute('role','region');popup.removeAttribute('aria-modal');r.body.append(popup);popup.hidden=false;}
+   backdrop.hidden=true;
+   requestAnimationFrame(()=>{const scroller=$('.panel-scroll');scroller.scrollTop+=r.button.getBoundingClientRect().top-scroller.getBoundingClientRect().top;});
+   return;
+  }
+ if(root.dataset.studioStep!=='interior')$('#tab-interior').click();close();active=key;lastFocus=trigger;popup.classList.toggle('from-place',trigger===motionButton||trigger.matches('[data-place]'));popup.style.maxHeight='';pins.get(key)?.setAttribute('aria-expanded','true');motionButton.setAttribute('aria-expanded',String(key==='motion'));placeButtons.get(key)?.setAttribute('aria-expanded','true');renderOptions(key);popup.hidden=false;backdrop.hidden=false;position();popup.querySelector('header button').focus({preventScroll:true});}
  backdrop.onclick=close;popup.querySelector('header button').onclick=close;
- document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
- controls.addEventListener('start',()=>{dragging=true;close();});controls.addEventListener('end',()=>{dragging=false;movingUntil=performance.now()+220;dirty=true;});controls.addEventListener('change',()=>{movingUntil=performance.now()+180;dirty=true;});
+ document.addEventListener('keydown',e=>{if(!active)return;if(e.key==='Escape'){e.preventDefault();close();}if(e.key==='Tab'&&!portrait.matches){const buttons=[...popup.querySelectorAll('button:not(:disabled)')],first=buttons[0],last=buttons.at(-1);if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}});
+ controls.addEventListener('start',()=>{dragging=true;if(!portrait.matches)close();});controls.addEventListener('end',()=>{dragging=false;movingUntil=performance.now()+220;dirty=true;});controls.addEventListener('change',()=>{movingUntil=performance.now()+180;dirty=true;});
  const ray=new THREE.Raycaster(),direction=new THREE.Vector3();
- function frame(now){requestAnimationFrame(frame);const hide=dragging||now<movingUntil||root.dataset.studioStep!=='interior'||root.classList.contains('intro-active')||root.classList.contains('outro-active');layer.hidden=hide;if(hide||document.hidden)return;if(!dirty)return;lastTick=now;dirty=false;camera.updateMatrixWorld();scene.updateMatrixWorld();const rect=stage.getBoundingClientRect();const blockers=scene.children.filter(g=>g.visible&&g.userData.data);const placed=[];
+ function frame(now){requestAnimationFrame(frame);const hide=portrait.matches||dragging||now<movingUntil||root.dataset.studioStep!=='interior'||root.classList.contains('intro-active')||root.classList.contains('outro-active');layer.hidden=hide;if(hide||document.hidden)return;if(!dirty)return;lastTick=now;dirty=false;camera.updateMatrixWorld();scene.updateMatrixWorld();const rect=stage.getBoundingClientRect();const blockers=scene.children.filter(g=>g.visible&&g.userData.data);const placed=[];
   for(const [key,b] of pins){const point=anchors.get(key),v=point.clone().project(camera);b.hidden=v.z< -1||v.z>1||Math.abs(v.x)>1||Math.abs(v.y)>1;if(b.hidden)continue;const ax=(v.x+1)*rect.width/2,ay=(1-v.y)*rect.height/2;let x=Math.max(24,Math.min(rect.width-24,ax)),y=Math.max(28,Math.min(rect.height-70,ay));const candidates=[];for(let dx=-5;dx<=5;dx++)for(let dy=-5;dy<=5;dy++)candidates.push({x:x+dx*44,y:y+dy*44,d:dx*dx+dy*dy});candidates.sort((a,b)=>a.d-b.d);const free=candidates.find(q=>q.x>=24&&q.x<=rect.width-24&&q.y>=28&&q.y<=rect.height-70&&!placed.some(p=>Math.hypot(q.x-p.x,q.y-p.y)<43));if(free){x=free.x;y=free.y;}placed.push({x,y});b.style.left=x+'px';b.style.top=y+'px';direction.copy(point).sub(camera.position);const distance=direction.length();ray.set(camera.position,direction.normalize());ray.far=distance-45;const occluded=ray.intersectObjects(blockers,true).some(hit=>{for(let n=hit.object;n;n=n.parent)if(!n.visible)return false;return true;});b.style.opacity=occluded?'.38':'1';}
   position();
  }
- window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active){renderOptions(active);position();}});new ResizeObserver(()=>{dirty=true;position();hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';}).observe(stage);
+ window.addEventListener('studio-step-change',()=>{close();dirty=true;stage.querySelector('.pin-tip')?.remove();});window.addEventListener('studio-locale-change',()=>{refresh();if(active&&!['finish','mattress'].includes(active)){renderOptions(active);position();}});new ResizeObserver(()=>{dirty=true;position();hintLabel.textContent=hintText();motionButton.textContent=getLanguage()==='en'?'Move ▾':'動かす ▾';}).observe(stage);
  new ResizeObserver(([entry])=>{stage.style.setProperty('--place-bar-height',entry.target.offsetHeight+'px');position();}).observe(stage.querySelector('.place-toolbar'));
  refresh();requestAnimationFrame(frame);
  return {refresh,open,openForModel(id){const s=getState();const key=id===keys.floor?'floor':id===keys.ceiling?'ceiling':id===keys.wall?'wall':id===s.front?'front':id===s.bed?'bed':'left';open(key);}};
