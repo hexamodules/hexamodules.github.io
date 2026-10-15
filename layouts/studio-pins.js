@@ -115,7 +115,7 @@ export function createPinStudio(api){
    const current=s.bedMattress?s.bedMattressColor:s.frontMattressColor;
    for(const c of STUDIO_MATTRESS_COLORS){
     const button=document.createElement('button'),dot=document.createElement('span');button.type='button';button.dataset.cardChoice='mattress-color-'+c.id;button.setAttribute('aria-label',getLanguage()==='en'?c.en:c.ja);button.setAttribute('aria-pressed',String(c.id===current));dot.className='pin-swatch';dot.style.background=c.hex;dot.setAttribute('aria-hidden','true');button.append(dot);
-    button.onclick=()=>apply({bedMattressColor:c.id,frontMattressColor:c.id}).catch(console.error);colors.append(button);
+    button.onclick=()=>apply({bedMattressColor:c.id,frontMattressColor:c.id,iSeatColor:c.id,iSeatMatchMattress:false}).catch(console.error);colors.append(button);
    }card.append(colors);
   }
   if(focused)card.querySelector(`[data-card-choice="${focused}"]`)?.focus({preventScroll:true});

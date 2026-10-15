@@ -52,7 +52,9 @@ export function createMattressControls({getState,getLanguage,onChange}){
  document.addEventListener('change',async e=>{
   const colorSlot=e.target.dataset?.mattressColor;
   if(['bed','front'].includes(colorSlot)&&MATTRESS_COLORS.some(c=>c.id===e.target.value)){
-   const value=e.target.value;await onChange({[colorSlot+'MattressColor']:value});
+   const value=e.target.value;
+   // Selecting a bed fabric also updates the camper seat, in every pose.
+   await onChange({[colorSlot+'MattressColor']:value,...(colorSlot==='bed'?{iSeatColor:value,iSeatMatchMattress:false}:{})});
    document.querySelector(`[data-mattress-color="${colorSlot}"][value="${value}"]`)?.focus({preventScroll:true});return;
   }
 
